@@ -452,6 +452,8 @@ function buildAutoTile(d,i){
   div.addEventListener('click',()=>openAutoModal(i));return div;
 }
 
+let aDragSrc=null,aDragIdx=null;
+
 function attachAutoDrag(row,i,j){
   row.setAttribute('draggable','true');
   row.addEventListener('dragstart',e=>{aDragSrc=j;aDragIdx=i;row.classList.add('dragging');e.dataTransfer.effectAllowed='move';});
@@ -466,12 +468,15 @@ function attachAutoDrag(row,i,j){
     renderAutoModal(i);updateTileArc(i);
   });
 }
-let aDragSrc=null,aDragIdx=null;
-function openAutoModal(i){
-  activeAutoIdx=i;const d=dims[i];
-  document.getElementById('a-icon').className='ti '+d.icon;
-  document.getElementById('a-title').textContent=d.label;
-  const list=document.getElementById('a-actions');list.innerHTML='';
+
+function renderAutoModal(i){
+  const d=dims[i];
+  const list=document.getElementById('a-actions');
+  list.innerHTML='';
+  /* Supprimer l'ancien footer s'il existe */
+  const oldFooter=document.getElementById('auto-modal-footer');
+  if(oldFooter)oldFooter.remove();
+
   d.actions.forEach((a,j)=>{
     const row=document.createElement('div');row.className='action-row';
     row.innerHTML=`<span class="drag-handle">⋮</span><span class="action-num">${j+1}</span>
@@ -483,6 +488,7 @@ function openAutoModal(i){
     attachAutoDrag(row,i,j);
     row.querySelector(`#aname-${i}-${j}`).addEventListener('input',e=>{d.actions[j].name=e.target.value;});
     row.querySelector(`#aname-${i}-${j}`).addEventListener('click',e=>e.stopPropagation());
+    row.querySelector(`#aname-${i}-${j}`).addEventListener('mousedown',e=>e.stopPropagation());
     const track=row.querySelector(`#mt-${i}-${j}`);let drag=false;
     function upG(e){
       const rect=track.getBoundingClientRect();
@@ -493,7 +499,7 @@ function openAutoModal(i){
       document.getElementById(`mp-${i}-${j}`).textContent=v+'%';document.getElementById(`mp-${i}-${j}`).style.color=c;
       updateTileArc(i);
     }
-    track.addEventListener('mousedown',e=>{drag=true;upG(e);});
+    track.addEventListener('mousedown',e=>{drag=true;upG(e);e.stopPropagation();});
     document.addEventListener('mousemove',e=>{if(drag)upG(e);});
     document.addEventListener('mouseup',()=>{drag=false;});
     track.addEventListener('touchstart',upG,{passive:true});
@@ -501,17 +507,29 @@ function openAutoModal(i){
     row.querySelector('.del-btn').addEventListener('click',e=>{
       e.stopPropagation();
       dims[i].actions.splice(j,1);
-      renderAutoModal(i);updateTileArc(i);
+      renderAutoModal(i);
+      updateTileArc(i);
     });
   });
-  /* Bouton Ajouter */
-  const footer=document.createElement('div');footer.className='modal-footer';
-  footer.innerHTML='<button class="add-btn" id="add-auto-btn"><i class="ti ti-plus" style="font-size:13px"></i> Ajouter une action</button><span style="font-size:11px;color:#b4b2a9">${dims[i].actions.length} action(s)</span>';
-  document.getElementById('a-actions').after(footer);
+
+  /* Footer avec bouton Ajouter */
+  const footer=document.createElement('div');
+  footer.className='modal-footer';
+  footer.id='auto-modal-footer';
+  footer.innerHTML=`<button class="add-btn" id="add-auto-btn"><i class="ti ti-plus" style="font-size:13px"></i> Ajouter une action</button><span style="font-size:11px;color:#b4b2a9">${d.actions.length} action(s)</span>`;
+  list.after(footer);
   document.getElementById('add-auto-btn').addEventListener('click',()=>{
     dims[i].actions.push({name:'Nouvelle action',val:50});
-    renderAutoModal(i);updateTileArc(i);
+    renderAutoModal(i);
+    updateTileArc(i);
   });
+}
+
+function openAutoModal(i){
+  activeAutoIdx=i;
+  document.getElementById('a-icon').className='ti '+dims[i].icon;
+  document.getElementById('a-title').textContent=dims[i].label;
+  renderAutoModal(i);
   document.querySelectorAll('.tile').forEach(t=>t.classList.remove('active'));
   document.getElementById('atile'+i).classList.add('active');
   document.getElementById('overlay-autonomie').classList.add('open');
