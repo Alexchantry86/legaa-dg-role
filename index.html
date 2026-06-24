@@ -471,18 +471,20 @@ function attachAutoDrag(row,i,j){
 
 function renderAutoModal(i){
   const d=dims[i];
+  /* Supprimer TOUS les footers existants en premier */
+  document.querySelectorAll('#auto-modal-footer').forEach(el=>el.remove());
   const list=document.getElementById('a-actions');
   list.innerHTML='';
-  /* Supprimer le footer existant après avoir vidé la liste */
-  document.querySelectorAll('#auto-modal-footer').forEach(el=>el.remove());
 
   d.actions.forEach((a,j)=>{
     const row=document.createElement('div');row.className='action-row';
     row.innerHTML=`<span class="drag-handle">⋮</span><span class="action-num">${j+1}</span>
-      <input class="action-name" type="text" value="${a.name}" id="aname-${i}-${j}"/>
+      <input class="action-name" type="text" id="aname-${i}-${j}"/>
       <div class="mini-track" id="mt-${i}-${j}"><div class="mini-fill" id="mf-${i}-${j}" style="width:${a.val}%;background:${colA(a.val)}"></div></div>
       <span class="mini-pct" id="mp-${i}-${j}" style="color:${colA(a.val)}">${a.val}%</span>
       <button class="del-btn" title="Supprimer">&#x2715;</button>`;
+    /* Affecter value via JS pour éviter tout problème d'encodage HTML */
+    row.querySelector(`#aname-${i}-${j}`).value=a.name;
     list.appendChild(row);
     attachAutoDrag(row,i,j);
     row.querySelector(`#aname-${i}-${j}`).addEventListener('input',e=>{d.actions[j].name=e.target.value;});
@@ -511,13 +513,20 @@ function renderAutoModal(i){
     });
   });
 
-  /* Footer avec bouton Ajouter */
+  /* Footer — créé une seule fois après le forEach */
   const footer=document.createElement('div');
   footer.className='modal-footer';
   footer.id='auto-modal-footer';
-  footer.innerHTML=`<button class="add-btn" id="add-auto-btn"><i class="ti ti-plus" style="font-size:13px"></i> Ajouter une action</button><span style="font-size:11px;color:#b4b2a9">${d.actions.length} action(s)</span>`;
+  const addBtn=document.createElement('button');
+  addBtn.className='add-btn';
+  addBtn.innerHTML='<i class="ti ti-plus" style="font-size:13px"></i> Ajouter une action';
+  const counter=document.createElement('span');
+  counter.style.cssText='font-size:11px;color:#b4b2a9';
+  counter.textContent=d.actions.length+' action(s)';
+  footer.appendChild(addBtn);
+  footer.appendChild(counter);
   list.after(footer);
-  document.getElementById('add-auto-btn').addEventListener('click',()=>{
+  addBtn.addEventListener('click',()=>{
     dims[i].actions.push({name:'Nouvelle action',val:50});
     renderAutoModal(i);
     updateTileArc(i);
@@ -600,6 +609,8 @@ function attachDrag(row,i,j){
 }
 
 function renderPrioModal(i){
+  /* Supprimer TOUS les footers existants en premier */
+  document.querySelectorAll('#prio-modal-footer').forEach(el=>el.remove());
   const pd=prioData[i];const list=document.getElementById('p-actions');list.innerHTML='';
   pd.actions.forEach((a,j)=>{
     const av=a.done?100:a.avancement;
@@ -607,7 +618,7 @@ function renderPrioModal(i){
     const row=document.createElement('div');row.className='prio-action-row';
     row.innerHTML=`<span class="drag-handle">⠿</span>
       <span class="prio-num">${j+1}</span>
-      <input class="prio-action-name" type="text" value="${a.name}" id="pname-${i}-${j}"/>
+      <input class="prio-action-name" type="text" id="pname-${i}-${j}"/>
       <div class="prio-gauge-wrap">
         <div class="prio-gauge-track" id="pgt-${i}-${j}"><div class="prio-gauge-fill" id="pgf-${i}-${j}" style="width:${av}%;background:${avColor}"></div></div>
         <span class="prio-gauge-pct" id="pgp-${i}-${j}" style="color:${avColor}">${av}%</span>
@@ -619,6 +630,8 @@ function renderPrioModal(i){
       </select>
       <div class="prio-check-wrap"><input type="checkbox" class="prio-check" id="pchk-${i}-${j}" ${a.done?'checked':''}/></div>
       <button class="del-btn" title="Supprimer">&#x2715;</button>`;
+    /* Affecter value via JS pour éviter tout problème d'encodage HTML */
+    row.querySelector(`#pname-${i}-${j}`).value=a.name;
     list.appendChild(row);
     attachDrag(row,i,j);
     row.querySelector(`#pname-${i}-${j}`).addEventListener('input',e=>{pd.actions[j].name=e.target.value;});
@@ -660,13 +673,20 @@ function renderPrioModal(i){
       renderPrioModal(i);refreshPrioTile(i);
     });
   });
-  /* Bouton Ajouter */
+  /* Footer — créé une seule fois après le forEach */
   document.querySelectorAll('#prio-modal-footer').forEach(el=>el.remove());
   const pFooter=document.createElement('div');pFooter.className='modal-footer';
   pFooter.id='prio-modal-footer';
-  pFooter.innerHTML=`<button class="add-btn" id="add-prio-btn"><i class="ti ti-plus" style="font-size:13px"></i> Ajouter une action</button><span style="font-size:11px;color:#b4b2a9">${prioData[i].actions.length} action(s)</span>`;
+  const pAddBtn=document.createElement('button');
+  pAddBtn.className='add-btn';
+  pAddBtn.innerHTML='<i class="ti ti-plus" style="font-size:13px"></i> Ajouter une action';
+  const pCounter=document.createElement('span');
+  pCounter.style.cssText='font-size:11px;color:#b4b2a9';
+  pCounter.textContent=pd.actions.length+' action(s)';
+  pFooter.appendChild(pAddBtn);
+  pFooter.appendChild(pCounter);
   document.getElementById('p-actions').after(pFooter);
-  document.getElementById('add-prio-btn').addEventListener('click',()=>{
+  pAddBtn.addEventListener('click',()=>{
     prioData[i].actions.push({name:'Nouvelle action',prio:'basse',avancement:0,done:false});
     renderPrioModal(i);refreshPrioTile(i);
   });
