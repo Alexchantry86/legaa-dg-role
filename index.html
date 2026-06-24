@@ -9,43 +9,36 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body {
   font-family: 'Segoe UI', Arial, sans-serif;
-  background: #f7f7f5;
-  color: #2c2c2a;
-  min-height: 100vh;
-  padding: 0 0 60px;
+  background: #f7f7f5; color: #2c2c2a;
+  min-height: 100vh; padding: 0 0 60px;
 }
-.page { max-width: 980px; margin: 0 auto; padding: 40px 32px 0; }
+.page { max-width: 980px; margin: 0 auto; padding: 36px 32px 0; }
 
 /* HEADER */
-.header { margin-bottom: 28px; }
-.eyebrow { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: #888780; margin-bottom: 6px; }
-h1 { font-size: 22px; font-weight: 500; color: #2c2c2a; margin-bottom: 4px; }
+.header { margin-bottom: 26px; }
+.eyebrow { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: #888780; margin-bottom: 5px; }
+h1 { font-size: 22px; font-weight: 500; color: #2c2c2a; margin-bottom: 2px; }
 .sub { font-size: 13px; color: #888780; }
 
 /* TABS */
-.tabs {
-  display: flex; gap: 0; margin-bottom: 28px;
-  border-bottom: 1px solid #d3d1c7;
-}
+.tabs { display: flex; border-bottom: 1px solid #d3d1c7; margin-bottom: 26px; }
 .tab-btn {
-  padding: 10px 22px; font-size: 13px; font-weight: 500;
-  color: #888780; background: none; border: none;
-  border-bottom: 2px solid transparent; margin-bottom: -1px;
-  cursor: pointer; transition: color .15s, border-color .15s;
+  padding: 10px 22px; font-size: 13px; font-weight: 500; color: #888780;
+  background: none; border: none; border-bottom: 2px solid transparent;
+  margin-bottom: -1px; cursor: pointer; transition: color .15s, border-color .15s;
   display: flex; align-items: center; gap: 7px;
 }
 .tab-btn i { font-size: 15px; }
 .tab-btn:hover { color: #2c2c2a; }
 .tab-btn.active { color: #2c2c2a; border-bottom-color: #2c2c2a; }
-
-/* TAB PANELS */
 .tab-panel { display: none; }
 .tab-panel.active { display: block; }
 
-/* GRID */
+/* GRILLE COMMUNE */
 .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.hint { text-align: center; font-size: 11px; color: #b4b2a9; margin-top: 14px; }
 
-/* ── ONGLET 1 : AUTONOMIE ── */
+/* ── ONGLET 1 : TUILES AUTONOMIE ── */
 .tile {
   background: #fff; border: 0.5px solid #d3d1c7; border-radius: 14px;
   padding: 20px 12px 16px; display: flex; flex-direction: column;
@@ -57,49 +50,44 @@ h1 { font-size: 22px; font-weight: 500; color: #2c2c2a; margin-bottom: 4px; }
 .tile-icon { font-size: 28px; color: #888780; line-height: 1; }
 .arc-wrap { position: relative; width: 72px; height: 40px; }
 .arc-wrap svg { overflow: visible; display: block; }
-.arc-pct {
-  position: absolute; bottom: -2px; left: 50%;
-  transform: translateX(-50%); font-size: 12px; font-weight: 500; white-space: nowrap;
-}
+.arc-pct { position: absolute; bottom: -2px; left: 50%; transform: translateX(-50%); font-size: 12px; font-weight: 500; white-space: nowrap; }
 .tile-label { font-size: 11px; font-weight: 500; color: #2c2c2a; text-align: center; line-height: 1.35; }
-.hint { text-align: center; font-size: 11px; color: #b4b2a9; margin-top: 14px; }
 
-/* ── ONGLET 2 : ACTIONS PRIORITAIRES ── */
-.prio-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-
+/* ── ONGLET 2 : TUILES PRIORITÉ ── */
 .prio-tile {
   background: #fff; border: 0.5px solid #d3d1c7; border-radius: 14px;
-  padding: 16px 14px 14px; cursor: pointer;
+  padding: 20px 14px 16px; display: flex; flex-direction: column;
+  align-items: center; gap: 11px; cursor: pointer;
   transition: border-color .15s, transform .1s; user-select: none;
 }
 .prio-tile:hover { border-color: #888780; transform: translateY(-1px); }
 .prio-tile.active { border-color: #2c2c2a; border-width: 1px; }
-
-.prio-tile-head {
-  display: flex; align-items: center; gap: 9px; margin-bottom: 10px;
+.prio-tile-icon { font-size: 28px; color: #888780; line-height: 1; }
+.prio-tile-label { font-size: 11px; font-weight: 500; color: #2c2c2a; text-align: center; line-height: 1.35; }
+.prio-tile-stats { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 100%; }
+.prio-stat-pills { display: flex; gap: 4px; justify-content: center; flex-wrap: wrap; }
+.prio-pill {
+  font-size: 10px; font-weight: 500; padding: 2px 7px;
+  border-radius: 20px; white-space: nowrap;
 }
-.prio-tile-head i { font-size: 18px; color: #888780; }
-.prio-tile-label { font-size: 11px; font-weight: 500; color: #2c2c2a; line-height: 1.3; }
-
-.prio-summary { display: flex; flex-direction: column; gap: 4px; }
-.prio-bar-row { display: flex; align-items: center; gap: 6px; }
-.prio-bar-label { font-size: 10px; color: #888780; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.prio-bar-track { width: 48px; height: 4px; background: #e8e6e0; border-radius: 2px; flex-shrink: 0; }
-.prio-bar-fill { height: 4px; border-radius: 2px; }
-.prio-count { font-size: 10px; color: #888780; margin-top: 6px; }
-.prio-count span { font-weight: 600; color: #2c2c2a; }
+.pill-haute   { background: #FAECE7; color: #993C1D; }
+.pill-moyenne { background: #FAEEDA; color: #633806; }
+.pill-basse   { background: #f1efe8; color: #888780; }
+.pill-done    { background: #E1F5EE; color: #085041; }
+.prio-stat-total { font-size: 10px; color: #b4b2a9; }
+.prio-stat-total span { font-weight: 600; color: #2c2c2a; }
 
 /* ── MODAL COMMUNE ── */
 .overlay {
   display: none; position: fixed; inset: 0;
-  background: rgba(44,44,42,0.42);
-  z-index: 100; align-items: center; justify-content: center; padding: 24px;
+  background: rgba(44,44,42,0.42); z-index: 100;
+  align-items: center; justify-content: center; padding: 24px;
 }
 .overlay.open { display: flex; }
 .modal {
-  background: #fff; border-radius: 18px;
-  width: 100%; max-width: 660px; max-height: 90vh;
-  overflow-y: auto; padding: 28px 28px 24px; position: relative;
+  background: #fff; border-radius: 18px; width: 100%;
+  max-width: 660px; max-height: 90vh; overflow-y: auto;
+  padding: 28px 28px 24px; position: relative;
 }
 .modal-head { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
 .modal-head i { font-size: 22px; color: #888780; }
@@ -125,9 +113,9 @@ h1 { font-size: 22px; font-weight: 500; color: #2c2c2a; margin-bottom: 4px; }
 .action-row:hover { border-color: #d3d1c7; }
 .action-num { font-size: 11px; font-weight: 500; color: #b4b2a9; text-align: center; }
 .action-name {
-  font-size: 13px; font-weight: 500; color: #2c2c2a;
-  padding: 2px 4px; border-radius: 4px;
-  border: 1px solid transparent; transition: border-color .12s, background .12s;
+  font-size: 13px; font-weight: 500; color: #2c2c2a; padding: 2px 4px;
+  border-radius: 4px; border: 1px solid transparent;
+  transition: border-color .12s, background .12s;
   outline: none; width: 100%; background: transparent; font-family: inherit;
 }
 .action-name:hover { border-color: #d3d1c7; background: #fff; }
@@ -136,56 +124,48 @@ h1 { font-size: 22px; font-weight: 500; color: #2c2c2a; margin-bottom: 4px; }
 .mini-fill { height: 6px; border-radius: 3px; pointer-events: none; transition: width .08s, background .2s; }
 .mini-pct { font-size: 12px; font-weight: 500; text-align: right; min-width: 34px; }
 
-/* MODAL ACTIONS PRIORITAIRES */
-.prio-action-list { display: flex; flex-direction: column; gap: 8px; }
+/* MODAL PRIORITÉS — DRAG & DROP */
+.prio-action-list { display: flex; flex-direction: column; gap: 6px; }
 .prio-action-row {
-  display: grid; grid-template-columns: 28px 1fr 90px 36px;
-  align-items: center; gap: 10px; padding: 10px 12px;
+  display: grid; grid-template-columns: 22px 22px 1fr 96px 32px;
+  align-items: center; gap: 8px; padding: 9px 12px;
   background: #f7f7f5; border-radius: 10px;
-  border: 1px solid transparent; transition: border-color .15s;
+  border: 1px solid transparent; transition: border-color .15s, opacity .15s;
+  cursor: grab;
 }
 .prio-action-row:hover { border-color: #d3d1c7; }
-.prio-action-num { font-size: 11px; font-weight: 500; color: #b4b2a9; text-align: center; }
+.prio-action-row.dragging { opacity: .4; cursor: grabbing; }
+.prio-action-row.drag-over { border-color: #888780; background: #efefed; }
+.drag-handle { font-size: 14px; color: #d3d1c7; cursor: grab; display: flex; align-items: center; }
+.prio-num { font-size: 11px; font-weight: 500; color: #b4b2a9; text-align: center; }
 .prio-action-name {
-  font-size: 13px; font-weight: 500; color: #2c2c2a;
-  padding: 2px 4px; border-radius: 4px;
-  border: 1px solid transparent; transition: border-color .12s, background .12s;
+  font-size: 13px; font-weight: 500; color: #2c2c2a; padding: 2px 4px;
+  border-radius: 4px; border: 1px solid transparent;
+  transition: border-color .12s, background .12s;
   outline: none; width: 100%; background: transparent; font-family: inherit;
 }
 .prio-action-name:hover { border-color: #d3d1c7; background: #fff; }
 .prio-action-name:focus { border-color: #888780; background: #fff; }
-
-/* Statut priorité */
 .prio-select {
   font-size: 11px; font-weight: 500; border: 1px solid #d3d1c7;
-  border-radius: 6px; padding: 4px 6px; background: #fff;
-  cursor: pointer; outline: none; font-family: inherit;
-  transition: border-color .12s;
+  border-radius: 6px; padding: 4px 5px; background: #fff;
+  cursor: pointer; outline: none; font-family: inherit; width: 100%;
 }
-.prio-select:focus { border-color: #888780; }
-
-/* Checkbox terminé */
+.sel-haute   { background: #FAECE7; color: #993C1D; border-color: #F5C4B3; }
+.sel-moyenne { background: #FAEEDA; color: #633806; border-color: #FAC775; }
+.sel-basse   { background: #f1efe8; color: #888780; border-color: #d3d1c7; }
+.sel-done    { background: #E1F5EE; color: #085041; border-color: #9FE1CB; }
 .prio-check-wrap { display: flex; align-items: center; justify-content: center; }
 .prio-check {
-  width: 18px; height: 18px; border: 1.5px solid #d3d1c7;
-  border-radius: 5px; cursor: pointer; appearance: none;
-  background: #fff; transition: background .12s, border-color .12s;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
+  width: 18px; height: 18px; border: 1.5px solid #d3d1c7; border-radius: 5px;
+  cursor: pointer; appearance: none; background: #fff;
+  transition: background .12s, border-color .12s; flex-shrink: 0; position: relative;
 }
 .prio-check:checked { background: #1D9E75; border-color: #1D9E75; }
-.prio-check:checked::after { content: '✓'; color: #fff; font-size: 11px; position: absolute; }
-
-/* Badges priorité */
-.badge-haute  { background: #FAECE7; color: #993C1D; }
-.badge-moyenne { background: #FAEEDA; color: #633806; }
-.badge-basse  { background: #f1efe8; color: #5f5e5a; }
-.badge-done   { background: #E1F5EE; color: #085041; }
+.prio-check:checked::after { content: '✓'; color: #fff; font-size: 11px; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-52%); }
 
 /* Légende S2 */
-.prio-legend {
-  display: flex; gap: 16px; margin-top: 14px; flex-wrap: wrap; justify-content: center;
-}
+.prio-legend { display: flex; gap: 16px; margin-top: 16px; flex-wrap: wrap; justify-content: center; }
 .prio-leg-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #5f5e5a; }
 .prio-leg-dot { width: 8px; height: 8px; border-radius: 50%; }
 </style>
@@ -194,36 +174,29 @@ h1 { font-size: 22px; font-weight: 500; color: #2c2c2a; margin-bottom: 4px; }
 <div class="page">
   <div class="header">
     <p class="eyebrow">LEGAA · Direction générale</p>
-    <h1>Tableau de bord — Etienne Kieffer</h1>
-    <p class="sub">HEKR SAS · Nommé mars 2026</p>
+    <h1>Tableau de bord — DG</h1>
+    <p class="sub">Niveau d'autonomie et actions prioritaires S2 2026</p>
   </div>
 
-  <!-- TABS -->
   <div class="tabs">
-    <button class="tab-btn active" data-tab="autonomie">
-      <i class="ti ti-gauge"></i> Niveau d'autonomie par domaine
-    </button>
-    <button class="tab-btn" data-tab="actions">
-      <i class="ti ti-list-check"></i> Actions prioritaires S2 2026
-    </button>
+    <button class="tab-btn active" data-tab="autonomie"><i class="ti ti-gauge"></i>Niveau d'autonomie par domaine</button>
+    <button class="tab-btn" data-tab="actions"><i class="ti ti-list-check"></i>Actions prioritaires S2 2026</button>
   </div>
 
-  <!-- ONGLET 1 : AUTONOMIE -->
   <div class="tab-panel active" id="tab-autonomie">
     <div class="grid" id="grid-autonomie"></div>
     <p class="hint">Cliquer sur une brique · Glisser pour ajuster l'autonomie · Cliquer sur un libellé pour le modifier</p>
   </div>
 
-  <!-- ONGLET 2 : ACTIONS PRIORITAIRES -->
   <div class="tab-panel" id="tab-actions">
-    <div class="prio-grid" id="grid-actions"></div>
+    <div class="grid" id="grid-actions"></div>
     <div class="prio-legend">
       <div class="prio-leg-item"><div class="prio-leg-dot" style="background:#D85A30"></div>Haute priorité</div>
-      <div class="prio-leg-item"><div class="prio-leg-dot" style="background:#EF9F27"></div>Priorité moyenne</div>
-      <div class="prio-leg-item"><div class="prio-leg-dot" style="background:#b4b2a9"></div>Basse priorité</div>
+      <div class="prio-leg-item"><div class="prio-leg-dot" style="background:#EF9F27"></div>Moyenne</div>
+      <div class="prio-leg-item"><div class="prio-leg-dot" style="background:#b4b2a9"></div>Basse</div>
       <div class="prio-leg-item"><div class="prio-leg-dot" style="background:#1D9E75"></div>Terminé</div>
     </div>
-    <p class="hint" style="margin-top:8px">Cliquer sur une brique · Modifier libellés · Changer priorité · Cocher terminé</p>
+    <p class="hint" style="margin-top:6px">Cliquer sur une brique · Glisser-déposer pour réordonner · Modifier libellés · Prioriser · Cocher terminé</p>
   </div>
 </div>
 
@@ -231,32 +204,24 @@ h1 { font-size: 22px; font-weight: 500; color: #2c2c2a; margin-bottom: 4px; }
 <div class="overlay" id="overlay-autonomie">
   <div class="modal">
     <button class="close-btn" id="close-autonomie"><i class="ti ti-x"></i></button>
-    <div class="modal-head">
-      <i id="a-icon" class="ti"></i>
-      <span class="modal-title" id="a-title"></span>
-    </div>
+    <div class="modal-head"><i id="a-icon" class="ti"></i><span class="modal-title" id="a-title"></span></div>
     <p class="modal-sub">Glisser sur la barre · Cliquer sur le libellé pour modifier</p>
     <div class="action-list" id="a-actions"></div>
   </div>
 </div>
 
-<!-- OVERLAY ACTIONS PRIORITAIRES -->
+<!-- OVERLAY PRIORITÉS -->
 <div class="overlay" id="overlay-actions">
   <div class="modal">
     <button class="close-btn" id="close-actions"><i class="ti ti-x"></i></button>
-    <div class="modal-head">
-      <i id="p-icon" class="ti"></i>
-      <span class="modal-title" id="p-title"></span>
-    </div>
-    <p class="modal-sub">Modifier les libellés · Définir la priorité · Cocher quand terminé</p>
+    <div class="modal-head"><i id="p-icon" class="ti"></i><span class="modal-title" id="p-title"></span></div>
+    <p class="modal-sub">Glisser ⠿ pour réordonner · Modifier libellés · Définir priorité · Cocher terminé</p>
     <div class="prio-action-list" id="p-actions"></div>
   </div>
 </div>
 
 <script>
-/* ══════════════════════════════════════════
-   DONNÉES
-══════════════════════════════════════════ */
+/* ═══════════════════════════════ DONNÉES ═══════════════════════════════ */
 const dims = [
   { icon:"ti-chart-line", label:"Commercial", val:60, actions:[
     {name:"Animation équipe commerciale",val:70},
@@ -404,27 +369,24 @@ const dims = [
   ]},
 ];
 
-/* Actions prioritaires S2 — indépendantes par brique */
 const prioData = dims.map(d => ({
   icon: d.icon,
   label: d.label,
   actions: [
-    {name:"Action prioritaire 1",prio:"haute",done:false},
-    {name:"Action prioritaire 2",prio:"haute",done:false},
-    {name:"Action prioritaire 3",prio:"moyenne",done:false},
-    {name:"Action prioritaire 4",prio:"moyenne",done:false},
-    {name:"Action prioritaire 5",prio:"moyenne",done:false},
-    {name:"Action prioritaire 6",prio:"basse",done:false},
-    {name:"Action prioritaire 7",prio:"basse",done:false},
-    {name:"Action prioritaire 8",prio:"basse",done:false},
-    {name:"Action prioritaire 9",prio:"basse",done:false},
-    {name:"Action prioritaire 10",prio:"basse",done:false},
+    {name:"Action prioritaire 1", prio:"haute",   done:false},
+    {name:"Action prioritaire 2", prio:"haute",   done:false},
+    {name:"Action prioritaire 3", prio:"moyenne", done:false},
+    {name:"Action prioritaire 4", prio:"moyenne", done:false},
+    {name:"Action prioritaire 5", prio:"moyenne", done:false},
+    {name:"Action prioritaire 6", prio:"basse",   done:false},
+    {name:"Action prioritaire 7", prio:"basse",   done:false},
+    {name:"Action prioritaire 8", prio:"basse",   done:false},
+    {name:"Action prioritaire 9", prio:"basse",   done:false},
+    {name:"Action prioritaire 10",prio:"basse",   done:false},
   ]
 }));
 
-/* ══════════════════════════════════════════
-   HELPERS AUTONOMIE
-══════════════════════════════════════════ */
+/* ═══════════════════════════════ HELPERS ═══════════════════════════════ */
 const R=30,CX=36,CY=36;
 function pt(r,a){return[CX+r*Math.cos(a),CY+r*Math.sin(a)];}
 function arcD(pct){
@@ -435,6 +397,10 @@ function arcD(pct){
 }
 function bgD(){const[sx,sy]=pt(R,Math.PI),[ex,ey]=pt(R,2*Math.PI);return`M ${sx.toFixed(2)} ${sy.toFixed(2)} A ${R} ${R} 0 1 1 ${ex.toFixed(2)} ${ey.toFixed(2)}`;}
 function colA(v){return v>=70?'#1D9E75':v>=40?'#EF9F27':'#D85A30';}
+function colP(prio,done){return done?'#1D9E75':prio==='haute'?'#D85A30':prio==='moyenne'?'#EF9F27':'#b4b2a9';}
+function selCls(prio,done){return done?'sel-done':prio==='haute'?'sel-haute':prio==='moyenne'?'sel-moyenne':'sel-basse';}
+function pillCls(prio,done){return done?'pill-done':prio==='haute'?'pill-haute':prio==='moyenne'?'pill-moyenne':'pill-basse';}
+function pillLabel(prio,done){return done?'✓ Terminé':prio==='haute'?'Haute':prio==='moyenne'?'Moyenne':'Basse';}
 
 function updateTileArc(i){
   const d=dims[i];
@@ -445,20 +411,7 @@ function updateTileArc(i){
   if(pe){pe.textContent=avg+'%';pe.style.color=colA(avg);}
 }
 
-/* ══════════════════════════════════════════
-   HELPERS PRIORITÉ
-══════════════════════════════════════════ */
-function colP(prio,done){
-  if(done)return'#1D9E75';
-  return prio==='haute'?'#D85A30':prio==='moyenne'?'#EF9F27':'#b4b2a9';
-}
-function labelP(prio){
-  return prio==='haute'?'Haute':prio==='moyenne'?'Moyenne':'Basse';
-}
-
-/* ══════════════════════════════════════════
-   ONGLET 1 — TUILES AUTONOMIE
-══════════════════════════════════════════ */
+/* ═══════════════════════════════ ONGLET 1 ═══════════════════════════════ */
 let activeAutoIdx=null;
 
 function buildAutoTile(d,i){
@@ -479,8 +432,8 @@ function buildAutoTile(d,i){
 }
 
 function openAutoModal(i){
-  const d=dims[i];
   activeAutoIdx=i;
+  const d=dims[i];
   document.getElementById('a-icon').className='ti '+d.icon;
   document.getElementById('a-title').textContent=d.label;
   const list=document.getElementById('a-actions');list.innerHTML='';
@@ -533,83 +486,95 @@ document.getElementById('overlay-autonomie').addEventListener('click',e=>{
   }
 });
 
-/* ══════════════════════════════════════════
-   ONGLET 2 — TUILES PRIORITÉS
-══════════════════════════════════════════ */
+/* ═══════════════════════════════ ONGLET 2 ═══════════════════════════════ */
 let activePrioIdx=null;
 
-function buildPrioTile(pd,i){
+function buildPrioTileEl(pd,i){
   const div=document.createElement('div');
   div.className='prio-tile';div.id='ptile'+i;
 
-  const summaryRows=pd.actions.slice(0,4).map(a=>{
-    const c=colP(a.prio,a.done);
-    return`<div class="prio-bar-row">
-      <span class="prio-bar-label">${a.name}</span>
-      <div class="prio-bar-track"><div class="prio-bar-fill" style="width:${a.done?100:a.prio==='haute'?100:a.prio==='moyenne'?60:30}%;background:${c}"></div></div>
-    </div>`;
-  }).join('');
+  const haute =pd.actions.filter(a=>!a.done&&a.prio==='haute').length;
+  const moyenne=pd.actions.filter(a=>!a.done&&a.prio==='moyenne').length;
+  const basse  =pd.actions.filter(a=>!a.done&&a.prio==='basse').length;
+  const done   =pd.actions.filter(a=>a.done).length;
+  const total  =pd.actions.length;
 
-  const doneCount=pd.actions.filter(a=>a.done).length;
-  const hauteCount=pd.actions.filter(a=>a.prio==='haute'&&!a.done).length;
+  const pills=[
+    haute   ?`<span class="prio-pill pill-haute">${haute} haute${haute>1?'s':''}</span>`:'',
+    moyenne ?`<span class="prio-pill pill-moyenne">${moyenne} moyenne${moyenne>1?'s':''}</span>`:'',
+    basse   ?`<span class="prio-pill pill-basse">${basse} basse${basse>1?'s':''}</span>`:'',
+    done    ?`<span class="prio-pill pill-done">${done} terminée${done>1?'s':''}</span>`:'',
+  ].filter(Boolean).join('');
 
   div.innerHTML=`
-    <div class="prio-tile-head">
-      <i class="ti ${pd.icon}" aria-hidden="true"></i>
-      <span class="prio-tile-label">${pd.label}</span>
-    </div>
-    <div class="prio-summary">${summaryRows}</div>
-    <div class="prio-count">
-      ${hauteCount>0?`<span>${hauteCount}</span> haute${hauteCount>1?'s':''} · `:''}
-      <span>${doneCount}</span>/${pd.actions.length} terminées
+    <i class="ti ${pd.icon} prio-tile-icon" aria-hidden="true"></i>
+    <div class="prio-tile-label">${pd.label}</div>
+    <div class="prio-tile-stats">
+      <div class="prio-stat-pills">${pills||'<span class="prio-pill pill-basse">Non défini</span>'}</div>
+      <div class="prio-stat-total"><span>${done}</span> / ${total} terminées</div>
     </div>`;
   div.addEventListener('click',()=>openPrioModal(i));
   return div;
 }
 
 function refreshPrioTile(i){
-  const pd=prioData[i];
   const old=document.getElementById('ptile'+i);
-  const newTile=buildPrioTile(pd,i);
-  newTile.id='ptile'+i;
-  if(activePrioIdx===i)newTile.classList.add('active');
-  old.replaceWith(newTile);
-  newTile.addEventListener('click',()=>openPrioModal(i));
+  const nw=buildPrioTileEl(prioData[i],i);
+  if(activePrioIdx===i)nw.classList.add('active');
+  old.replaceWith(nw);
 }
 
-function openPrioModal(i){
-  const pd=prioData[i];
-  activePrioIdx=i;
-  document.getElementById('p-icon').className='ti '+pd.icon;
-  document.getElementById('p-title').textContent=pd.label;
-  const list=document.getElementById('p-actions');list.innerHTML='';
+/* ── Drag & Drop ── */
+let dragSrc=null,dragDimIdx=null;
 
+function attachDrag(row,i,j){
+  row.setAttribute('draggable','true');
+  row.addEventListener('dragstart',e=>{
+    dragSrc=j; dragDimIdx=i;
+    row.classList.add('dragging');
+    e.dataTransfer.effectAllowed='move';
+  });
+  row.addEventListener('dragend',()=>{ row.classList.remove('dragging'); dragSrc=null; });
+  row.addEventListener('dragover',e=>{e.preventDefault();row.classList.add('drag-over');});
+  row.addEventListener('dragleave',()=>row.classList.remove('drag-over'));
+  row.addEventListener('drop',e=>{
+    e.preventDefault(); row.classList.remove('drag-over');
+    if(dragSrc===null||dragDimIdx!==i)return;
+    const arr=prioData[i].actions;
+    const moved=arr.splice(dragSrc,1)[0];
+    arr.splice(j,0,moved);
+    renderPrioModal(i);
+    refreshPrioTile(i);
+  });
+}
+
+function renderPrioModal(i){
+  const pd=prioData[i];
+  const list=document.getElementById('p-actions');list.innerHTML='';
   pd.actions.forEach((a,j)=>{
     const row=document.createElement('div');row.className='prio-action-row';
-    const badgeCls=a.done?'badge-done':a.prio==='haute'?'badge-haute':a.prio==='moyenne'?'badge-moyenne':'badge-basse';
-
     row.innerHTML=`
-      <span class="prio-action-num">${j+1}</span>
+      <span class="drag-handle" title="Glisser pour réordonner">⠿</span>
+      <span class="prio-num">${j+1}</span>
       <input class="prio-action-name" type="text" value="${a.name}" id="pname-${i}-${j}"/>
-      <select class="prio-select ${badgeCls}" id="psel-${i}-${j}">
-        <option value="haute" ${a.prio==='haute'?'selected':''}>🔴 Haute</option>
+      <select class="prio-select ${selCls(a.prio,a.done)}" id="psel-${i}-${j}">
+        <option value="haute"   ${a.prio==='haute'  ?'selected':''}>🔴 Haute</option>
         <option value="moyenne" ${a.prio==='moyenne'?'selected':''}>🟡 Moyenne</option>
-        <option value="basse" ${a.prio==='basse'?'selected':''}>⚪ Basse</option>
+        <option value="basse"   ${a.prio==='basse'  ?'selected':''}>⚪ Basse</option>
       </select>
       <div class="prio-check-wrap">
-        <input type="checkbox" class="prio-check" id="pchk-${i}-${j}" ${a.done?'checked':''} title="Marquer comme terminé"/>
+        <input type="checkbox" class="prio-check" id="pchk-${i}-${j}" ${a.done?'checked':''} title="Terminé"/>
       </div>`;
     list.appendChild(row);
+    attachDrag(row,i,j);
 
-    row.querySelector(`#pname-${i}-${j}`).addEventListener('input',e=>{
-      pd.actions[j].name=e.target.value;
-    });
+    row.querySelector(`#pname-${i}-${j}`).addEventListener('input',e=>{pd.actions[j].name=e.target.value;});
     row.querySelector(`#pname-${i}-${j}`).addEventListener('click',e=>e.stopPropagation());
 
     const sel=row.querySelector(`#psel-${i}-${j}`);
     sel.addEventListener('change',()=>{
       pd.actions[j].prio=sel.value;
-      sel.className=`prio-select ${pd.actions[j].done?'badge-done':sel.value==='haute'?'badge-haute':sel.value==='moyenne'?'badge-moyenne':'badge-basse'}`;
+      sel.className=`prio-select ${selCls(pd.actions[j].prio,pd.actions[j].done)}`;
       refreshPrioTile(i);
     });
     sel.addEventListener('click',e=>e.stopPropagation());
@@ -617,33 +582,32 @@ function openPrioModal(i){
     const chk=row.querySelector(`#pchk-${i}-${j}`);
     chk.addEventListener('change',()=>{
       pd.actions[j].done=chk.checked;
-      sel.className=`prio-select ${chk.checked?'badge-done':pd.actions[j].prio==='haute'?'badge-haute':pd.actions[j].prio==='moyenne'?'badge-moyenne':'badge-basse'}`;
+      sel.className=`prio-select ${selCls(pd.actions[j].prio,pd.actions[j].done)}`;
       refreshPrioTile(i);
     });
     chk.addEventListener('click',e=>e.stopPropagation());
   });
+}
 
+function openPrioModal(i){
+  activePrioIdx=i;
+  document.getElementById('p-icon').className='ti '+prioData[i].icon;
+  document.getElementById('p-title').textContent=prioData[i].label;
+  renderPrioModal(i);
   document.querySelectorAll('.prio-tile').forEach(t=>t.classList.remove('active'));
   document.getElementById('ptile'+i).classList.add('active');
   document.getElementById('overlay-actions').classList.add('open');
 }
 
-document.getElementById('close-actions').addEventListener('click',()=>{
+function closePrioModal(){
   document.getElementById('overlay-actions').classList.remove('open');
   if(activePrioIdx!==null){refreshPrioTile(activePrioIdx);document.getElementById('ptile'+activePrioIdx).classList.remove('active');}
   activePrioIdx=null;
-});
-document.getElementById('overlay-actions').addEventListener('click',e=>{
-  if(e.target.id==='overlay-actions'){
-    document.getElementById('overlay-actions').classList.remove('open');
-    if(activePrioIdx!==null){refreshPrioTile(activePrioIdx);document.getElementById('ptile'+activePrioIdx).classList.remove('active');}
-    activePrioIdx=null;
-  }
-});
+}
+document.getElementById('close-actions').addEventListener('click',closePrioModal);
+document.getElementById('overlay-actions').addEventListener('click',e=>{if(e.target.id==='overlay-actions')closePrioModal();});
 
-/* ══════════════════════════════════════════
-   TABS
-══════════════════════════════════════════ */
+/* ═══════════════════════════════ TABS ═══════════════════════════════ */
 document.querySelectorAll('.tab-btn').forEach(btn=>{
   btn.addEventListener('click',()=>{
     document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
@@ -653,14 +617,11 @@ document.querySelectorAll('.tab-btn').forEach(btn=>{
   });
 });
 
-/* ══════════════════════════════════════════
-   INIT
-══════════════════════════════════════════ */
+/* ═══════════════════════════════ INIT ═══════════════════════════════ */
 const gA=document.getElementById('grid-autonomie');
 dims.forEach((d,i)=>gA.appendChild(buildAutoTile(d,i)));
-
 const gP=document.getElementById('grid-actions');
-prioData.forEach((pd,i)=>gP.appendChild(buildPrioTile(pd,i)));
+prioData.forEach((pd,i)=>gP.appendChild(buildPrioTileEl(pd,i)));
 </script>
 </body>
 </html>
