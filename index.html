@@ -214,7 +214,9 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
     <button class="close-btn" id="close-autonomie"><i class="ti ti-x"></i></button>
     <div class="modal-head"><i id="a-icon" class="ti"></i><span class="modal-title" id="a-title"></span></div>
     <p class="modal-sub">Glisser sur la barre · Cliquer sur le libellé pour modifier</p>
-    <div class="action-list" id="a-actions"></div>
+    <div id="auto-modal-container">
+      <div class="action-list" id="a-actions"></div>
+    </div>
   </div>
 </div>
 
@@ -223,7 +225,9 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
     <button class="close-btn" id="close-actions"><i class="ti ti-x"></i></button>
     <div class="modal-head"><i id="p-icon" class="ti"></i><span class="modal-title" id="p-title"></span></div>
     <p class="modal-sub">⠿ Réordonner · Modifier libellé · Jauge avancement · Priorité · ✓ Terminé</p>
-    <div class="prio-action-list" id="p-actions"></div>
+    <div id="prio-modal-container">
+      <div class="prio-action-list" id="p-actions"></div>
+    </div>
   </div>
 </div>
 
@@ -469,12 +473,23 @@ function attachAutoDrag(row,i,j){
   });
 }
 
+/* Listeners globaux uniques pour les jauges de l'onglet 1 — définis une seule fois */
+let _aDrag=false;
+document.addEventListener('mousemove',e=>{if(_aDrag&&_aDrag.fn)_aDrag.fn(e);});
+document.addEventListener('mouseup',()=>{if(_aDrag)_aDrag=false;});
+
 function renderAutoModal(i){
   const d=dims[i];
-  /* Supprimer TOUS les footers existants en premier */
-  document.querySelectorAll('#auto-modal-footer').forEach(el=>el.remove());
   const list=document.getElementById('a-actions');
-  list.innerHTML='';
+  /* Vider liste ET footer en une seule opération sur le conteneur parent */
+  const container=document.getElementById('auto-modal-container');
+  container.innerHTML='';
+
+  /* Recréer la liste */
+  const newList=document.createElement('div');
+  newList.id='a-actions';
+  newList.className='action-list';
+  container.appendChild(newList);
 
   d.actions.forEach((a,j)=>{
     const row=document.createElement('div');row.className='action-row';
@@ -483,28 +498,31 @@ function renderAutoModal(i){
       <div class="mini-track" id="mt-${i}-${j}"><div class="mini-fill" id="mf-${i}-${j}" style="width:${a.val}%;background:${colA(a.val)}"></div></div>
       <span class="mini-pct" id="mp-${i}-${j}" style="color:${colA(a.val)}">${a.val}%</span>
       <button class="del-btn" title="Supprimer">&#x2715;</button>`;
-    /* Affecter value via JS pour éviter tout problème d'encodage HTML */
     row.querySelector(`#aname-${i}-${j}`).value=a.name;
-    list.appendChild(row);
+    newList.appendChild(row);
     attachAutoDrag(row,i,j);
-    row.querySelector(`#aname-${i}-${j}`).addEventListener('input',e=>{d.actions[j].name=e.target.value;});
-    row.querySelector(`#aname-${i}-${j}`).addEventListener('click',e=>e.stopPropagation());
-    row.querySelector(`#aname-${i}-${j}`).addEventListener('mousedown',e=>e.stopPropagation());
-    const track=row.querySelector(`#mt-${i}-${j}`);let drag=false;
-    function upG(e){
+
+    const inp=row.querySelector(`#aname-${i}-${j}`);
+    inp.addEventListener('input',e=>{d.actions[j].name=e.target.value;});
+    inp.addEventListener('click',e=>e.stopPropagation());
+    inp.addEventListener('mousedown',e=>e.stopPropagation());
+
+    const track=row.querySelector(`#mt-${i}-${j}`);
+    const upG=e=>{
       const rect=track.getBoundingClientRect();
       const x=(e.touches?e.touches[0].clientX:e.clientX)-rect.left;
       let v=Math.round((x/rect.width)*100/5)*5;v=Math.max(5,Math.min(100,v));
       d.actions[j].val=v;const c=colA(v);
-      document.getElementById(`mf-${i}-${j}`).style.width=v+'%';document.getElementById(`mf-${i}-${j}`).style.background=c;
-      document.getElementById(`mp-${i}-${j}`).textContent=v+'%';document.getElementById(`mp-${i}-${j}`).style.color=c;
+      document.getElementById(`mf-${i}-${j}`).style.width=v+'%';
+      document.getElementById(`mf-${i}-${j}`).style.background=c;
+      document.getElementById(`mp-${i}-${j}`).textContent=v+'%';
+      document.getElementById(`mp-${i}-${j}`).style.color=c;
       updateTileArc(i);
-    }
-    track.addEventListener('mousedown',e=>{drag=true;upG(e);e.stopPropagation();});
-    document.addEventListener('mousemove',e=>{if(drag)upG(e);});
-    document.addEventListener('mouseup',()=>{drag=false;});
+    };
+    track.addEventListener('mousedown',e=>{e.stopPropagation();_aDrag={fn:upG};upG(e);});
     track.addEventListener('touchstart',upG,{passive:true});
     track.addEventListener('touchmove',e=>{e.preventDefault();upG(e);},{passive:false});
+
     row.querySelector('.del-btn').addEventListener('click',e=>{
       e.stopPropagation();
       dims[i].actions.splice(j,1);
@@ -513,23 +531,20 @@ function renderAutoModal(i){
     });
   });
 
-  /* Footer — créé une seule fois après le forEach */
+  /* Footer unique dans le même conteneur */
   const footer=document.createElement('div');
   footer.className='modal-footer';
-  footer.id='auto-modal-footer';
   const addBtn=document.createElement('button');
   addBtn.className='add-btn';
   addBtn.innerHTML='<i class="ti ti-plus" style="font-size:13px"></i> Ajouter une action';
   const counter=document.createElement('span');
   counter.style.cssText='font-size:11px;color:#b4b2a9';
   counter.textContent=d.actions.length+' action(s)';
-  footer.appendChild(addBtn);
-  footer.appendChild(counter);
-  list.after(footer);
+  footer.appendChild(addBtn);footer.appendChild(counter);
+  container.appendChild(footer);
   addBtn.addEventListener('click',()=>{
     dims[i].actions.push({name:'Nouvelle action',val:50});
-    renderAutoModal(i);
-    updateTileArc(i);
+    renderAutoModal(i);updateTileArc(i);
   });
 }
 
@@ -608,10 +623,23 @@ function attachDrag(row,i,j){
   });
 }
 
+/* Listeners globaux uniques pour les jauges de l'onglet 2 */
+let _pDrag=false;
+document.addEventListener('mousemove',e=>{if(_pDrag&&_pDrag.fn)_pDrag.fn(e);});
+document.addEventListener('mouseup',()=>{if(_pDrag)_pDrag=false;});
+
 function renderPrioModal(i){
-  /* Supprimer TOUS les footers existants en premier */
-  document.querySelectorAll('#prio-modal-footer').forEach(el=>el.remove());
-  const pd=prioData[i];const list=document.getElementById('p-actions');list.innerHTML='';
+  /* Vider tout le conteneur fixe d'un coup */
+  const container=document.getElementById('prio-modal-container');
+  container.innerHTML='';
+
+  /* Recréer la liste */
+  const pd=prioData[i];
+  const newList=document.createElement('div');
+  newList.id='p-actions';
+  newList.className='prio-action-list';
+  container.appendChild(newList);
+
   pd.actions.forEach((a,j)=>{
     const av=a.done?100:a.avancement;
     const avColor=av>=100?'#1D9E75':av>0?colP(a.prio,av):'#d3d1c7';
@@ -630,14 +658,14 @@ function renderPrioModal(i){
       </select>
       <div class="prio-check-wrap"><input type="checkbox" class="prio-check" id="pchk-${i}-${j}" ${a.done?'checked':''}/></div>
       <button class="del-btn" title="Supprimer">&#x2715;</button>`;
-    /* Affecter value via JS pour éviter tout problème d'encodage HTML */
     row.querySelector(`#pname-${i}-${j}`).value=a.name;
-    list.appendChild(row);
+    newList.appendChild(row);
     attachDrag(row,i,j);
     row.querySelector(`#pname-${i}-${j}`).addEventListener('input',e=>{pd.actions[j].name=e.target.value;});
     row.querySelector(`#pname-${i}-${j}`).addEventListener('click',e=>e.stopPropagation());
-    const gtrack=row.querySelector(`#pgt-${i}-${j}`);let gdrag=false;
-    function upAv(e){
+    row.querySelector(`#pname-${i}-${j}`).addEventListener('mousedown',e=>e.stopPropagation());
+    const gtrack=row.querySelector(`#pgt-${i}-${j}`);
+    const upAv=e=>{
       if(pd.actions[j].done)return;
       const rect=gtrack.getBoundingClientRect();
       const x=(e.touches?e.touches[0].clientX:e.clientX)-rect.left;
@@ -647,10 +675,8 @@ function renderPrioModal(i){
       document.getElementById(`pgf-${i}-${j}`).style.width=v+'%';document.getElementById(`pgf-${i}-${j}`).style.background=c;
       document.getElementById(`pgp-${i}-${j}`).textContent=v+'%';document.getElementById(`pgp-${i}-${j}`).style.color=c;
       refreshPrioTile(i);
-    }
-    gtrack.addEventListener('mousedown',e=>{gdrag=true;upAv(e);});
-    document.addEventListener('mousemove',e=>{if(gdrag)upAv(e);});
-    document.addEventListener('mouseup',()=>{gdrag=false;});
+    };
+    gtrack.addEventListener('mousedown',e=>{e.stopPropagation();_pDrag={fn:upAv};upAv(e);});
     gtrack.addEventListener('touchstart',upAv,{passive:true});
     gtrack.addEventListener('touchmove',e=>{e.preventDefault();upAv(e);},{passive:false});
     const sel=row.querySelector(`#psel-${i}-${j}`);
@@ -673,19 +699,16 @@ function renderPrioModal(i){
       renderPrioModal(i);refreshPrioTile(i);
     });
   });
-  /* Footer — créé une seule fois après le forEach */
-  document.querySelectorAll('#prio-modal-footer').forEach(el=>el.remove());
+  /* Footer dans le même conteneur — impossible à dupliquer */
   const pFooter=document.createElement('div');pFooter.className='modal-footer';
-  pFooter.id='prio-modal-footer';
   const pAddBtn=document.createElement('button');
   pAddBtn.className='add-btn';
   pAddBtn.innerHTML='<i class="ti ti-plus" style="font-size:13px"></i> Ajouter une action';
   const pCounter=document.createElement('span');
   pCounter.style.cssText='font-size:11px;color:#b4b2a9';
   pCounter.textContent=pd.actions.length+' action(s)';
-  pFooter.appendChild(pAddBtn);
-  pFooter.appendChild(pCounter);
-  document.getElementById('p-actions').after(pFooter);
+  pFooter.appendChild(pAddBtn);pFooter.appendChild(pCounter);
+  container.appendChild(pFooter);
   pAddBtn.addEventListener('click',()=>{
     prioData[i].actions.push({name:'Nouvelle action',prio:'basse',avancement:0,done:false});
     renderPrioModal(i);refreshPrioTile(i);
