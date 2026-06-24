@@ -473,9 +473,8 @@ function renderAutoModal(i){
   const d=dims[i];
   const list=document.getElementById('a-actions');
   list.innerHTML='';
-  /* Supprimer l'ancien footer s'il existe */
-  const oldFooter=document.getElementById('auto-modal-footer');
-  if(oldFooter)oldFooter.remove();
+  /* Supprimer le footer existant après avoir vidé la liste */
+  document.querySelectorAll('#auto-modal-footer').forEach(el=>el.remove());
 
   d.actions.forEach((a,j)=>{
     const row=document.createElement('div');row.className='action-row';
@@ -662,8 +661,10 @@ function renderPrioModal(i){
     });
   });
   /* Bouton Ajouter */
+  document.querySelectorAll('#prio-modal-footer').forEach(el=>el.remove());
   const pFooter=document.createElement('div');pFooter.className='modal-footer';
-  pFooter.innerHTML='<button class="add-btn" id="add-prio-btn"><i class="ti ti-plus" style="font-size:13px"></i> Ajouter une action</button><span style="font-size:11px;color:#b4b2a9">${prioData[i].actions.length} action(s)</span>';
+  pFooter.id='prio-modal-footer';
+  pFooter.innerHTML=`<button class="add-btn" id="add-prio-btn"><i class="ti ti-plus" style="font-size:13px"></i> Ajouter une action</button><span style="font-size:11px;color:#b4b2a9">${prioData[i].actions.length} action(s)</span>`;
   document.getElementById('p-actions').after(pFooter);
   document.getElementById('add-prio-btn').addEventListener('click',()=>{
     prioData[i].actions.push({name:'Nouvelle action',prio:'basse',avancement:0,done:false});
