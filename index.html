@@ -79,7 +79,7 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
 
 /* MODAL AUTONOMIE */
 .action-list{display:flex;flex-direction:column;gap:8px}
-.action-row{display:grid;grid-template-columns:28px 1fr 160px 38px;align-items:center;gap:10px;padding:10px 12px;background:#f7f7f5;border-radius:10px;border:1px solid transparent;transition:border-color .15s}
+.action-row{display:grid;grid-template-columns:22px 22px 1fr 160px 38px;align-items:center;gap:10px;padding:10px 12px;background:#f7f7f5;border-radius:10px;border:1px solid transparent;transition:border-color .15s}
 .action-row:hover{border-color:#d3d1c7}
 .action-num{font-size:11px;font-weight:500;color:#b4b2a9;text-align:center}
 .action-name{font-size:13px;font-weight:500;color:#2c2c2a;padding:2px 4px;border-radius:4px;border:1px solid transparent;transition:border-color .12s,background .12s;outline:none;width:100%;background:transparent;font-family:inherit}
@@ -130,7 +130,7 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
     <div class="sync-global">
       <div class="sync-dot" id="sync-dot"></div>
       <span id="sync-label">Chargement…</span>
-      <button class="sync-btn primary" onclick="saveToCloud()" id="save-btn"><i class="ti ti-cloud-upload" style="font-size:13px"></i> Sauvegarder</button>
+      <button class="sync-btn primary" onclick="forceSave()" id="save-btn"><i class="ti ti-cloud-upload" style="font-size:13px"></i> Sauvegarder</button>
       <button class="sync-btn" onclick="loadFromCloud()" title="Recharger depuis le cloud"><i class="ti ti-refresh" style="font-size:13px"></i></button>
     </div>
   </div>
@@ -286,7 +286,7 @@ async function loadFromCloud(){
     });
     const meta=await r.json();
     fileSHA=meta.sha||'';
-    const content=JSON.parse(atob(meta.content.replace(/\n/g,'')));
+    const _raw=atob(meta.content.replace(/\n/g,''));const _b=new Uint8Array(_raw.length);for(let _i=0;_i<_raw.length;_i++)_b[_i]=_raw.charCodeAt(_i);const content=JSON.parse(new TextDecoder().decode(_b));
     if(content.dims && content.dims.length){
       dims.splice(0,dims.length,...content.dims);
       prioData.splice(0,prioData.length,...content.prioData);
@@ -307,6 +307,7 @@ async function loadFromCloud(){
 let _lastSaved='';
 let _saving=false;
 
+function forceSave(){_saving=false;_lastSaved="";saveToCloud(false);}
 async function saveToCloud(silent=false){
   const current=JSON.stringify({dims,prioData});
   if(current===_lastSaved)return; // rien à sauvegarder
@@ -318,7 +319,7 @@ async function saveToCloud(silent=false){
     const payload={dims,prioData,savedAt:new Date().toISOString()};
     const body={
       message:'DG data update '+new Date().toISOString().slice(0,16),
-      content:btoa(unescape(encodeURIComponent(JSON.stringify(payload)))),
+      content:(()=>{const e=new TextEncoder().encode(JSON.stringify(payload));let b='';e.forEach(x=>b+=String.fromCharCode(x));return btoa(b);})(),
     };
     if(fileSHA)body.sha=fileSHA;
     const r=await fetch(`${API_BASE}/repos/${GITHUB_REPO}/contents/${DATA_FILE}`,{
@@ -379,6 +380,22 @@ function buildAutoTile(d,i){
     <div class="tile-label">${d.label}</div>`;
   div.addEventListener('click',()=>openAutoModal(i));return div;
 }
+
+function attachAutoDrag(row,i,j){
+  row.setAttribute('draggable','true');
+  row.addEventListener('dragstart',e=>{aDragSrc=j;aDragIdx=i;row.classList.add('dragging');e.dataTransfer.effectAllowed='move';});
+  row.addEventListener('dragend',()=>{row.classList.remove('dragging');aDragSrc=null;});
+  row.addEventListener('dragover',e=>{e.preventDefault();row.classList.add('drag-over');});
+  row.addEventListener('dragleave',()=>row.classList.remove('drag-over'));
+  row.addEventListener('drop',e=>{
+    e.preventDefault();row.classList.remove('drag-over');
+    if(aDragSrc===null||aDragIdx!==i)return;
+    const arr=dims[i].actions;
+    const moved=arr.splice(aDragSrc,1)[0];arr.splice(j,0,moved);
+    renderAutoModal(i);updateTileArc(i);
+  });
+}
+let aDragSrc=null,aDragIdx=null;
 function openAutoModal(i){
   activeAutoIdx=i;const d=dims[i];
   document.getElementById('a-icon').className='ti '+d.icon;
@@ -386,11 +403,12 @@ function openAutoModal(i){
   const list=document.getElementById('a-actions');list.innerHTML='';
   d.actions.forEach((a,j)=>{
     const row=document.createElement('div');row.className='action-row';
-    row.innerHTML=`<span class="action-num">${j+1}</span>
+    row.innerHTML=`<span class="drag-handle">⋮</span><span class="action-num">${j+1}</span>
       <input class="action-name" type="text" value="${a.name}" id="aname-${i}-${j}"/>
       <div class="mini-track" id="mt-${i}-${j}"><div class="mini-fill" id="mf-${i}-${j}" style="width:${a.val}%;background:${colA(a.val)}"></div></div>
       <span class="mini-pct" id="mp-${i}-${j}" style="color:${colA(a.val)}">${a.val}%</span>`;
     list.appendChild(row);
+    attachAutoDrag(row,i,j);
     row.querySelector(`#aname-${i}-${j}`).addEventListener('input',e=>{d.actions[j].name=e.target.value;});
     row.querySelector(`#aname-${i}-${j}`).addEventListener('click',e=>e.stopPropagation());
     const track=row.querySelector(`#mt-${i}-${j}`);let drag=false;
