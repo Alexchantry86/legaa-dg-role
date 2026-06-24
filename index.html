@@ -92,7 +92,7 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
 
 /* MODAL PRIORITÉS — colonnes : drag | num | nom | avancement | priorité(réduite) | check */
 .prio-action-list{display:flex;flex-direction:column;gap:4px}
-.prio-action-row{display:grid;grid-template-columns:16px 18px 1fr 110px 60px 22px 20px;align-items:center;gap:6px;padding:6px 10px;background:#f7f7f5;border-radius:8px;border:1px solid transparent;transition:border-color .15s,opacity .15s;cursor:grab}
+.prio-action-row{display:grid;grid-template-columns:16px 18px 1fr 110px 60px 22px 18px 20px;align-items:center;gap:6px;padding:6px 10px;background:#f7f7f5;border-radius:8px;border:1px solid transparent;transition:border-color .15s,opacity .15s;cursor:grab}
 .prio-action-row:hover{border-color:#d3d1c7}
 .prio-action-row.dragging{opacity:.35;cursor:grabbing}
 .prio-action-row.drag-over{border-color:#888780;background:#efefed}
@@ -119,7 +119,36 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
 .prio-leg-item{display:flex;align-items:center;gap:6px;font-size:11px;color:#5f5e5a}
 .prio-leg-dot{width:8px;height:8px;border-radius:50%}
 
-/* Titre tuile éditable */
+/* ── CHAT COMMENTAIRES ── */
+.chat-btn{background:none;border:none;cursor:pointer;padding:0;flex-shrink:0;display:flex;align-items:center;justify-content:center;position:relative;transition:transform .12s}
+.chat-btn:hover{transform:scale(1.15)}
+.chat-btn svg{display:block}
+.chat-bubble-count{position:absolute;top:-4px;right:-4px;background:#D85A30;color:#fff;font-size:8px;font-weight:700;border-radius:10px;min-width:14px;height:14px;display:flex;align-items:center;justify-content:center;padding:0 3px;line-height:1}
+
+.overlay-chat{display:none;position:fixed;inset:0;background:rgba(44,44,42,.42);z-index:200;align-items:center;justify-content:center;padding:24px}
+.overlay-chat.open{display:flex}
+.chat-modal{background:#fff;border-radius:18px;width:100%;max-width:520px;height:560px;display:flex;flex-direction:column;position:relative;overflow:hidden}
+.chat-modal-head{display:flex;align-items:center;gap:10px;padding:18px 20px 14px;border-bottom:.5px solid #e8e6e0;flex-shrink:0}
+.chat-modal-head i{font-size:16px;color:#888780}
+.chat-modal-title{font-size:14px;font-weight:500;color:#2c2c2a;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chat-close{background:#f1efe8;border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;color:#5f5e5a;flex-shrink:0;transition:background .12s}
+.chat-close:hover{background:#d3d1c7}
+.chat-messages{flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:10px}
+.chat-empty{text-align:center;color:#b4b2a9;font-size:12px;margin:auto;padding:20px 0}
+.chat-msg{display:flex;flex-direction:column;gap:3px;max-width:88%}
+.chat-msg.me{align-self:flex-end;align-items:flex-end}
+.chat-msg.other{align-self:flex-start;align-items:flex-start}
+.chat-bubble{padding:8px 12px;border-radius:14px;font-size:12px;line-height:1.5;color:#2c2c2a;white-space:pre-wrap;word-break:break-word}
+.chat-msg.me .chat-bubble{background:#2c2c2a;color:#fff;border-bottom-right-radius:4px}
+.chat-msg.other .chat-bubble{background:#f1efe8;border-bottom-left-radius:4px}
+.chat-meta{font-size:10px;color:#b4b2a9;display:flex;align-items:center;gap:5px}
+.chat-author{font-weight:500;color:#888780}
+.chat-input-row{display:flex;gap:8px;padding:12px 16px;border-top:.5px solid #e8e6e0;flex-shrink:0;align-items:flex-end}
+.chat-input{flex:1;border:.5px solid #d3d1c7;border-radius:10px;padding:8px 12px;font-size:12px;font-family:inherit;resize:none;outline:none;min-height:36px;max-height:100px;transition:border-color .12s;color:#2c2c2a;background:#fff;line-height:1.5}
+.chat-input:focus{border-color:#888780}
+.chat-send{background:#2c2c2a;color:#fff;border:none;border-radius:10px;width:36px;height:36px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;transition:background .12s}
+.chat-send:hover{background:#444441}
+.chat-send:disabled{opacity:.4;cursor:not-allowed}
 .tile-label-input{font-size:11px;font-weight:500;color:#2c2c2a;text-align:center;line-height:1.35;border:none;outline:none;background:transparent;width:100%;font-family:inherit;cursor:text;padding:0;border-bottom:1px dashed transparent;transition:border-color .15s}
 .tile-label-input:hover{border-bottom-color:#d3d1c7}
 .tile-label-input:focus{border-bottom-color:#888780}
@@ -657,6 +686,11 @@ function renderPrioModal(i){
         <option value="basse"   ${a.prio==='basse'  ?'selected':''}>⚪ Basse</option>
       </select>
       <div class="prio-check-wrap"><input type="checkbox" class="prio-check" id="pchk-${i}-${j}" ${a.done?'checked':''}/></div>
+      <button class="chat-btn" title="Commentaires" id="cbtn-${i}-${j}">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M14 8.5C14 11.538 11.314 14 8 14c-.98 0-1.905-.226-2.714-.626L2 14l.8-2.8A5.364 5.364 0 0 1 2 8.5C2 5.462 4.686 3 8 3s6 2.462 6 5.5Z" stroke="#b4b2a9" stroke-width="1.2" stroke-linejoin="round"/>
+        </svg>
+      </button>
       <button class="del-btn" title="Supprimer">&#x2715;</button>`;
     row.querySelector(`#pname-${i}-${j}`).value=a.name;
     newList.appendChild(row);
@@ -698,6 +732,14 @@ function renderPrioModal(i){
       prioData[i].actions.splice(j,1);
       renderPrioModal(i);refreshPrioTile(i);
     });
+    const cbtn=row.querySelector(`#cbtn-${i}-${j}`);
+    const msgs=a.comments||[];
+    if(msgs.length>0){
+      const cnt=document.createElement('span');cnt.className='chat-bubble-count';cnt.textContent=msgs.length;
+      cbtn.appendChild(cnt);
+      cbtn.querySelector('path').setAttribute('stroke','#1D9E75');
+    }
+    cbtn.addEventListener('click',e=>{e.stopPropagation();openChat(i,j);});
   });
   /* Footer dans le même conteneur — impossible à dupliquer */
   const pFooter=document.createElement('div');pFooter.className='modal-footer';
@@ -915,6 +957,85 @@ function exportExcel(){
   XLSX.writeFile(wb,'LEGAA_DG_'+now.replace(/\//g,'-')+'.xlsx');
 }
 
+/* ═══════════════ CHAT COMMENTAIRES ═══════════════ */
+let _chatDomIdx=null,_chatActIdx=null;
+
+function openChat(domIdx,actIdx){
+  _chatDomIdx=domIdx; _chatActIdx=actIdx;
+  const a=prioData[domIdx].actions[actIdx];
+  if(!a.comments)a.comments=[];
+  document.getElementById('chat-title').textContent=a.name;
+  renderChat();
+  document.getElementById('chat-input').value='';
+  document.getElementById('overlay-chat').classList.add('open');
+  setTimeout(()=>{
+    const msgs=document.getElementById('chat-messages');
+    msgs.scrollTop=msgs.scrollHeight;
+    document.getElementById('chat-input').focus();
+  },50);
+}
+
+function renderChat(){
+  const a=prioData[_chatDomIdx].actions[_chatActIdx];
+  const msgs=a.comments||[];
+  const el=document.getElementById('chat-messages');
+  if(msgs.length===0){
+    el.innerHTML='<p class="chat-empty">Aucun commentaire pour le moment.<br>Ajoutez le premier ci-dessous.</p>';
+    return;
+  }
+  el.innerHTML='';
+  msgs.forEach(m=>{
+    const div=document.createElement('div');
+    div.className='chat-msg me';
+    const ts=new Date(m.ts);
+    const dateStr=ts.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'2-digit'});
+    const timeStr=ts.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+    div.innerHTML=`<div class="chat-bubble">${escHtml(m.text)}</div>
+      <div class="chat-meta"><span class="chat-author">${escHtml(m.author||'DG')}</span><span>${dateStr} ${timeStr}</span></div>`;
+    el.appendChild(div);
+  });
+  el.scrollTop=el.scrollHeight;
+}
+
+function escHtml(s){
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function sendChatMsg(){
+  const inp=document.getElementById('chat-input');
+  const text=inp.value.trim();
+  if(!text)return;
+  const a=prioData[_chatDomIdx].actions[_chatActIdx];
+  if(!a.comments)a.comments=[];
+  a.comments.push({text,ts:new Date().toISOString(),author:'DG'});
+  inp.value='';
+  renderChat();
+  /* Rafraîchir le bouton chat dans la modal priorité */
+  const cbtn=document.getElementById(`cbtn-${_chatDomIdx}-${_chatActIdx}`);
+  if(cbtn){
+    let cnt=cbtn.querySelector('.chat-bubble-count');
+    if(!cnt){cnt=document.createElement('span');cnt.className='chat-bubble-count';cbtn.appendChild(cnt);}
+    cnt.textContent=a.comments.length;
+    cbtn.querySelector('path').setAttribute('stroke','#1D9E75');
+  }
+}
+
+document.getElementById('chat-send').addEventListener('click',sendChatMsg);
+document.getElementById('chat-input').addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChatMsg();}
+});
+/* Auto-resize textarea */
+document.getElementById('chat-input').addEventListener('input',function(){
+  this.style.height='auto';
+  this.style.height=Math.min(this.scrollHeight,100)+'px';
+});
+document.getElementById('chat-close').addEventListener('click',()=>{
+  document.getElementById('overlay-chat').classList.remove('open');
+});
+document.getElementById('overlay-chat').addEventListener('click',e=>{
+  if(e.target.id==='overlay-chat')document.getElementById('overlay-chat').classList.remove('open');
+});
+
 /* ═══════════════ INIT ═══════════════ */
 function rebuildAll(){
   document.getElementById('grid-autonomie').innerHTML='';
@@ -929,5 +1050,21 @@ loadFromCloud().then(()=>{
 });
 </script>
 <div id="pdf-report"></div>
+
+<!-- OVERLAY CHAT COMMENTAIRES -->
+<div class="overlay-chat" id="overlay-chat">
+  <div class="chat-modal">
+    <div class="chat-modal-head">
+      <i class="ti ti-message-circle"></i>
+      <span class="chat-modal-title" id="chat-title">Commentaires</span>
+      <button class="chat-close" id="chat-close"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="chat-messages" id="chat-messages"></div>
+    <div class="chat-input-row">
+      <textarea class="chat-input" id="chat-input" placeholder="Ajouter un commentaire…" rows="1"></textarea>
+      <button class="chat-send" id="chat-send" title="Envoyer"><i class="ti ti-send"></i></button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
