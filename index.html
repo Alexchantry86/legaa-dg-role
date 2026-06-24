@@ -511,7 +511,7 @@ function renderAutoModal(i){
     const upG=e=>{
       const rect=track.getBoundingClientRect();
       const x=(e.touches?e.touches[0].clientX:e.clientX)-rect.left;
-      let v=Math.round((x/rect.width)*100/5)*5;v=Math.max(5,Math.min(100,v));
+      let v=Math.round((x/rect.width)*100/5)*5;v=Math.max(0,Math.min(100,v));
       d.actions[j].val=v;const c=colA(v);
       document.getElementById(`mf-${i}-${j}`).style.width=v+'%';
       document.getElementById(`mf-${i}-${j}`).style.background=c;
