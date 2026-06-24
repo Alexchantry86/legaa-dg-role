@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rôle du DG — LEGAA</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.0.0/tabler-icons.min.css">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #f7f7f5;
+  color: #2c2c2a;
+  min-height: 100vh;
+  padding: 40px 32px 60px;
+}
+.page { max-width: 980px; margin: 0 auto; }
+.header { margin-bottom: 32px; }
+.eyebrow { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: #888780; margin-bottom: 6px; }
+h1 { font-size: 24px; font-weight: 500; color: #2c2c2a; margin-bottom: 4px; }
+.sub { font-size: 13px; color: #888780; }
+
+.grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+
+.tile {
+  background: #fff;
+  border: 0.5px solid #d3d1c7;
+  border-radius: 14px;
+  padding: 20px 12px 16px;
+  display: flex; flex-direction: column; align-items: center;
+  gap: 10px; cursor: pointer;
+  transition: border-color .15s, transform .1s;
+  user-select: none;
+}
+.tile:hover { border-color: #888780; transform: translateY(-1px); }
+.tile.active { border-color: #2c2c2a; border-width: 1px; }
+.tile-icon { font-size: 28px; color: #888780; line-height: 1; }
+.arc-wrap { position: relative; width: 72px; height: 40px; }
+.arc-wrap svg { overflow: visible; display: block; }
+.arc-pct {
+  position: absolute; bottom: -2px; left: 50%;
+  transform: translateX(-50%);
+  font-size: 12px; font-weight: 500; white-space: nowrap;
+}
+.tile-label { font-size: 11px; font-weight: 500; color: #2c2c2a; text-align: center; line-height: 1.35; }
+.hint { text-align: center; font-size: 11px; color: #b4b2a9; margin-top: 14px; }
+
+/* OVERLAY */
+.overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(44,44,42,0.42);
+  z-index: 100; align-items: center; justify-content: center; padding: 24px;
+}
+.overlay.open { display: flex; }
+
+/* MODAL */
+.modal {
+  background: #fff; border-radius: 18px;
+  width: 100%; max-width: 660px; max-height: 90vh;
+  overflow-y: auto; padding: 28px 28px 24px; position: relative;
+}
+.modal-head { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
+.modal-head i { font-size: 22px; color: #888780; }
+.modal-title { font-size: 18px; font-weight: 500; color: #2c2c2a; }
+.modal-sub { font-size: 12px; color: #b4b2a9; margin-bottom: 20px; margin-left: 34px; }
+
+.close-btn {
+  position: absolute; top: 20px; right: 20px;
+  background: #f1efe8; border: none; border-radius: 50%;
+  width: 32px; height: 32px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; color: #5f5e5a; transition: background .12s;
+}
+.close-btn:hover { background: #d3d1c7; }
+
+/* ACTION LIST */
+.action-list { display: flex; flex-direction: column; gap: 8px; }
+
+.action-row {
+  display: grid;
+  grid-template-columns: 28px 1fr 160px 38px;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #f7f7f5;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  transition: border-color .15s;
+}
+.action-row:hover { border-color: #d3d1c7; }
+
+.action-num {
+  font-size: 11px; font-weight: 500; color: #b4b2a9;
+  text-align: center; line-height: 1;
+}
+
+.action-name-wrap { position: relative; }
+.action-name {
+  font-size: 13px; font-weight: 500; color: #2c2c2a;
+  cursor: text; padding: 2px 4px; border-radius: 4px;
+  border: 1px solid transparent;
+  transition: border-color .12s, background .12s;
+  outline: none; width: 100%; background: transparent;
+  font-family: inherit;
+}
+.action-name:hover { border-color: #d3d1c7; background: #fff; }
+.action-name:focus { border-color: #888780; background: #fff; }
+
+.mini-track {
+  position: relative; height: 6px;
+  background: #e8e6e0; border-radius: 3px; cursor: pointer;
+}
+.mini-fill { height: 6px; border-radius: 3px; pointer-events: none; transition: width .08s, background .2s; }
+
+.mini-pct { font-size: 12px; font-weight: 500; text-align: right; min-width: 34px; }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="header">
+    <p class="eyebrow">LEGAA · Direction générale</p>
+    <h1>Rôle du Directeur Général</h1>
+    <p class="sub">Etienne Kieffer (HEKR SAS) · Nommé mars 2026 — niveau d'autonomie par domaine</p>
+  </div>
+  <div class="grid" id="grid"></div>
+  <p class="hint">Cliquer sur une brique pour voir le détail · Cliquer sur le texte d'une action pour le modifier</p>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal" id="modal">
+    <button class="close-btn" id="close-btn" aria-label="Fermer"><i class="ti ti-x"></i></button>
+    <div class="modal-head">
+      <i id="m-icon" class="ti"></i>
+      <span class="modal-title" id="m-title"></span>
+    </div>
+    <p class="modal-sub">Cliquer sur le libellé pour le modifier · Glisser sur la barre pour ajuster l'autonomie</p>
+    <div class="action-list" id="m-actions"></div>
+  </div>
+</div>
+
+<script>
+const dims = [
+  { icon:"ti-chart-line", label:"Commercial", val:60, actions:[
+    {name:"Animation équipe commerciale",val:70},
+    {name:"Suivi pipeline Odoo (Joaquim, Julien)",val:75},
+    {name:"Négociation grands comptes",val:50},
+    {name:"Tarification & remises",val:55},
+    {name:"Conquête nouveaux clients",val:60},
+    {name:"Fidélisation portefeuille existant",val:70},
+    {name:"Réponse aux appels d'offres",val:55},
+    {name:"Reporting commercial au Président",val:65},
+    {name:"Objectifs & incentives équipe",val:60},
+    {name:"Partenariats commerciaux",val:40},
+  ]},
+  { icon:"ti-users", label:"Management RH", val:75, actions:[
+    {name:"Recrutements (hors DG)",val:80},
+    {name:"Entretiens annuels & objectifs",val:80},
+    {name:"Gestion des absences & plannings",val:90},
+    {name:"Procédures disciplinaires",val:65},
+    {name:"Formation & montée en compétences",val:70},
+    {name:"Gestion des conflits internes",val:70},
+    {name:"Animation CODIR LEGAA",val:85},
+    {name:"Relations avec Silae / Mazars (paie)",val:60},
+    {name:"Licenciements / ruptures conventionnelles",val:45},
+    {name:"Politique de rémunération",val:40},
+  ]},
+  { icon:"ti-package", label:"Opérations", val:80, actions:[
+    {name:"Pilotage atelier emballage (Vincent)",val:85},
+    {name:"Pilotage logistique (Thomas)",val:85},
+    {name:"ADV Emballage & produits dangereux (Moussa)",val:80},
+    {name:"Qualité & conformité SEILA",val:75},
+    {name:"Gestion des sous-traitants",val:70},
+    {name:"Optimisation flux & productivité",val:80},
+    {name:"Gestion des stocks",val:85},
+    {name:"Sécurité des personnes",val:90},
+    {name:"Incidents & non-conformités",val:75},
+    {name:"Investissements équipements courants",val:55},
+  ]},
+  { icon:"ti-currency-euro", label:"Finance courante", val:50, actions:[
+    {name:"Suivi trésorerie hebdomadaire",val:70},
+    {name:"Reporting mensuel (Mazars / Cegid Loop)",val:60},
+    {name:"Validation factures fournisseurs",val:65},
+    {name:"Arbitrages budgétaires courants",val:50},
+    {name:"Recouvrement clients",val:70},
+    {name:"Gestion des notes de frais",val:80},
+    {name:"Suivi des emprunts",val:40},
+    {name:"Décisions de financement",val:20},
+    {name:"Cautions & engagements bancaires",val:20},
+    {name:"Clôture comptable",val:35},
+  ]},
+  { icon:"ti-file-certificate", label:"Conformité", val:65, actions:[
+    {name:"Suivi ICPE / DREAL",val:65},
+    {name:"Certifications ADR & IMDG",val:70},
+    {name:"Agrément OEA",val:60},
+    {name:"Certification SEILA",val:65},
+    {name:"Suivi litige CAMFIL",val:45},
+    {name:"Régularisation TVA en cours",val:40},
+    {name:"Veille réglementaire",val:70},
+    {name:"Relations inspection du travail",val:60},
+    {name:"Assurances & sinistres",val:55},
+    {name:"RGPD & sécurité données",val:60},
+  ]},
+  { icon:"ti-arrows-right-left", label:"Synergies groupe", val:40, actions:[
+    {name:"Coordination opérationnelle CAP'EMBAL",val:50},
+    {name:"Coordination opérationnelle CBR Bois",val:45},
+    {name:"Remontées d'information au Président",val:55},
+    {name:"Mutualisation achats groupe",val:40},
+    {name:"Benchmarks CAP'EMBAL (référence groupe)",val:35},
+    {name:"Projets transverses groupe",val:35},
+    {name:"Partage de ressources inter-entités",val:40},
+    {name:"Consolidation reporting groupe",val:30},
+    {name:"Intégration fiscale MBAC Développement",val:25},
+    {name:"Gouvernance inter-entités",val:20},
+  ]},
+  { icon:"ti-user-search", label:"Stratégie & Développement", val:55, actions:[
+    {name:"Prospection nouveaux secteurs",val:55},
+    {name:"Veille concurrentielle",val:65},
+    {name:"Réponses AO stratégiques",val:50},
+    {name:"Plan stratégique 2027–2030",val:35},
+    {name:"Développement gamme emballage",val:60},
+    {name:"Développement offre logistique",val:60},
+    {name:"Partenariats & alliances",val:40},
+    {name:"Croissance externe (cibles)",val:20},
+    {name:"Positionnement marché",val:50},
+    {name:"Innovation produit / process",val:60},
+  ]},
+  { icon:"ti-building-bank", label:"Relations externes", val:35, actions:[
+    {name:"Relation banques courante",val:50},
+    {name:"Négociation lignes de crédit",val:20},
+    {name:"Relation Forvis Mazars (Lenglaert)",val:55},
+    {name:"Relation administrations (URSSAF…)",val:50},
+    {name:"Relation assureurs",val:55},
+    {name:"Avocats & contentieux",val:35},
+    {name:"Relation clients institutionnels",val:60},
+    {name:"Engagement cautions / garanties",val:15},
+    {name:"Représentation entreprise externe",val:50},
+    {name:"Communication groupe / presse",val:20},
+  ]},
+  { icon:"ti-device-desktop", label:"Outils & SI", val:65, actions:[
+    {name:"Odoo CRM/gestion — pilotage usage",val:75},
+    {name:"Cegid Loop — supervision comptable",val:55},
+    {name:"Silae (paie via Mazars)",val:50},
+    {name:"Évolutions Odoo & paramétrages",val:60},
+    {name:"Intégration outils terrain (caristes…)",val:70},
+    {name:"Sécurité informatique",val:55},
+    {name:"Projets de digitalisation",val:50},
+    {name:"Formation équipes aux outils",val:70},
+    {name:"Relation prestataires IT",val:60},
+    {name:"Reporting & tableaux de bord",val:65},
+  ]},
+  { icon:"ti-shopping-cart", label:"Achats", val:65, actions:[
+    {name:"Achats bois & panneaux",val:70},
+    {name:"Achats consommables emballage",val:75},
+    {name:"Achats produits dangereux",val:70},
+    {name:"Négociation fournisseurs courants",val:70},
+    {name:"Référencement nouveaux fournisseurs",val:55},
+    {name:"Benchmark prix (vs CAP'EMBAL)",val:50},
+    {name:"Achats équipements & matériels",val:50},
+    {name:"Gestion des litiges fournisseurs",val:65},
+    {name:"Mutualisation achats groupe",val:35},
+    {name:"Contrats cadres fournisseurs",val:45},
+  ]},
+  { icon:"ti-chart-area", label:"P&L, Budget & Invest.", val:45, actions:[
+    {name:"Construction budget annuel",val:50},
+    {name:"Suivi écarts budget / réel",val:60},
+    {name:"Prévisions de trésorerie",val:55},
+    {name:"Validation investissements courants",val:50},
+    {name:"Investissements structurants (>20k€)",val:20},
+    {name:"Analyse P&L par activité",val:55},
+    {name:"Plan de financement",val:25},
+    {name:"Reporting résultats au Président",val:60},
+    {name:"Pilotage coût de revient",val:60},
+    {name:"Arbitrage marge / volume",val:50},
+  ]},
+  { icon:"ti-tools", label:"Maîtrise technique", val:75, actions:[
+    {name:"Conception emballages industriels",val:80},
+    {name:"Normes ADR / IMDG (matières dangereuses)",val:75},
+    {name:"Processus logistique & flux",val:80},
+    {name:"Gestion des caristes & chariots",val:85},
+    {name:"Qualité & contrôle en production",val:80},
+    {name:"Gestion entrepôt & stockage",val:80},
+    {name:"Maintenance équipements atelier",val:70},
+    {name:"Méthodes & amélioration continue",val:65},
+    {name:"Sécurité des installations",val:75},
+    {name:"Expertise client (solutions techniques)",val:70},
+  ]},
+];
+
+const R=30, CX=36, CY=36;
+function pt(r,a){return [CX+r*Math.cos(a), CY+r*Math.sin(a)];}
+function arcD(pct){
+  if(pct>=100)pct=99.9;
+  const s=Math.PI, e=Math.PI+Math.PI*(pct/100);
+  const [sx,sy]=pt(R,s),[ex,ey]=pt(R,e);
+  return `M ${sx.toFixed(2)} ${sy.toFixed(2)} A ${R} ${R} 0 ${pct>50?1:0} 1 ${ex.toFixed(2)} ${ey.toFixed(2)}`;
+}
+function bgD(){const [sx,sy]=pt(R,Math.PI),[ex,ey]=pt(R,2*Math.PI);return `M ${sx.toFixed(2)} ${sy.toFixed(2)} A ${R} ${R} 0 1 1 ${ex.toFixed(2)} ${ey.toFixed(2)}`;}
+function col(v){return v>=70?'#1D9E75':v>=40?'#EF9F27':'#D85A30';}
+
+let currentDimIdx = null;
+
+function updateTileArc(i){
+  const d=dims[i];
+  const avg=Math.round(d.actions.reduce((s,a)=>s+a.val,0)/d.actions.length);
+  d.val=avg;
+  const el=document.getElementById('arc'+i);
+  const pe=document.getElementById('pct'+i);
+  if(el){el.setAttribute('d',arcD(avg));el.setAttribute('stroke',col(avg));}
+  if(pe){pe.textContent=avg+'%';pe.style.color=col(avg);}
+}
+
+function buildTile(d,i){
+  const div=document.createElement('div');
+  div.className='tile';div.id='tile'+i;
+  div.innerHTML=`
+    <i class="ti ${d.icon} tile-icon" aria-hidden="true"></i>
+    <div class="arc-wrap">
+      <svg width="72" height="40" viewBox="0 0 72 40">
+        <path d="${bgD()}" fill="none" stroke="#e8e6e0" stroke-width="6" stroke-linecap="round"/>
+        <path id="arc${i}" d="${arcD(d.val)}" fill="none" stroke="${col(d.val)}" stroke-width="6" stroke-linecap="round"/>
+      </svg>
+      <span class="arc-pct" id="pct${i}" style="color:${col(d.val)}">${d.val}%</span>
+    </div>
+    <div class="tile-label">${d.label}</div>
+  `;
+  div.addEventListener('click',()=>openModal(i));
+  return div;
+}
+
+function openModal(i){
+  currentDimIdx=i;
+  const d=dims[i];
+  document.getElementById('m-icon').className='ti '+d.icon;
+  document.getElementById('m-title').textContent=d.label;
+
+  const list=document.getElementById('m-actions');
+  list.innerHTML='';
+
+  d.actions.forEach((a,j)=>{
+    const row=document.createElement('div');
+    row.className='action-row';
+    row.innerHTML=`
+      <span class="action-num">${j+1}</span>
+      <input class="action-name" type="text" value="${a.name}" id="aname-${i}-${j}" title="Cliquer pour modifier le libellé"/>
+      <div class="mini-track" id="mt-${i}-${j}">
+        <div class="mini-fill" id="mf-${i}-${j}" style="width:${a.val}%;background:${col(a.val)}"></div>
+      </div>
+      <span class="mini-pct" id="mp-${i}-${j}" style="color:${col(a.val)}">${a.val}%</span>
+    `;
+    list.appendChild(row);
+
+    // Editable label
+    const nameInput=row.querySelector(`#aname-${i}-${j}`);
+    nameInput.addEventListener('input',()=>{
+      d.actions[j].name=nameInput.value;
+    });
+    nameInput.addEventListener('click',e=>e.stopPropagation());
+
+    // Draggable gauge
+    const track=row.querySelector(`#mt-${i}-${j}`);
+    let dragging=false;
+    function updateGauge(e){
+      const rect=track.getBoundingClientRect();
+      const x=(e.touches?e.touches[0].clientX:e.clientX)-rect.left;
+      let v=Math.round((x/rect.width)*100/5)*5;
+      v=Math.max(5,Math.min(100,v));
+      d.actions[j].val=v;
+      const c=col(v);
+      document.getElementById(`mf-${i}-${j}`).style.width=v+'%';
+      document.getElementById(`mf-${i}-${j}`).style.background=c;
+      document.getElementById(`mp-${i}-${j}`).textContent=v+'%';
+      document.getElementById(`mp-${i}-${j}`).style.color=c;
+      updateTileArc(i);
+    }
+    track.addEventListener('mousedown',e=>{dragging=true;updateGauge(e);});
+    document.addEventListener('mousemove',e=>{if(dragging)updateGauge(e);});
+    document.addEventListener('mouseup',()=>{dragging=false;});
+    track.addEventListener('touchstart',updateGauge,{passive:true});
+    track.addEventListener('touchmove',e=>{e.preventDefault();updateGauge(e);},{passive:false});
+  });
+
+  document.getElementById('overlay').classList.add('open');
+  document.querySelectorAll('.tile').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tile'+i).classList.add('active');
+}
+
+document.getElementById('close-btn').addEventListener('click',()=>{
+  document.getElementById('overlay').classList.remove('open');
+  if(currentDimIdx!==null)document.getElementById('tile'+currentDimIdx).classList.remove('active');
+  currentDimIdx=null;
+});
+document.getElementById('overlay').addEventListener('click',e=>{
+  if(e.target===document.getElementById('overlay')){
+    document.getElementById('overlay').classList.remove('open');
+    if(currentDimIdx!==null)document.getElementById('tile'+currentDimIdx).classList.remove('active');
+    currentDimIdx=null;
+  }
+});
+
+const grid=document.getElementById('grid');
+dims.forEach((d,i)=>grid.appendChild(buildTile(d,i)));
+</script>
+</body>
+</html>
