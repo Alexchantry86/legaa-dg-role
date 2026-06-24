@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Direction Générale — LEGAA</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.0.0/tabler-icons.min.css">
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI',Arial,sans-serif;background:#f7f7f5;color:#2c2c2a;min-height:100vh;padding:0 0 60px}
@@ -131,6 +132,43 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
 .add-btn:hover{background:#9FE1CB}
 .del-btn{background:none;border:none;cursor:pointer;color:#d3d1c7;font-size:16px;display:flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;transition:color .12s;line-height:1}
 .del-btn:hover{color:#D85A30}
+
+/* ── EXPORT PDF ── */
+#pdf-report{display:none}
+@media print{
+  body{background:#fff!important;padding:0!important;font-size:11pt}
+  .page,.tabs,.sync-global,.overlay,.prio-legend,.hint{display:none!important}
+  #pdf-report{display:block!important}
+  .pr-page{page-break-after:always;padding:32pt 40pt}
+  .pr-page:last-child{page-break-after:avoid}
+  .pr-cover{text-align:center;padding-top:120pt}
+  .pr-cover-eye{font-size:9pt;letter-spacing:.12em;text-transform:uppercase;color:#888780;margin-bottom:8pt}
+  .pr-cover-title{font-size:28pt;font-weight:600;color:#2c2c2a;margin-bottom:6pt}
+  .pr-cover-sub{font-size:12pt;color:#888780;margin-bottom:40pt}
+  .pr-cover-date{font-size:10pt;color:#b4b2a9}
+  .pr-section-title{font-size:14pt;font-weight:600;color:#2c2c2a;margin-bottom:4pt;padding-bottom:4pt;border-bottom:1pt solid #e8e6e0}
+  .pr-section-sub{font-size:9pt;color:#888780;margin-bottom:16pt}
+  .pr-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10pt;margin-bottom:14pt}
+  .pr-card{border:0.5pt solid #d3d1c7;border-radius:6pt;padding:10pt 12pt}
+  .pr-card-head{display:flex;align-items:center;gap:8pt;margin-bottom:6pt}
+  .pr-card-icon{font-size:14pt;color:#888780}
+  .pr-card-label{font-size:10pt;font-weight:600;color:#2c2c2a}
+  .pr-bar-wrap{margin-bottom:3pt}
+  .pr-bar-label{display:flex;justify-content:space-between;font-size:8.5pt;color:#5f5e5a;margin-bottom:2pt}
+  .pr-bar-track{height:5pt;background:#e8e6e0;border-radius:3pt;overflow:hidden}
+  .pr-bar-fill{height:5pt;border-radius:3pt}
+  .pr-autonomie-badge{display:inline-block;font-size:9pt;font-weight:600;padding:2pt 8pt;border-radius:4pt;margin-bottom:8pt}
+  .pr-prio-table{width:100%;border-collapse:collapse;font-size:8.5pt}
+  .pr-prio-table th{text-align:left;padding:4pt 6pt;background:#f7f7f5;font-weight:600;color:#5f5e5a;border-bottom:0.5pt solid #d3d1c7}
+  .pr-prio-table td{padding:4pt 6pt;border-bottom:0.3pt solid #f0eeea;vertical-align:middle}
+  .pr-prio-table tr:last-child td{border-bottom:none}
+  .pr-badge{display:inline-block;padding:1pt 5pt;border-radius:3pt;font-size:7.5pt;font-weight:500}
+  .badge-h{background:#FAECE7;color:#993C1D}.badge-m{background:#FAEEDA;color:#633806}
+  .badge-b{background:#f1efe8;color:#888780}.badge-d{background:#E1F5EE;color:#085041}
+  .pr-prog-bar{display:inline-block;width:60pt;height:4pt;background:#e8e6e0;border-radius:2pt;vertical-align:middle;margin-right:4pt;overflow:hidden}
+  .pr-prog-fill{height:4pt;border-radius:2pt}
+  .pr-footer{position:fixed;bottom:20pt;left:40pt;right:40pt;display:flex;justify-content:space-between;font-size:8pt;color:#b4b2a9;border-top:0.3pt solid #e8e6e0;padding-top:6pt}
+}
 </style>
 </head>
 <body>
@@ -145,6 +183,8 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
       <div class="sync-dot" id="sync-dot"></div>
       <span id="sync-label">Chargement…</span>
       <button class="sync-btn primary" onclick="forceSave()" id="save-btn"><i class="ti ti-cloud-upload" style="font-size:13px"></i> Sauvegarder</button>
+      <button class="sync-btn" onclick="exportExcel()" title="Exporter en Excel"><i class="ti ti-file-spreadsheet" style="font-size:13px"></i> Excel</button>
+      <button class="sync-btn" onclick="exportPDF()" title="Exporter en PDF"><i class="ti ti-file-type-pdf" style="font-size:13px"></i> PDF</button>
     </div>
   </div>
   <div class="tabs">
@@ -639,6 +679,180 @@ document.querySelectorAll('.tab-btn').forEach(btn=>{
   });
 });
 
+
+/* ═══════════════ EXPORTS ═══════════════ */
+function colLabel(v){return v>=70?'Forte':'Forte';}
+
+function exportPDF(){
+  buildPDFReport();
+  setTimeout(()=>window.print(),300);
+}
+
+function buildPDFReport(){
+  const now=new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
+  let html='';
+
+  /* PAGE DE COUVERTURE */
+  html+=`<div class="pr-page pr-cover">
+    <p class="pr-cover-eye">LEGAA &middot; Direction G&eacute;n&eacute;rale</p>
+    <h1 class="pr-cover-title">Tableau de bord DG</h1>
+    <p class="pr-cover-sub">Bilan d&rsquo;autonomie &amp; actions prioritaires S2 2026</p>
+    <p class="pr-cover-date">G&eacute;n&eacute;r&eacute; le ${now}</p>
+    <div style="margin-top:60pt;text-align:left;border:.5pt solid #d3d1c7;border-radius:8pt;padding:16pt 20pt">
+      <p style="font-size:9pt;color:#888780;margin-bottom:10pt;font-weight:600;letter-spacing:.06em;text-transform:uppercase">Synth&egrave;se des domaines</p>
+      ${dims.map(d=>{
+        const c=d.val>=70?'#1D9E75':d.val>=40?'#EF9F27':'#D85A30';
+        return `<div style="display:flex;align-items:center;gap:8pt;margin-bottom:5pt">
+          <div style="width:110pt;font-size:9pt;color:#2c2c2a;font-weight:500">${d.label}</div>
+          <div style="flex:1;height:5pt;background:#e8e6e0;border-radius:3pt;overflow:hidden">
+            <div style="width:${d.val}%;height:5pt;background:${c};border-radius:3pt"></div>
+          </div>
+          <div style="width:28pt;text-align:right;font-size:9pt;font-weight:600;color:${c}">${d.val}%</div>
+        </div>`;
+      }).join('')}
+    </div>
+    <div class="pr-footer"><span>LEGAA &mdash; Confidentiel</span><span>${now}</span></div>
+  </div>`;
+
+  /* PAGE AUTONOMIE : 2 briques par page, 3 colonnes actions */
+  for(let i=0;i<dims.length;i+=2){
+    const slice=dims.slice(i,i+2);
+    html+=`<div class="pr-page">
+      <p class="pr-section-title">Niveau d&rsquo;autonomie par domaine</p>
+      <p class="pr-section-sub">D&eacute;tail des actions &mdash; page ${Math.floor(i/2)+1}/${Math.ceil(dims.length/2)}</p>
+      ${slice.map(d=>{
+        const c=d.val>=70?'#1D9E75':d.val>=40?'#EF9F27':'#D85A30';
+        const lbl=d.val>=70?'Autonomie forte':d.val>=40?'Autonomie partielle':'Supervision renforc&eacute;e';
+        return `<div class="pr-card" style="margin-bottom:14pt">
+          <div class="pr-card-head">
+            <span class="pr-card-label" style="font-size:12pt">${d.label}</span>
+            <span class="pr-autonomie-badge" style="background:${c}22;color:${c};margin-left:auto">${d.val}% &mdash; ${lbl}</span>
+          </div>
+          <div class="pr-grid">
+            ${d.actions.map((a,j)=>{
+              const ac=a.val>=70?'#1D9E75':a.val>=40?'#EF9F27':'#D85A30';
+              return `<div class="pr-bar-wrap">
+                <div class="pr-bar-label"><span>${j+1}. ${a.name}</span><span style="color:${ac};font-weight:600">${a.val}%</span></div>
+                <div class="pr-bar-track"><div class="pr-bar-fill" style="width:${a.val}%;background:${ac}"></div></div>
+              </div>`;
+            }).join('')}
+          </div>
+        </div>`;
+      }).join('')}
+      <div class="pr-footer"><span>LEGAA &mdash; Confidentiel</span><span>${now}</span></div>
+    </div>`;
+  }
+
+  /* PAGE PRIORITES S2 : 1 brique par page */
+  for(let i=0;i<prioData.length;i++){
+    const pd=prioData[i];
+    const done=pd.actions.filter(a=>a.done).length;
+    const av=Math.round(pd.actions.map(a=>a.done?100:a.avancement).reduce((s,v)=>s+v,0)/pd.actions.length);
+    const hc=pd.actions.filter(a=>!a.done&&a.prio==='haute').length;
+    const mc=pd.actions.filter(a=>!a.done&&a.prio==='moyenne').length;
+    const bc=pd.actions.filter(a=>!a.done&&a.prio==='basse').length;
+    const barC=done===pd.actions.length&&pd.actions.length>0?'#1D9E75':hc>0?'#D85A30':mc>0?'#EF9F27':'#b4b2a9';
+    html+=`<div class="pr-page">
+      <div style="display:flex;align-items:center;gap:10pt;margin-bottom:4pt">
+        <p class="pr-section-title" style="flex:1;border:none;margin:0">${pd.label}</p>
+        <span style="font-size:9pt;color:${barC};font-weight:600">${av}% avanc&eacute; &mdash; ${done}/${pd.actions.length} termin&eacute;es</span>
+      </div>
+      <div style="display:flex;gap:8pt;margin-bottom:14pt">
+        ${hc?`<span class="pr-badge badge-h">${hc} haute${hc>1?'s':''}</span>`:''}
+        ${mc?`<span class="pr-badge badge-m">${mc} moyenne${mc>1?'s':''}</span>`:''}
+        ${bc?`<span class="pr-badge badge-b">${bc} basse${bc>1?'s':''}</span>`:''}
+        ${done?`<span class="pr-badge badge-d">${done} termin&eacute;e${done>1?'s':''}</span>`:''}
+      </div>
+      <table class="pr-prio-table">
+        <thead><tr>
+          <th style="width:20pt">#</th>
+          <th>Action</th>
+          <th style="width:55pt">Avancement</th>
+          <th style="width:60pt">Priorit&eacute;</th>
+          <th style="width:45pt">Statut</th>
+        </tr></thead>
+        <tbody>
+          ${pd.actions.map((a,j)=>{
+            const av2=a.done?100:a.avancement;
+            const pc=av2>=100?'#1D9E75':a.prio==='haute'?'#D85A30':a.prio==='moyenne'?'#EF9F27':'#b4b2a9';
+            const pbCls=a.done?'badge-d':a.prio==='haute'?'badge-h':a.prio==='moyenne'?'badge-m':'badge-b';
+            const plbl=a.done?'Termin&eacute;':a.prio==='haute'?'Haute':a.prio==='moyenne'?'Moyenne':'Basse';
+            return `<tr>
+              <td style="color:#b4b2a9;font-weight:500">${j+1}</td>
+              <td style="font-weight:500;color:${a.done?'#888780':'#2c2c2a'};${a.done?'text-decoration:line-through':''}">${a.name}</td>
+              <td><div class="pr-prog-bar"><div class="pr-prog-fill" style="width:${av2}%;background:${pc}"></div></div><span style="font-size:8pt;color:${pc};font-weight:600">${av2}%</span></td>
+              <td><span class="pr-badge ${pbCls}">${plbl}</span></td>
+              <td style="color:${a.done?'#1D9E75':'#b4b2a9'};font-weight:500">${a.done?'&#10003; Fait':'En cours'}</td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+      <div class="pr-footer"><span>LEGAA &mdash; Confidentiel &mdash; Actions prioritaires S2 2026</span><span>${now}</span></div>
+    </div>`;
+  }
+
+  document.getElementById('pdf-report').innerHTML=html;
+}
+
+/* ── EXPORT EXCEL ── */
+function exportExcel(){
+  const XLSX=window.XLSX;
+  if(!XLSX){alert('Chargement du module Excel en cours, réessayez dans 2 secondes.');return;}
+  const wb=XLSX.utils.book_new();
+  const now=new Date().toLocaleDateString('fr-FR');
+
+  /* Feuille 1 : Synthèse autonomie */
+  const synth=[['Domaine','Autonomie globale (%)','Niveau']];
+  dims.forEach(d=>{
+    const lbl=d.val>=70?'Autonomie forte':d.val>=40?'Partielle':'Supervision';
+    synth.push([d.label,d.val,lbl]);
+  });
+  const ws1=XLSX.utils.aoa_to_sheet(synth);
+  ws1['!cols']=[{wch:30},{wch:20},{wch:20}];
+  XLSX.utils.book_append_sheet(wb,ws1,'Autonomie - Synthèse');
+
+  /* Feuille 2 : Détail autonomie */
+  const det=[['Domaine','#','Action','Autonomie (%)','Niveau']];
+  dims.forEach(d=>{
+    d.actions.forEach((a,j)=>{
+      const lbl=a.val>=70?'Forte':a.val>=40?'Partielle':'Supervision';
+      det.push([d.label,j+1,a.name,a.val,lbl]);
+    });
+  });
+  const ws2=XLSX.utils.aoa_to_sheet(det);
+  ws2['!cols']=[{wch:28},{wch:4},{wch:45},{wch:16},{wch:14}];
+  XLSX.utils.book_append_sheet(wb,ws2,'Autonomie - Détail');
+
+  /* Feuille 3 : Actions prioritaires synthèse */
+  const ps=[['Domaine','Total actions','Hautes','Moyennes','Basses','Terminées','Avancement (%)']];
+  prioData.forEach(pd=>{
+    const h=pd.actions.filter(a=>!a.done&&a.prio==='haute').length;
+    const m=pd.actions.filter(a=>!a.done&&a.prio==='moyenne').length;
+    const b=pd.actions.filter(a=>!a.done&&a.prio==='basse').length;
+    const d=pd.actions.filter(a=>a.done).length;
+    const av=Math.round(pd.actions.map(a=>a.done?100:a.avancement).reduce((s,v)=>s+v,0)/pd.actions.length);
+    ps.push([pd.label,pd.actions.length,h,m,b,d,av]);
+  });
+  const ws3=XLSX.utils.aoa_to_sheet(ps);
+  ws3['!cols']=[{wch:28},{wch:14},{wch:10},{wch:10},{wch:10},{wch:12},{wch:16}];
+  XLSX.utils.book_append_sheet(wb,ws3,'Priorités S2 - Synthèse');
+
+  /* Feuille 4 : Actions prioritaires détail */
+  const pd2=[['Domaine','#','Action','Priorité','Avancement (%)','Statut']];
+  prioData.forEach(pd=>{
+    pd.actions.forEach((a,j)=>{
+      const prio=a.done?'Terminée':a.prio==='haute'?'Haute':a.prio==='moyenne'?'Moyenne':'Basse';
+      const statut=a.done?'Terminé':'En cours';
+      pd2.push([pd.label,j+1,a.name,prio,a.done?100:a.avancement,statut]);
+    });
+  });
+  const ws4=XLSX.utils.aoa_to_sheet(pd2);
+  ws4['!cols']=[{wch:28},{wch:4},{wch:45},{wch:12},{wch:16},{wch:12}];
+  XLSX.utils.book_append_sheet(wb,ws4,'Priorités S2 - Détail');
+
+  XLSX.writeFile(wb,'LEGAA_DG_'+now.replace(/\//g,'-')+'.xlsx');
+}
+
 /* ═══════════════ INIT ═══════════════ */
 function rebuildAll(){
   document.getElementById('grid-autonomie').innerHTML='';
@@ -652,5 +866,6 @@ loadFromCloud().then(()=>{
   setInterval(()=>{ saveToCloud(true); }, 1000);
 });
 </script>
+<div id="pdf-report"></div>
 </body>
 </html>
