@@ -6,168 +6,130 @@
 <title>Direction Générale — LEGAA</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.0.0/tabler-icons.min.css">
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  font-family: 'Segoe UI', Arial, sans-serif;
-  background: #f7f7f5; color: #2c2c2a;
-  min-height: 100vh; padding: 0 0 60px;
-}
-.page { max-width: 980px; margin: 0 auto; padding: 36px 32px 0; }
-
-/* HEADER */
-.header { margin-bottom: 26px; }
-.eyebrow { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: #888780; margin-bottom: 5px; }
-h1 { font-size: 22px; font-weight: 500; color: #2c2c2a; margin-bottom: 2px; }
-.sub { font-size: 13px; color: #888780; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#f7f7f5;color:#2c2c2a;min-height:100vh;padding:0 0 60px}
+.page{max-width:980px;margin:0 auto;padding:36px 32px 0}
+.header{margin-bottom:26px}
+.eyebrow{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#888780;margin-bottom:5px}
+h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
+.sub{font-size:13px;color:#888780}
 
 /* TABS */
-.tabs { display: flex; border-bottom: 1px solid #d3d1c7; margin-bottom: 26px; }
-.tab-btn {
-  padding: 10px 22px; font-size: 13px; font-weight: 500; color: #888780;
-  background: none; border: none; border-bottom: 2px solid transparent;
-  margin-bottom: -1px; cursor: pointer; transition: color .15s, border-color .15s;
-  display: flex; align-items: center; gap: 7px;
-}
-.tab-btn i { font-size: 15px; }
-.tab-btn:hover { color: #2c2c2a; }
-.tab-btn.active { color: #2c2c2a; border-bottom-color: #2c2c2a; }
-.tab-panel { display: none; }
-.tab-panel.active { display: block; }
+.tabs{display:flex;border-bottom:1px solid #d3d1c7;margin-bottom:26px}
+.tab-btn{padding:10px 22px;font-size:13px;font-weight:500;color:#888780;background:none;border:none;border-bottom:2px solid transparent;margin-bottom:-1px;cursor:pointer;transition:color .15s,border-color .15s;display:flex;align-items:center;gap:7px}
+.tab-btn i{font-size:15px}
+.tab-btn:hover{color:#2c2c2a}
+.tab-btn.active{color:#2c2c2a;border-bottom-color:#2c2c2a}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
 
-/* GRILLE COMMUNE */
-.grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-.hint { text-align: center; font-size: 11px; color: #b4b2a9; margin-top: 14px; }
+/* GRILLE 4 col */
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.hint{text-align:center;font-size:11px;color:#b4b2a9;margin-top:14px}
 
-/* ── ONGLET 1 : TUILES AUTONOMIE ── */
-.tile {
-  background: #fff; border: 0.5px solid #d3d1c7; border-radius: 14px;
-  padding: 20px 12px 16px; display: flex; flex-direction: column;
-  align-items: center; gap: 10px; cursor: pointer;
-  transition: border-color .15s, transform .1s; user-select: none;
-}
-.tile:hover { border-color: #888780; transform: translateY(-1px); }
-.tile.active { border-color: #2c2c2a; border-width: 1px; }
-.tile-icon { font-size: 28px; color: #888780; line-height: 1; }
-.arc-wrap { position: relative; width: 72px; height: 40px; }
-.arc-wrap svg { overflow: visible; display: block; }
-.arc-pct { position: absolute; bottom: -2px; left: 50%; transform: translateX(-50%); font-size: 12px; font-weight: 500; white-space: nowrap; }
-.tile-label { font-size: 11px; font-weight: 500; color: #2c2c2a; text-align: center; line-height: 1.35; }
+/* ── ONGLET 1 : AUTONOMIE ── */
+.tile{background:#fff;border:.5px solid #d3d1c7;border-radius:14px;padding:20px 12px 16px;display:flex;flex-direction:column;align-items:center;gap:10px;cursor:pointer;transition:border-color .15s,transform .1s;user-select:none}
+.tile:hover{border-color:#888780;transform:translateY(-1px)}
+.tile.active{border-color:#2c2c2a;border-width:1px}
+.tile-icon{font-size:28px;color:#888780;line-height:1}
+.arc-wrap{position:relative;width:72px;height:40px}
+.arc-wrap svg{overflow:visible;display:block}
+.arc-pct{position:absolute;bottom:-2px;left:50%;transform:translateX(-50%);font-size:12px;font-weight:500;white-space:nowrap}
+.tile-label{font-size:11px;font-weight:500;color:#2c2c2a;text-align:center;line-height:1.35}
 
 /* ── ONGLET 2 : TUILES PRIORITÉ ── */
-.prio-tile {
-  background: #fff; border: 0.5px solid #d3d1c7; border-radius: 14px;
-  padding: 20px 14px 16px; display: flex; flex-direction: column;
-  align-items: center; gap: 11px; cursor: pointer;
-  transition: border-color .15s, transform .1s; user-select: none;
-}
-.prio-tile:hover { border-color: #888780; transform: translateY(-1px); }
-.prio-tile.active { border-color: #2c2c2a; border-width: 1px; }
-.prio-tile-icon { font-size: 28px; color: #888780; line-height: 1; }
-.prio-tile-label { font-size: 11px; font-weight: 500; color: #2c2c2a; text-align: center; line-height: 1.35; }
-.prio-tile-stats { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 100%; }
-.prio-stat-pills { display: flex; gap: 4px; justify-content: center; flex-wrap: wrap; }
-.prio-pill {
-  font-size: 10px; font-weight: 500; padding: 2px 7px;
-  border-radius: 20px; white-space: nowrap;
-}
-.pill-haute   { background: #FAECE7; color: #993C1D; }
-.pill-moyenne { background: #FAEEDA; color: #633806; }
-.pill-basse   { background: #f1efe8; color: #888780; }
-.pill-done    { background: #E1F5EE; color: #085041; }
-.prio-stat-total { font-size: 10px; color: #b4b2a9; }
-.prio-stat-total span { font-weight: 600; color: #2c2c2a; }
+.prio-tile{background:#fff;border:.5px solid #d3d1c7;border-radius:14px;padding:18px 14px 14px;display:flex;flex-direction:column;align-items:center;gap:0;cursor:pointer;transition:border-color .15s,transform .1s;user-select:none;overflow:hidden;position:relative}
+.prio-tile:hover{border-color:#888780;transform:translateY(-1px)}
+.prio-tile.active{border-color:#2c2c2a;border-width:1px}
+
+/* Bande couleur haute du domaine selon état */
+.prio-tile-bar{position:absolute;top:0;left:0;right:0;height:4px;border-radius:14px 14px 0 0}
+
+.prio-tile-top{display:flex;flex-direction:column;align-items:center;gap:8px;padding-top:8px;width:100%}
+.prio-tile-icon{font-size:26px;line-height:1}
+.prio-tile-label{font-size:11px;font-weight:500;color:#2c2c2a;text-align:center;line-height:1.3}
+
+/* Mini progress ring sur tuile */
+.prio-ring-wrap{position:relative;width:52px;height:52px;margin:6px 0 2px}
+.prio-ring-wrap svg{overflow:visible}
+.prio-ring-pct{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500}
+
+/* Pills */
+.prio-tile-pills{display:flex;gap:4px;flex-wrap:wrap;justify-content:center;width:100%}
+.prio-pill{font-size:10px;font-weight:500;padding:2px 6px;border-radius:20px;white-space:nowrap}
+.pill-haute{background:#FAECE7;color:#993C1D}
+.pill-moyenne{background:#FAEEDA;color:#633806}
+.pill-basse{background:#f1efe8;color:#888780}
+.pill-done{background:#E1F5EE;color:#085041}
 
 /* ── MODAL COMMUNE ── */
-.overlay {
-  display: none; position: fixed; inset: 0;
-  background: rgba(44,44,42,0.42); z-index: 100;
-  align-items: center; justify-content: center; padding: 24px;
-}
-.overlay.open { display: flex; }
-.modal {
-  background: #fff; border-radius: 18px; width: 100%;
-  max-width: 660px; max-height: 90vh; overflow-y: auto;
-  padding: 28px 28px 24px; position: relative;
-}
-.modal-head { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
-.modal-head i { font-size: 22px; color: #888780; }
-.modal-title { font-size: 18px; font-weight: 500; color: #2c2c2a; }
-.modal-sub { font-size: 12px; color: #b4b2a9; margin-bottom: 20px; margin-left: 34px; }
-.close-btn {
-  position: absolute; top: 20px; right: 20px;
-  background: #f1efe8; border: none; border-radius: 50%;
-  width: 32px; height: 32px; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 16px; color: #5f5e5a; transition: background .12s;
-}
-.close-btn:hover { background: #d3d1c7; }
+.overlay{display:none;position:fixed;inset:0;background:rgba(44,44,42,.42);z-index:100;align-items:center;justify-content:center;padding:24px}
+.overlay.open{display:flex}
+.modal{background:#fff;border-radius:18px;width:100%;max-width:680px;max-height:90vh;overflow-y:auto;padding:28px 28px 24px;position:relative}
+.modal-head{display:flex;align-items:center;gap:12px;margin-bottom:4px}
+.modal-head i{font-size:22px;color:#888780}
+.modal-title{font-size:18px;font-weight:500;color:#2c2c2a}
+.modal-sub{font-size:12px;color:#b4b2a9;margin-bottom:18px;margin-left:34px}
+.close-btn{position:absolute;top:20px;right:20px;background:#f1efe8;border:none;border-radius:50%;width:32px;height:32px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;color:#5f5e5a;transition:background .12s}
+.close-btn:hover{background:#d3d1c7}
 
 /* MODAL AUTONOMIE */
-.action-list { display: flex; flex-direction: column; gap: 8px; }
-.action-row {
-  display: grid; grid-template-columns: 28px 1fr 160px 38px;
-  align-items: center; gap: 10px; padding: 10px 12px;
-  background: #f7f7f5; border-radius: 10px;
-  border: 1px solid transparent; transition: border-color .15s;
-}
-.action-row:hover { border-color: #d3d1c7; }
-.action-num { font-size: 11px; font-weight: 500; color: #b4b2a9; text-align: center; }
-.action-name {
-  font-size: 13px; font-weight: 500; color: #2c2c2a; padding: 2px 4px;
-  border-radius: 4px; border: 1px solid transparent;
-  transition: border-color .12s, background .12s;
-  outline: none; width: 100%; background: transparent; font-family: inherit;
-}
-.action-name:hover { border-color: #d3d1c7; background: #fff; }
-.action-name:focus { border-color: #888780; background: #fff; }
-.mini-track { position: relative; height: 6px; background: #e8e6e0; border-radius: 3px; cursor: pointer; }
-.mini-fill { height: 6px; border-radius: 3px; pointer-events: none; transition: width .08s, background .2s; }
-.mini-pct { font-size: 12px; font-weight: 500; text-align: right; min-width: 34px; }
+.action-list{display:flex;flex-direction:column;gap:8px}
+.action-row{display:grid;grid-template-columns:28px 1fr 160px 38px;align-items:center;gap:10px;padding:10px 12px;background:#f7f7f5;border-radius:10px;border:1px solid transparent;transition:border-color .15s}
+.action-row:hover{border-color:#d3d1c7}
+.action-num{font-size:11px;font-weight:500;color:#b4b2a9;text-align:center}
+.action-name{font-size:13px;font-weight:500;color:#2c2c2a;padding:2px 4px;border-radius:4px;border:1px solid transparent;transition:border-color .12s,background .12s;outline:none;width:100%;background:transparent;font-family:inherit}
+.action-name:hover{border-color:#d3d1c7;background:#fff}
+.action-name:focus{border-color:#888780;background:#fff}
+.mini-track{position:relative;height:6px;background:#e8e6e0;border-radius:3px;cursor:pointer}
+.mini-fill{height:6px;border-radius:3px;pointer-events:none;transition:width .08s,background .2s}
+.mini-pct{font-size:12px;font-weight:500;text-align:right;min-width:34px}
 
-/* MODAL PRIORITÉS — DRAG & DROP */
-.prio-action-list { display: flex; flex-direction: column; gap: 6px; }
-.prio-action-row {
-  display: grid; grid-template-columns: 22px 22px 1fr 96px 32px;
-  align-items: center; gap: 8px; padding: 9px 12px;
-  background: #f7f7f5; border-radius: 10px;
-  border: 1px solid transparent; transition: border-color .15s, opacity .15s;
-  cursor: grab;
-}
-.prio-action-row:hover { border-color: #d3d1c7; }
-.prio-action-row.dragging { opacity: .4; cursor: grabbing; }
-.prio-action-row.drag-over { border-color: #888780; background: #efefed; }
-.drag-handle { font-size: 14px; color: #d3d1c7; cursor: grab; display: flex; align-items: center; }
-.prio-num { font-size: 11px; font-weight: 500; color: #b4b2a9; text-align: center; }
-.prio-action-name {
-  font-size: 13px; font-weight: 500; color: #2c2c2a; padding: 2px 4px;
-  border-radius: 4px; border: 1px solid transparent;
-  transition: border-color .12s, background .12s;
-  outline: none; width: 100%; background: transparent; font-family: inherit;
-}
-.prio-action-name:hover { border-color: #d3d1c7; background: #fff; }
-.prio-action-name:focus { border-color: #888780; background: #fff; }
-.prio-select {
-  font-size: 11px; font-weight: 500; border: 1px solid #d3d1c7;
-  border-radius: 6px; padding: 4px 5px; background: #fff;
-  cursor: pointer; outline: none; font-family: inherit; width: 100%;
-}
-.sel-haute   { background: #FAECE7; color: #993C1D; border-color: #F5C4B3; }
-.sel-moyenne { background: #FAEEDA; color: #633806; border-color: #FAC775; }
-.sel-basse   { background: #f1efe8; color: #888780; border-color: #d3d1c7; }
-.sel-done    { background: #E1F5EE; color: #085041; border-color: #9FE1CB; }
-.prio-check-wrap { display: flex; align-items: center; justify-content: center; }
-.prio-check {
-  width: 18px; height: 18px; border: 1.5px solid #d3d1c7; border-radius: 5px;
-  cursor: pointer; appearance: none; background: #fff;
-  transition: background .12s, border-color .12s; flex-shrink: 0; position: relative;
-}
-.prio-check:checked { background: #1D9E75; border-color: #1D9E75; }
-.prio-check:checked::after { content: '✓'; color: #fff; font-size: 11px; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-52%); }
+/* MODAL PRIORITÉS */
+.prio-action-list{display:flex;flex-direction:column;gap:6px}
+.prio-action-row{display:grid;grid-template-columns:22px 22px 1fr 80px 120px 32px;align-items:center;gap:8px;padding:9px 12px;background:#f7f7f5;border-radius:10px;border:1px solid transparent;transition:border-color .15s,opacity .15s;cursor:grab}
+.prio-action-row:hover{border-color:#d3d1c7}
+.prio-action-row.dragging{opacity:.35;cursor:grabbing}
+.prio-action-row.drag-over{border-color:#888780;background:#efefed}
+.drag-handle{font-size:14px;color:#d3d1c7;cursor:grab;display:flex;align-items:center}
+.prio-num{font-size:11px;font-weight:500;color:#b4b2a9;text-align:center}
+.prio-action-name{font-size:13px;font-weight:500;color:#2c2c2a;padding:2px 4px;border-radius:4px;border:1px solid transparent;transition:border-color .12s,background .12s;outline:none;width:100%;background:transparent;font-family:inherit}
+.prio-action-name:hover{border-color:#d3d1c7;background:#fff}
+.prio-action-name:focus{border-color:#888780;background:#fff}
 
-/* Légende S2 */
-.prio-legend { display: flex; gap: 16px; margin-top: 16px; flex-wrap: wrap; justify-content: center; }
-.prio-leg-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #5f5e5a; }
-.prio-leg-dot { width: 8px; height: 8px; border-radius: 50%; }
+/* Jauge avancement dans modal priorités */
+.prio-gauge-wrap{display:flex;align-items:center;gap:6px}
+.prio-gauge-track{flex:1;height:5px;background:#e8e6e0;border-radius:3px;cursor:pointer;min-width:60px}
+.prio-gauge-fill{height:5px;border-radius:3px;pointer-events:none;transition:width .08s,background .2s}
+.prio-gauge-pct{font-size:11px;font-weight:500;min-width:30px;text-align:right}
+
+.prio-select{font-size:11px;font-weight:500;border:1px solid #d3d1c7;border-radius:6px;padding:4px 5px;background:#fff;cursor:pointer;outline:none;font-family:inherit;width:100%}
+.sel-haute{background:#FAECE7;color:#993C1D;border-color:#F5C4B3}
+.sel-moyenne{background:#FAEEDA;color:#633806;border-color:#FAC775}
+.sel-basse{background:#f1efe8;color:#888780;border-color:#d3d1c7}
+.sel-done{background:#E1F5EE;color:#085041;border-color:#9FE1CB}
+.prio-check-wrap{display:flex;align-items:center;justify-content:center}
+.prio-check{width:18px;height:18px;border:1.5px solid #d3d1c7;border-radius:5px;cursor:pointer;appearance:none;background:#fff;transition:background .12s,border-color .12s;flex-shrink:0;position:relative}
+.prio-check:checked{background:#1D9E75;border-color:#1D9E75}
+.prio-check:checked::after{content:'✓';color:#fff;font-size:11px;position:absolute;top:50%;left:50%;transform:translate(-50%,-52%)}
+
+/* Légende */
+.prio-legend{display:flex;gap:16px;margin-top:16px;flex-wrap:wrap;justify-content:center}
+.prio-leg-item{display:flex;align-items:center;gap:6px;font-size:11px;color:#5f5e5a}
+.prio-leg-dot{width:8px;height:8px;border-radius:50%}
+
+/* Sync banner */
+.sync-bar{display:flex;align-items:center;justify-content:space-between;background:#fff;border:.5px solid #d3d1c7;border-radius:10px;padding:10px 16px;margin-bottom:20px;font-size:12px;color:#5f5e5a;gap:12px}
+.sync-bar i{font-size:15px;color:#888780}
+.sync-status{display:flex;align-items:center;gap:6px;flex:1}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:#b4b2a9;flex-shrink:0}
+.sync-dot.ok{background:#1D9E75}
+.sync-dot.saving{background:#EF9F27}
+.sync-actions{display:flex;gap:8px}
+.sync-btn{font-size:11px;font-weight:500;padding:5px 10px;border-radius:6px;border:.5px solid #d3d1c7;background:#f7f7f5;cursor:pointer;color:#2c2c2a;transition:background .12s;font-family:inherit}
+.sync-btn:hover{background:#e8e6e0}
+.sync-btn.primary{background:#2c2c2a;color:#fff;border-color:#2c2c2a}
+.sync-btn.primary:hover{background:#444441}
 </style>
 </head>
 <body>
@@ -183,12 +145,28 @@ h1 { font-size: 22px; font-weight: 500; color: #2c2c2a; margin-bottom: 2px; }
     <button class="tab-btn" data-tab="actions"><i class="ti ti-list-check"></i>Actions prioritaires S2 2026</button>
   </div>
 
+  <!-- ONGLET 1 -->
   <div class="tab-panel active" id="tab-autonomie">
     <div class="grid" id="grid-autonomie"></div>
-    <p class="hint">Cliquer sur une brique · Glisser pour ajuster l'autonomie · Cliquer sur un libellé pour le modifier</p>
+    <p class="hint">Cliquer sur une brique · Glisser pour ajuster · Cliquer sur un libellé pour le modifier</p>
   </div>
 
+  <!-- ONGLET 2 -->
   <div class="tab-panel" id="tab-actions">
+
+    <!-- Barre de synchronisation -->
+    <div class="sync-bar">
+      <div class="sync-status">
+        <div class="sync-dot" id="sync-dot"></div>
+        <span id="sync-label">Données sauvegardées localement</span>
+      </div>
+      <div class="sync-actions">
+        <button class="sync-btn" onclick="exportData()" title="Copier les données dans le presse-papier pour les partager"><i class="ti ti-copy" style="vertical-align:-2px"></i> Exporter</button>
+        <button class="sync-btn" onclick="triggerImport()" title="Coller des données exportées depuis un autre navigateur"><i class="ti ti-upload" style="vertical-align:-2px"></i> Importer</button>
+        <input type="file" id="import-file" accept=".json" style="display:none" onchange="importFile(event)">
+      </div>
+    </div>
+
     <div class="grid" id="grid-actions"></div>
     <div class="prio-legend">
       <div class="prio-leg-item"><div class="prio-leg-dot" style="background:#D85A30"></div>Haute priorité</div>
@@ -196,7 +174,7 @@ h1 { font-size: 22px; font-weight: 500; color: #2c2c2a; margin-bottom: 2px; }
       <div class="prio-leg-item"><div class="prio-leg-dot" style="background:#b4b2a9"></div>Basse</div>
       <div class="prio-leg-item"><div class="prio-leg-dot" style="background:#1D9E75"></div>Terminé</div>
     </div>
-    <p class="hint" style="margin-top:6px">Cliquer sur une brique · Glisser-déposer pour réordonner · Modifier libellés · Prioriser · Cocher terminé</p>
+    <p class="hint" style="margin-top:6px">Cliquer sur une brique · Glisser ⠿ pour réordonner · Jauge d'avancement glissable</p>
   </div>
 </div>
 
@@ -215,178 +193,171 @@ h1 { font-size: 22px; font-weight: 500; color: #2c2c2a; margin-bottom: 2px; }
   <div class="modal">
     <button class="close-btn" id="close-actions"><i class="ti ti-x"></i></button>
     <div class="modal-head"><i id="p-icon" class="ti"></i><span class="modal-title" id="p-title"></span></div>
-    <p class="modal-sub">Glisser ⠿ pour réordonner · Modifier libellés · Définir priorité · Cocher terminé</p>
+    <p class="modal-sub">Glisser ⠿ pour réordonner · Modifier libellés · Priorité · Avancement · Cocher terminé</p>
     <div class="prio-action-list" id="p-actions"></div>
   </div>
 </div>
 
 <script>
-/* ═══════════════════════════════ DONNÉES ═══════════════════════════════ */
-const dims = [
-  { icon:"ti-chart-line", label:"Commercial", val:60, actions:[
-    {name:"Animation équipe commerciale",val:70},
-    {name:"Suivi pipeline Odoo (Joaquim, Julien)",val:75},
-    {name:"Négociation grands comptes",val:50},
-    {name:"Tarification & remises",val:55},
-    {name:"Conquête nouveaux clients",val:60},
-    {name:"Fidélisation portefeuille existant",val:70},
-    {name:"Réponse aux appels d'offres",val:55},
-    {name:"Reporting commercial au Président",val:65},
-    {name:"Objectifs & incentives équipe",val:60},
-    {name:"Partenariats commerciaux",val:40},
-  ]},
-  { icon:"ti-users", label:"Management RH", val:75, actions:[
-    {name:"Recrutements (hors DG)",val:80},
-    {name:"Entretiens annuels & objectifs",val:80},
-    {name:"Gestion des absences & plannings",val:90},
-    {name:"Procédures disciplinaires",val:65},
-    {name:"Formation & montée en compétences",val:70},
-    {name:"Gestion des conflits internes",val:70},
-    {name:"Animation CODIR LEGAA",val:85},
-    {name:"Relations avec Silae / Mazars",val:60},
-    {name:"Licenciements / ruptures conventionnelles",val:45},
-    {name:"Politique de rémunération",val:40},
-  ]},
-  { icon:"ti-package", label:"Opérations", val:80, actions:[
-    {name:"Pilotage atelier emballage (Vincent)",val:85},
-    {name:"Pilotage logistique (Thomas)",val:85},
-    {name:"ADV Emballage & produits dangereux (Moussa)",val:80},
-    {name:"Qualité & conformité SEILA",val:75},
-    {name:"Gestion des sous-traitants",val:70},
-    {name:"Optimisation flux & productivité",val:80},
-    {name:"Gestion des stocks",val:85},
-    {name:"Sécurité des personnes",val:90},
-    {name:"Incidents & non-conformités",val:75},
-    {name:"Investissements équipements courants",val:55},
-  ]},
-  { icon:"ti-currency-euro", label:"Finance courante", val:50, actions:[
-    {name:"Suivi trésorerie hebdomadaire",val:70},
-    {name:"Reporting mensuel (Mazars / Cegid Loop)",val:60},
-    {name:"Validation factures fournisseurs",val:65},
-    {name:"Arbitrages budgétaires courants",val:50},
-    {name:"Recouvrement clients",val:70},
-    {name:"Gestion des notes de frais",val:80},
-    {name:"Suivi des emprunts",val:40},
-    {name:"Décisions de financement",val:20},
-    {name:"Cautions & engagements bancaires",val:20},
-    {name:"Clôture comptable",val:35},
-  ]},
-  { icon:"ti-file-certificate", label:"Conformité", val:65, actions:[
-    {name:"Suivi ICPE / DREAL",val:65},
-    {name:"Certifications ADR & IMDG",val:70},
-    {name:"Agrément OEA",val:60},
-    {name:"Certification SEILA",val:65},
-    {name:"Suivi litige CAMFIL",val:45},
-    {name:"Régularisation TVA en cours",val:40},
-    {name:"Veille réglementaire",val:70},
-    {name:"Relations inspection du travail",val:60},
-    {name:"Assurances & sinistres",val:55},
-    {name:"RGPD & sécurité données",val:60},
-  ]},
-  { icon:"ti-arrows-right-left", label:"Synergies groupe", val:40, actions:[
-    {name:"Coordination opérationnelle CAP'EMBAL",val:50},
-    {name:"Coordination opérationnelle CBR Bois",val:45},
-    {name:"Remontées d'information au Président",val:55},
-    {name:"Mutualisation achats groupe",val:40},
-    {name:"Benchmarks CAP'EMBAL (référence)",val:35},
-    {name:"Projets transverses groupe",val:35},
-    {name:"Partage de ressources inter-entités",val:40},
-    {name:"Consolidation reporting groupe",val:30},
-    {name:"Intégration fiscale MBAC Développement",val:25},
-    {name:"Gouvernance inter-entités",val:20},
-  ]},
-  { icon:"ti-user-search", label:"Stratégie & Développement", val:55, actions:[
-    {name:"Prospection nouveaux secteurs",val:55},
-    {name:"Veille concurrentielle",val:65},
-    {name:"Réponses AO stratégiques",val:50},
-    {name:"Plan stratégique 2027–2030",val:35},
-    {name:"Développement gamme emballage",val:60},
-    {name:"Développement offre logistique",val:60},
-    {name:"Partenariats & alliances",val:40},
-    {name:"Croissance externe (cibles)",val:20},
-    {name:"Positionnement marché",val:50},
-    {name:"Innovation produit / process",val:60},
-  ]},
-  { icon:"ti-building-bank", label:"Relations externes", val:35, actions:[
-    {name:"Relation banques courante",val:50},
-    {name:"Négociation lignes de crédit",val:20},
-    {name:"Relation Forvis Mazars (Lenglaert)",val:55},
-    {name:"Relation administrations (URSSAF…)",val:50},
-    {name:"Relation assureurs",val:55},
-    {name:"Avocats & contentieux",val:35},
-    {name:"Relation clients institutionnels",val:60},
-    {name:"Engagement cautions / garanties",val:15},
-    {name:"Représentation entreprise externe",val:50},
-    {name:"Communication groupe / presse",val:20},
-  ]},
-  { icon:"ti-device-desktop", label:"Outils & SI", val:65, actions:[
-    {name:"Odoo CRM/gestion — pilotage usage",val:75},
-    {name:"Cegid Loop — supervision comptable",val:55},
-    {name:"Silae (paie via Mazars)",val:50},
-    {name:"Évolutions Odoo & paramétrages",val:60},
-    {name:"Intégration outils terrain (caristes…)",val:70},
-    {name:"Sécurité informatique",val:55},
-    {name:"Projets de digitalisation",val:50},
-    {name:"Formation équipes aux outils",val:70},
-    {name:"Relation prestataires IT",val:60},
-    {name:"Reporting & tableaux de bord",val:65},
-  ]},
-  { icon:"ti-shopping-cart", label:"Achats", val:65, actions:[
-    {name:"Achats bois & panneaux",val:70},
-    {name:"Achats consommables emballage",val:75},
-    {name:"Achats produits dangereux",val:70},
-    {name:"Négociation fournisseurs courants",val:70},
-    {name:"Référencement nouveaux fournisseurs",val:55},
-    {name:"Benchmark prix (vs CAP'EMBAL)",val:50},
-    {name:"Achats équipements & matériels",val:50},
-    {name:"Gestion des litiges fournisseurs",val:65},
-    {name:"Mutualisation achats groupe",val:35},
-    {name:"Contrats cadres fournisseurs",val:45},
-  ]},
-  { icon:"ti-chart-area", label:"P&L, Budget & Invest.", val:45, actions:[
-    {name:"Construction budget annuel",val:50},
-    {name:"Suivi écarts budget / réel",val:60},
-    {name:"Prévisions de trésorerie",val:55},
-    {name:"Validation investissements courants",val:50},
-    {name:"Investissements structurants (>20k€)",val:20},
-    {name:"Analyse P&L par activité",val:55},
-    {name:"Plan de financement",val:25},
-    {name:"Reporting résultats au Président",val:60},
-    {name:"Pilotage coût de revient",val:60},
-    {name:"Arbitrage marge / volume",val:50},
-  ]},
-  { icon:"ti-tools", label:"Maîtrise technique", val:75, actions:[
-    {name:"Conception emballages industriels",val:80},
-    {name:"Normes ADR / IMDG (matières dangereuses)",val:75},
-    {name:"Processus logistique & flux",val:80},
-    {name:"Gestion des caristes & chariots",val:85},
-    {name:"Qualité & contrôle en production",val:80},
-    {name:"Gestion entrepôt & stockage",val:80},
-    {name:"Maintenance équipements atelier",val:70},
-    {name:"Méthodes & amélioration continue",val:65},
-    {name:"Sécurité des installations",val:75},
-    {name:"Expertise client (solutions techniques)",val:70},
-  ]},
+/* ═══════════════════ DONNÉES PAR DÉFAUT ═══════════════════ */
+const DEFAULT_DIMS = [
+  {icon:"ti-chart-line",label:"Commercial",val:60,actions:[
+    {name:"Animation équipe commerciale",val:70},{name:"Suivi pipeline Odoo (Joaquim, Julien)",val:75},
+    {name:"Négociation grands comptes",val:50},{name:"Tarification & remises",val:55},
+    {name:"Conquête nouveaux clients",val:60},{name:"Fidélisation portefeuille existant",val:70},
+    {name:"Réponse aux appels d'offres",val:55},{name:"Reporting commercial au Président",val:65},
+    {name:"Objectifs & incentives équipe",val:60},{name:"Partenariats commerciaux",val:40}]},
+  {icon:"ti-users",label:"Management RH",val:75,actions:[
+    {name:"Recrutements (hors DG)",val:80},{name:"Entretiens annuels & objectifs",val:80},
+    {name:"Gestion des absences & plannings",val:90},{name:"Procédures disciplinaires",val:65},
+    {name:"Formation & montée en compétences",val:70},{name:"Gestion des conflits internes",val:70},
+    {name:"Animation CODIR LEGAA",val:85},{name:"Relations avec Silae / Mazars",val:60},
+    {name:"Licenciements / ruptures conventionnelles",val:45},{name:"Politique de rémunération",val:40}]},
+  {icon:"ti-package",label:"Opérations",val:80,actions:[
+    {name:"Pilotage atelier emballage (Vincent)",val:85},{name:"Pilotage logistique (Thomas)",val:85},
+    {name:"ADV Emballage & produits dangereux (Moussa)",val:80},{name:"Qualité & conformité SEILA",val:75},
+    {name:"Gestion des sous-traitants",val:70},{name:"Optimisation flux & productivité",val:80},
+    {name:"Gestion des stocks",val:85},{name:"Sécurité des personnes",val:90},
+    {name:"Incidents & non-conformités",val:75},{name:"Investissements équipements courants",val:55}]},
+  {icon:"ti-currency-euro",label:"Finance courante",val:50,actions:[
+    {name:"Suivi trésorerie hebdomadaire",val:70},{name:"Reporting mensuel (Mazars / Cegid Loop)",val:60},
+    {name:"Validation factures fournisseurs",val:65},{name:"Arbitrages budgétaires courants",val:50},
+    {name:"Recouvrement clients",val:70},{name:"Gestion des notes de frais",val:80},
+    {name:"Suivi des emprunts",val:40},{name:"Décisions de financement",val:20},
+    {name:"Cautions & engagements bancaires",val:20},{name:"Clôture comptable",val:35}]},
+  {icon:"ti-file-certificate",label:"Conformité",val:65,actions:[
+    {name:"Suivi ICPE / DREAL",val:65},{name:"Certifications ADR & IMDG",val:70},
+    {name:"Agrément OEA",val:60},{name:"Certification SEILA",val:65},
+    {name:"Suivi litige CAMFIL",val:45},{name:"Régularisation TVA en cours",val:40},
+    {name:"Veille réglementaire",val:70},{name:"Relations inspection du travail",val:60},
+    {name:"Assurances & sinistres",val:55},{name:"RGPD & sécurité données",val:60}]},
+  {icon:"ti-arrows-right-left",label:"Synergies groupe",val:40,actions:[
+    {name:"Coordination opérationnelle CAP'EMBAL",val:50},{name:"Coordination opérationnelle CBR Bois",val:45},
+    {name:"Remontées d'information au Président",val:55},{name:"Mutualisation achats groupe",val:40},
+    {name:"Benchmarks CAP'EMBAL (référence)",val:35},{name:"Projets transverses groupe",val:35},
+    {name:"Partage de ressources inter-entités",val:40},{name:"Consolidation reporting groupe",val:30},
+    {name:"Intégration fiscale MBAC Développement",val:25},{name:"Gouvernance inter-entités",val:20}]},
+  {icon:"ti-user-search",label:"Stratégie & Développement",val:55,actions:[
+    {name:"Prospection nouveaux secteurs",val:55},{name:"Veille concurrentielle",val:65},
+    {name:"Réponses AO stratégiques",val:50},{name:"Plan stratégique 2027–2030",val:35},
+    {name:"Développement gamme emballage",val:60},{name:"Développement offre logistique",val:60},
+    {name:"Partenariats & alliances",val:40},{name:"Croissance externe (cibles)",val:20},
+    {name:"Positionnement marché",val:50},{name:"Innovation produit / process",val:60}]},
+  {icon:"ti-building-bank",label:"Relations externes",val:35,actions:[
+    {name:"Relation banques courante",val:50},{name:"Négociation lignes de crédit",val:20},
+    {name:"Relation Forvis Mazars (Lenglaert)",val:55},{name:"Relation administrations (URSSAF…)",val:50},
+    {name:"Relation assureurs",val:55},{name:"Avocats & contentieux",val:35},
+    {name:"Relation clients institutionnels",val:60},{name:"Engagement cautions / garanties",val:15},
+    {name:"Représentation entreprise externe",val:50},{name:"Communication groupe / presse",val:20}]},
+  {icon:"ti-device-desktop",label:"Outils & SI",val:65,actions:[
+    {name:"Odoo CRM/gestion — pilotage usage",val:75},{name:"Cegid Loop — supervision comptable",val:55},
+    {name:"Silae (paie via Mazars)",val:50},{name:"Évolutions Odoo & paramétrages",val:60},
+    {name:"Intégration outils terrain (caristes…)",val:70},{name:"Sécurité informatique",val:55},
+    {name:"Projets de digitalisation",val:50},{name:"Formation équipes aux outils",val:70},
+    {name:"Relation prestataires IT",val:60},{name:"Reporting & tableaux de bord",val:65}]},
+  {icon:"ti-shopping-cart",label:"Achats",val:65,actions:[
+    {name:"Achats bois & panneaux",val:70},{name:"Achats consommables emballage",val:75},
+    {name:"Achats produits dangereux",val:70},{name:"Négociation fournisseurs courants",val:70},
+    {name:"Référencement nouveaux fournisseurs",val:55},{name:"Benchmark prix (vs CAP'EMBAL)",val:50},
+    {name:"Achats équipements & matériels",val:50},{name:"Gestion des litiges fournisseurs",val:65},
+    {name:"Mutualisation achats groupe",val:35},{name:"Contrats cadres fournisseurs",val:45}]},
+  {icon:"ti-chart-area",label:"P&L, Budget & Invest.",val:45,actions:[
+    {name:"Construction budget annuel",val:50},{name:"Suivi écarts budget / réel",val:60},
+    {name:"Prévisions de trésorerie",val:55},{name:"Validation investissements courants",val:50},
+    {name:"Investissements structurants (>20k€)",val:20},{name:"Analyse P&L par activité",val:55},
+    {name:"Plan de financement",val:25},{name:"Reporting résultats au Président",val:60},
+    {name:"Pilotage coût de revient",val:60},{name:"Arbitrage marge / volume",val:50}]},
+  {icon:"ti-tools",label:"Maîtrise technique",val:75,actions:[
+    {name:"Conception emballages industriels",val:80},{name:"Normes ADR / IMDG (matières dangereuses)",val:75},
+    {name:"Processus logistique & flux",val:80},{name:"Gestion des caristes & chariots",val:85},
+    {name:"Qualité & contrôle en production",val:80},{name:"Gestion entrepôt & stockage",val:80},
+    {name:"Maintenance équipements atelier",val:70},{name:"Méthodes & amélioration continue",val:65},
+    {name:"Sécurité des installations",val:75},{name:"Expertise client (solutions techniques)",val:70}]},
 ];
 
-const prioData = dims.map(d => ({
-  icon: d.icon,
-  label: d.label,
-  actions: [
-    {name:"Action prioritaire 1", prio:"haute",   done:false},
-    {name:"Action prioritaire 2", prio:"haute",   done:false},
-    {name:"Action prioritaire 3", prio:"moyenne", done:false},
-    {name:"Action prioritaire 4", prio:"moyenne", done:false},
-    {name:"Action prioritaire 5", prio:"moyenne", done:false},
-    {name:"Action prioritaire 6", prio:"basse",   done:false},
-    {name:"Action prioritaire 7", prio:"basse",   done:false},
-    {name:"Action prioritaire 8", prio:"basse",   done:false},
-    {name:"Action prioritaire 9", prio:"basse",   done:false},
-    {name:"Action prioritaire 10",prio:"basse",   done:false},
+const DEFAULT_PRIO = DEFAULT_DIMS.map(d=>({
+  icon:d.icon, label:d.label,
+  actions:[
+    {name:"Action prioritaire 1",prio:"haute",  avancement:0,done:false},
+    {name:"Action prioritaire 2",prio:"haute",  avancement:0,done:false},
+    {name:"Action prioritaire 3",prio:"moyenne",avancement:0,done:false},
+    {name:"Action prioritaire 4",prio:"moyenne",avancement:0,done:false},
+    {name:"Action prioritaire 5",prio:"moyenne",avancement:0,done:false},
+    {name:"Action prioritaire 6",prio:"basse",  avancement:0,done:false},
+    {name:"Action prioritaire 7",prio:"basse",  avancement:0,done:false},
+    {name:"Action prioritaire 8",prio:"basse",  avancement:0,done:false},
+    {name:"Action prioritaire 9",prio:"basse",  avancement:0,done:false},
+    {name:"Action prioritaire 10",prio:"basse", avancement:0,done:false},
   ]
 }));
 
-/* ═══════════════════════════════ HELPERS ═══════════════════════════════ */
+/* ═══════════════════ PERSISTANCE (localStorage) ═══════════════════ */
+const STORAGE_KEY_DIMS = 'legaa_dg_dims';
+const STORAGE_KEY_PRIO = 'legaa_dg_prio';
+
+function saveData(){
+  try{
+    localStorage.setItem(STORAGE_KEY_DIMS, JSON.stringify(dims));
+    localStorage.setItem(STORAGE_KEY_PRIO, JSON.stringify(prioData));
+    setSyncStatus('ok','Sauvegardé · ' + new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}));
+  }catch(e){ setSyncStatus('err','Erreur de sauvegarde'); }
+}
+function loadData(){
+  try{
+    const d=localStorage.getItem(STORAGE_KEY_DIMS);
+    const p=localStorage.getItem(STORAGE_KEY_PRIO);
+    return {dims: d?JSON.parse(d):null, prio: p?JSON.parse(p):null};
+  }catch(e){return {dims:null,prio:null};}
+}
+function setSyncStatus(state,msg){
+  const dot=document.getElementById('sync-dot');
+  const lbl=document.getElementById('sync-label');
+  dot.className='sync-dot'+(state==='ok'?' ok':state==='saving'?' saving':'');
+  lbl.textContent=msg;
+}
+
+/* Export / Import JSON */
+function exportData(){
+  const json=JSON.stringify({dims,prioData},null,2);
+  const blob=new Blob([json],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download='legaa_dg_data.json';a.click();
+  URL.revokeObjectURL(url);
+  setSyncStatus('ok','Fichier exporté — partagez-le pour synchroniser');
+}
+function triggerImport(){document.getElementById('import-file').click();}
+function importFile(e){
+  const file=e.target.files[0]; if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    try{
+      const d=JSON.parse(ev.target.result);
+      if(d.dims)dims.splice(0,dims.length,...d.dims);
+      if(d.prioData)prioData.splice(0,prioData.length,...d.prioData);
+      saveData(); rebuildAll();
+      setSyncStatus('ok','Données importées avec succès');
+    }catch(err){setSyncStatus('err','Fichier invalide');}
+  };
+  reader.readAsText(file);
+  e.target.value='';
+}
+
+/* ═══════════════════ INIT DONNÉES ═══════════════════ */
+const saved=loadData();
+const dims     = saved.dims  ? saved.dims  : JSON.parse(JSON.stringify(DEFAULT_DIMS));
+const prioData = saved.prio  ? saved.prio  : JSON.parse(JSON.stringify(DEFAULT_PRIO));
+// Assurer rétrocompat (ajouter avancement si absent)
+prioData.forEach(pd=>pd.actions.forEach(a=>{if(a.avancement===undefined)a.avancement=a.done?100:0;}));
+
+let saveTimeout=null;
+function scheduleSave(){
+  setSyncStatus('saving','Sauvegarde...');
+  clearTimeout(saveTimeout);
+  saveTimeout=setTimeout(saveData,800);
+}
+
+/* ═══════════════════ HELPERS ARC ═══════════════════ */
 const R=30,CX=36,CY=36;
 function pt(r,a){return[CX+r*Math.cos(a),CY+r*Math.sin(a)];}
 function arcD(pct){
@@ -397,10 +368,23 @@ function arcD(pct){
 }
 function bgD(){const[sx,sy]=pt(R,Math.PI),[ex,ey]=pt(R,2*Math.PI);return`M ${sx.toFixed(2)} ${sy.toFixed(2)} A ${R} ${R} 0 1 1 ${ex.toFixed(2)} ${ey.toFixed(2)}`;}
 function colA(v){return v>=70?'#1D9E75':v>=40?'#EF9F27':'#D85A30';}
-function colP(prio,done){return done?'#1D9E75':prio==='haute'?'#D85A30':prio==='moyenne'?'#EF9F27':'#b4b2a9';}
+
+/* Mini ring (onglet 2) */
+const RING_R=20,RING_CX=26,RING_CY=26;
+function ringCircumference(){return 2*Math.PI*RING_R;}
+function ringDashArray(pct){const c=ringCircumference();return`${(pct/100*c).toFixed(2)} ${c.toFixed(2)}`;}
+
+function colP(prio,done,av){
+  if(done||av>=100)return'#1D9E75';
+  if(av>0)return prio==='haute'?'#E85C2F':prio==='moyenne'?'#EF9F27':'#888780';
+  return prio==='haute'?'#D85A30':prio==='moyenne'?'#EF9F27':'#b4b2a9';
+}
 function selCls(prio,done){return done?'sel-done':prio==='haute'?'sel-haute':prio==='moyenne'?'sel-moyenne':'sel-basse';}
-function pillCls(prio,done){return done?'pill-done':prio==='haute'?'pill-haute':prio==='moyenne'?'pill-moyenne':'pill-basse';}
-function pillLabel(prio,done){return done?'✓ Terminé':prio==='haute'?'Haute':prio==='moyenne'?'Moyenne':'Basse';}
+
+function avgAvancement(pd){
+  const doneAs100=pd.actions.map(a=>a.done?100:a.avancement);
+  return Math.round(doneAs100.reduce((s,v)=>s+v,0)/doneAs100.length);
+}
 
 function updateTileArc(i){
   const d=dims[i];
@@ -411,12 +395,11 @@ function updateTileArc(i){
   if(pe){pe.textContent=avg+'%';pe.style.color=colA(avg);}
 }
 
-/* ═══════════════════════════════ ONGLET 1 ═══════════════════════════════ */
+/* ═══════════════════ ONGLET 1 ═══════════════════ */
 let activeAutoIdx=null;
 
 function buildAutoTile(d,i){
-  const div=document.createElement('div');
-  div.className='tile';div.id='atile'+i;
+  const div=document.createElement('div');div.className='tile';div.id='atile'+i;
   div.innerHTML=`
     <i class="ti ${d.icon} tile-icon" aria-hidden="true"></i>
     <div class="arc-wrap">
@@ -432,8 +415,7 @@ function buildAutoTile(d,i){
 }
 
 function openAutoModal(i){
-  activeAutoIdx=i;
-  const d=dims[i];
+  activeAutoIdx=i;const d=dims[i];
   document.getElementById('a-icon').className='ti '+d.icon;
   document.getElementById('a-title').textContent=d.label;
   const list=document.getElementById('a-actions');list.innerHTML='';
@@ -447,7 +429,7 @@ function openAutoModal(i){
       </div>
       <span class="mini-pct" id="mp-${i}-${j}" style="color:${colA(a.val)}">${a.val}%</span>`;
     list.appendChild(row);
-    row.querySelector(`#aname-${i}-${j}`).addEventListener('input',e=>{d.actions[j].name=e.target.value;});
+    row.querySelector(`#aname-${i}-${j}`).addEventListener('input',e=>{d.actions[j].name=e.target.value;scheduleSave();});
     row.querySelector(`#aname-${i}-${j}`).addEventListener('click',e=>e.stopPropagation());
     const track=row.querySelector(`#mt-${i}-${j}`);
     let drag=false;
@@ -460,7 +442,7 @@ function openAutoModal(i){
       document.getElementById(`mf-${i}-${j}`).style.background=c;
       document.getElementById(`mp-${i}-${j}`).textContent=v+'%';
       document.getElementById(`mp-${i}-${j}`).style.color=c;
-      updateTileArc(i);
+      updateTileArc(i);scheduleSave();
     }
     track.addEventListener('mousedown',e=>{drag=true;upG(e);});
     document.addEventListener('mousemove',e=>{if(drag)upG(e);});
@@ -472,47 +454,52 @@ function openAutoModal(i){
   document.getElementById('atile'+i).classList.add('active');
   document.getElementById('overlay-autonomie').classList.add('open');
 }
-
 document.getElementById('close-autonomie').addEventListener('click',()=>{
   document.getElementById('overlay-autonomie').classList.remove('open');
   if(activeAutoIdx!==null)document.getElementById('atile'+activeAutoIdx).classList.remove('active');
   activeAutoIdx=null;
 });
 document.getElementById('overlay-autonomie').addEventListener('click',e=>{
-  if(e.target.id==='overlay-autonomie'){
-    document.getElementById('overlay-autonomie').classList.remove('open');
-    if(activeAutoIdx!==null)document.getElementById('atile'+activeAutoIdx).classList.remove('active');
-    activeAutoIdx=null;
-  }
+  if(e.target.id==='overlay-autonomie'){document.getElementById('overlay-autonomie').classList.remove('open');
+    if(activeAutoIdx!==null)document.getElementById('atile'+activeAutoIdx).classList.remove('active');activeAutoIdx=null;}
 });
 
-/* ═══════════════════════════════ ONGLET 2 ═══════════════════════════════ */
+/* ═══════════════════ ONGLET 2 ═══════════════════ */
 let activePrioIdx=null;
 
 function buildPrioTileEl(pd,i){
-  const div=document.createElement('div');
-  div.className='prio-tile';div.id='ptile'+i;
-
+  const div=document.createElement('div');div.className='prio-tile';div.id='ptile'+i;
   const haute =pd.actions.filter(a=>!a.done&&a.prio==='haute').length;
   const moyenne=pd.actions.filter(a=>!a.done&&a.prio==='moyenne').length;
   const basse  =pd.actions.filter(a=>!a.done&&a.prio==='basse').length;
   const done   =pd.actions.filter(a=>a.done).length;
-  const total  =pd.actions.length;
-
+  const av=avgAvancement(pd);
+  const ringC=ringCircumference();
+  const barColor=done===pd.actions.length?'#1D9E75':haute>0?'#D85A30':moyenne>0?'#EF9F27':'#b4b2a9';
+  const iconColor=done===pd.actions.length?'#1D9E75':haute>0?'#D85A30':haute===0&&moyenne>0?'#EF9F27':'#888780';
   const pills=[
-    haute   ?`<span class="prio-pill pill-haute">${haute} haute${haute>1?'s':''}</span>`:'',
-    moyenne ?`<span class="prio-pill pill-moyenne">${moyenne} moyenne${moyenne>1?'s':''}</span>`:'',
-    basse   ?`<span class="prio-pill pill-basse">${basse} basse${basse>1?'s':''}</span>`:'',
-    done    ?`<span class="prio-pill pill-done">${done} terminée${done>1?'s':''}</span>`:'',
+    haute   ?`<span class="prio-pill pill-haute">${haute}🔴</span>`:'',
+    moyenne ?`<span class="prio-pill pill-moyenne">${moyenne}🟡</span>`:'',
+    basse   ?`<span class="prio-pill pill-basse">${basse}⚪</span>`:'',
+    done    ?`<span class="prio-pill pill-done">${done}✓</span>`:'',
   ].filter(Boolean).join('');
 
   div.innerHTML=`
-    <i class="ti ${pd.icon} prio-tile-icon" aria-hidden="true"></i>
-    <div class="prio-tile-label">${pd.label}</div>
-    <div class="prio-tile-stats">
-      <div class="prio-stat-pills">${pills||'<span class="prio-pill pill-basse">Non défini</span>'}</div>
-      <div class="prio-stat-total"><span>${done}</span> / ${total} terminées</div>
-    </div>`;
+    <div class="prio-tile-bar" style="background:${barColor}"></div>
+    <div class="prio-tile-top">
+      <i class="ti ${pd.icon} prio-tile-icon" style="color:${iconColor}" aria-hidden="true"></i>
+      <div class="prio-tile-label">${pd.label}</div>
+    </div>
+    <div class="prio-ring-wrap">
+      <svg width="52" height="52" viewBox="0 0 52 52">
+        <circle cx="26" cy="26" r="${RING_R}" fill="none" stroke="#e8e6e0" stroke-width="4"/>
+        <circle cx="26" cy="26" r="${RING_R}" fill="none" stroke="${barColor}" stroke-width="4"
+          stroke-dasharray="${ringDashArray(av)}" stroke-dashoffset="${(ringCircumference()*0.25).toFixed(2)}"
+          stroke-linecap="round" transform="rotate(-90 26 26)"/>
+      </svg>
+      <div class="prio-ring-pct" style="color:${barColor}">${av}%</div>
+    </div>
+    <div class="prio-tile-pills">${pills||'<span class="prio-pill pill-basse">—</span>'}</div>`;
   div.addEventListener('click',()=>openPrioModal(i));
   return div;
 }
@@ -524,27 +511,21 @@ function refreshPrioTile(i){
   old.replaceWith(nw);
 }
 
-/* ── Drag & Drop ── */
+/* Drag & drop */
 let dragSrc=null,dragDimIdx=null;
-
 function attachDrag(row,i,j){
   row.setAttribute('draggable','true');
-  row.addEventListener('dragstart',e=>{
-    dragSrc=j; dragDimIdx=i;
-    row.classList.add('dragging');
-    e.dataTransfer.effectAllowed='move';
-  });
-  row.addEventListener('dragend',()=>{ row.classList.remove('dragging'); dragSrc=null; });
+  row.addEventListener('dragstart',e=>{dragSrc=j;dragDimIdx=i;row.classList.add('dragging');e.dataTransfer.effectAllowed='move';});
+  row.addEventListener('dragend',()=>{row.classList.remove('dragging');dragSrc=null;});
   row.addEventListener('dragover',e=>{e.preventDefault();row.classList.add('drag-over');});
   row.addEventListener('dragleave',()=>row.classList.remove('drag-over'));
   row.addEventListener('drop',e=>{
-    e.preventDefault(); row.classList.remove('drag-over');
+    e.preventDefault();row.classList.remove('drag-over');
     if(dragSrc===null||dragDimIdx!==i)return;
     const arr=prioData[i].actions;
     const moved=arr.splice(dragSrc,1)[0];
     arr.splice(j,0,moved);
-    renderPrioModal(i);
-    refreshPrioTile(i);
+    renderPrioModal(i);refreshPrioTile(i);scheduleSave();
   });
 }
 
@@ -552,11 +533,19 @@ function renderPrioModal(i){
   const pd=prioData[i];
   const list=document.getElementById('p-actions');list.innerHTML='';
   pd.actions.forEach((a,j)=>{
+    const av=a.done?100:a.avancement;
+    const avColor=av>=100?'#1D9E75':av>0?colP(a.prio,false,av):'#e8e6e0';
     const row=document.createElement('div');row.className='prio-action-row';
     row.innerHTML=`
-      <span class="drag-handle" title="Glisser pour réordonner">⠿</span>
+      <span class="drag-handle" title="Réordonner">⠿</span>
       <span class="prio-num">${j+1}</span>
       <input class="prio-action-name" type="text" value="${a.name}" id="pname-${i}-${j}"/>
+      <div class="prio-gauge-wrap">
+        <div class="prio-gauge-track" id="pgt-${i}-${j}">
+          <div class="prio-gauge-fill" id="pgf-${i}-${j}" style="width:${av}%;background:${avColor}"></div>
+        </div>
+        <span class="prio-gauge-pct" id="pgp-${i}-${j}" style="color:${avColor}">${av}%</span>
+      </div>
       <select class="prio-select ${selCls(a.prio,a.done)}" id="psel-${i}-${j}">
         <option value="haute"   ${a.prio==='haute'  ?'selected':''}>🔴 Haute</option>
         <option value="moyenne" ${a.prio==='moyenne'?'selected':''}>🟡 Moyenne</option>
@@ -568,22 +557,51 @@ function renderPrioModal(i){
     list.appendChild(row);
     attachDrag(row,i,j);
 
-    row.querySelector(`#pname-${i}-${j}`).addEventListener('input',e=>{pd.actions[j].name=e.target.value;});
+    row.querySelector(`#pname-${i}-${j}`).addEventListener('input',e=>{pd.actions[j].name=e.target.value;scheduleSave();});
     row.querySelector(`#pname-${i}-${j}`).addEventListener('click',e=>e.stopPropagation());
+
+    /* Jauge avancement drag */
+    const gtrack=row.querySelector(`#pgt-${i}-${j}`);
+    let gdrag=false;
+    function upAv(e){
+      if(pd.actions[j].done)return;
+      const rect=gtrack.getBoundingClientRect();
+      const x=(e.touches?e.touches[0].clientX:e.clientX)-rect.left;
+      let v=Math.round((x/rect.width)*100/5)*5;v=Math.max(0,Math.min(100,v));
+      pd.actions[j].avancement=v;
+      const c=v>=100?'#1D9E75':colP(pd.actions[j].prio,false,v);
+      document.getElementById(`pgf-${i}-${j}`).style.width=v+'%';
+      document.getElementById(`pgf-${i}-${j}`).style.background=c;
+      document.getElementById(`pgp-${i}-${j}`).textContent=v+'%';
+      document.getElementById(`pgp-${i}-${j}`).style.color=c;
+      refreshPrioTile(i);scheduleSave();
+    }
+    gtrack.addEventListener('mousedown',e=>{gdrag=true;upAv(e);});
+    document.addEventListener('mousemove',e=>{if(gdrag)upAv(e);});
+    document.addEventListener('mouseup',()=>{gdrag=false;});
+    gtrack.addEventListener('touchstart',upAv,{passive:true});
+    gtrack.addEventListener('touchmove',e=>{e.preventDefault();upAv(e);},{passive:false});
 
     const sel=row.querySelector(`#psel-${i}-${j}`);
     sel.addEventListener('change',()=>{
       pd.actions[j].prio=sel.value;
       sel.className=`prio-select ${selCls(pd.actions[j].prio,pd.actions[j].done)}`;
-      refreshPrioTile(i);
+      refreshPrioTile(i);scheduleSave();
     });
     sel.addEventListener('click',e=>e.stopPropagation());
 
     const chk=row.querySelector(`#pchk-${i}-${j}`);
     chk.addEventListener('change',()=>{
       pd.actions[j].done=chk.checked;
+      if(chk.checked)pd.actions[j].avancement=100;
       sel.className=`prio-select ${selCls(pd.actions[j].prio,pd.actions[j].done)}`;
-      refreshPrioTile(i);
+      const av2=chk.checked?100:pd.actions[j].avancement;
+      const c2=chk.checked?'#1D9E75':colP(pd.actions[j].prio,false,av2);
+      document.getElementById(`pgf-${i}-${j}`).style.width=av2+'%';
+      document.getElementById(`pgf-${i}-${j}`).style.background=c2;
+      document.getElementById(`pgp-${i}-${j}`).textContent=av2+'%';
+      document.getElementById(`pgp-${i}-${j}`).style.color=c2;
+      refreshPrioTile(i);scheduleSave();
     });
     chk.addEventListener('click',e=>e.stopPropagation());
   });
@@ -598,7 +616,6 @@ function openPrioModal(i){
   document.getElementById('ptile'+i).classList.add('active');
   document.getElementById('overlay-actions').classList.add('open');
 }
-
 function closePrioModal(){
   document.getElementById('overlay-actions').classList.remove('open');
   if(activePrioIdx!==null){refreshPrioTile(activePrioIdx);document.getElementById('ptile'+activePrioIdx).classList.remove('active');}
@@ -607,7 +624,7 @@ function closePrioModal(){
 document.getElementById('close-actions').addEventListener('click',closePrioModal);
 document.getElementById('overlay-actions').addEventListener('click',e=>{if(e.target.id==='overlay-actions')closePrioModal();});
 
-/* ═══════════════════════════════ TABS ═══════════════════════════════ */
+/* ═══════════════════ TABS ═══════════════════ */
 document.querySelectorAll('.tab-btn').forEach(btn=>{
   btn.addEventListener('click',()=>{
     document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
@@ -617,11 +634,16 @@ document.querySelectorAll('.tab-btn').forEach(btn=>{
   });
 });
 
-/* ═══════════════════════════════ INIT ═══════════════════════════════ */
-const gA=document.getElementById('grid-autonomie');
-dims.forEach((d,i)=>gA.appendChild(buildAutoTile(d,i)));
-const gP=document.getElementById('grid-actions');
-prioData.forEach((pd,i)=>gP.appendChild(buildPrioTileEl(pd,i)));
+/* ═══════════════════ INIT ═══════════════════ */
+function rebuildAll(){
+  document.getElementById('grid-autonomie').innerHTML='';
+  document.getElementById('grid-actions').innerHTML='';
+  dims.forEach((d,i)=>document.getElementById('grid-autonomie').appendChild(buildAutoTile(d,i)));
+  prioData.forEach((pd,i)=>document.getElementById('grid-actions').appendChild(buildPrioTileEl(pd,i)));
+}
+rebuildAll();
+if(saved.dims||saved.prio){setSyncStatus('ok','Données restaurées · ' + new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}));}
+else{setSyncStatus('ok','Données par défaut chargées');}
 </script>
 </body>
 </html>
