@@ -238,6 +238,22 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
   </div>
 </div>
 
+<!-- OVERLAY CHAT COMMENTAIRES -->
+<div class="overlay-chat" id="overlay-chat">
+  <div class="chat-modal">
+    <div class="chat-modal-head">
+      <i class="ti ti-message-circle"></i>
+      <span class="chat-modal-title" id="chat-title">Commentaires</span>
+      <button class="chat-close" id="chat-close"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="chat-messages" id="chat-messages"></div>
+    <div class="chat-input-row">
+      <textarea class="chat-input" id="chat-input" placeholder="Ajouter un commentaire…" rows="1"></textarea>
+      <button class="chat-send" id="chat-send" title="Envoyer"><i class="ti ti-send"></i></button>
+    </div>
+  </div>
+</div>
+
 <div class="overlay" id="overlay-autonomie">
   <div class="modal">
     <button class="close-btn" id="close-autonomie"><i class="ti ti-x"></i></button>
@@ -1050,21 +1066,5 @@ loadFromCloud().then(()=>{
 });
 </script>
 <div id="pdf-report"></div>
-
-<!-- OVERLAY CHAT COMMENTAIRES -->
-<div class="overlay-chat" id="overlay-chat">
-  <div class="chat-modal">
-    <div class="chat-modal-head">
-      <i class="ti ti-message-circle"></i>
-      <span class="chat-modal-title" id="chat-title">Commentaires</span>
-      <button class="chat-close" id="chat-close"><i class="ti ti-x"></i></button>
-    </div>
-    <div class="chat-messages" id="chat-messages"></div>
-    <div class="chat-input-row">
-      <textarea class="chat-input" id="chat-input" placeholder="Ajouter un commentaire…" rows="1"></textarea>
-      <button class="chat-send" id="chat-send" title="Envoyer"><i class="ti ti-send"></i></button>
-    </div>
-  </div>
-</div>
 </body>
 </html>
