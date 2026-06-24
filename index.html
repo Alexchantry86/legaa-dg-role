@@ -60,8 +60,6 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
 .pill-basse{background:#f1efe8;color:#888780}
 .pill-done{background:#E1F5EE;color:#085041}
 
-/* ── SYNC BAR onglet 2 (boutons seuls) ── */
-.sync-bar{display:flex;align-items:center;justify-content:flex-end;gap:8px;margin-bottom:16px}
 .sync-btn{font-size:11px;font-weight:500;padding:5px 10px;border-radius:6px;border:.5px solid #d3d1c7;background:#f7f7f5;cursor:pointer;color:#2c2c2a;transition:background .12s;font-family:inherit;display:flex;align-items:center;gap:4px;white-space:nowrap}
 .sync-btn:hover{background:#e8e6e0}
 .sync-btn.primary{background:#2c2c2a;color:#fff;border-color:#2c2c2a}
@@ -144,9 +142,6 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
   </div>
 
   <div class="tab-panel" id="tab-actions">
-    <div class="sync-bar">
-      <button class="sync-btn primary" onclick="saveToCloud()" style="pointer-events:none;opacity:0;width:1px;padding:0;border:0"></button>
-    </div>
     <div class="grid" id="grid-actions"></div>
     <div class="prio-legend">
       <div class="prio-leg-item"><div class="prio-leg-dot" style="background:#D85A30"></div>Haute priorité</div>
