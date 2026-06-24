@@ -79,7 +79,7 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
 
 /* MODAL AUTONOMIE */
 .action-list{display:flex;flex-direction:column;gap:8px}
-.action-row{display:grid;grid-template-columns:22px 22px 1fr 160px 38px;align-items:center;gap:10px;padding:10px 12px;background:#f7f7f5;border-radius:10px;border:1px solid transparent;transition:border-color .15s}
+.action-row{display:grid;grid-template-columns:22px 22px 1fr 160px 38px 24px;align-items:center;gap:10px;padding:10px 12px;background:#f7f7f5;border-radius:10px;border:1px solid transparent;transition:border-color .15s}
 .action-row:hover{border-color:#d3d1c7}
 .action-num{font-size:11px;font-weight:500;color:#b4b2a9;text-align:center}
 .action-name{font-size:13px;font-weight:500;color:#2c2c2a;padding:2px 4px;border-radius:4px;border:1px solid transparent;transition:border-color .12s,background .12s;outline:none;width:100%;background:transparent;font-family:inherit}
@@ -91,7 +91,7 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
 
 /* MODAL PRIORITÉS — colonnes : drag | num | nom | avancement | priorité(réduite) | check */
 .prio-action-list{display:flex;flex-direction:column;gap:6px}
-.prio-action-row{display:grid;grid-template-columns:20px 22px 1fr 130px 68px 28px;align-items:center;gap:8px;padding:9px 12px;background:#f7f7f5;border-radius:10px;border:1px solid transparent;transition:border-color .15s,opacity .15s;cursor:grab}
+.prio-action-row{display:grid;grid-template-columns:20px 22px 1fr 130px 68px 28px 24px;align-items:center;gap:8px;padding:9px 12px;background:#f7f7f5;border-radius:10px;border:1px solid transparent;transition:border-color .15s,opacity .15s;cursor:grab}
 .prio-action-row:hover{border-color:#d3d1c7}
 .prio-action-row.dragging{opacity:.35;cursor:grabbing}
 .prio-action-row.drag-over{border-color:#888780;background:#efefed}
@@ -117,6 +117,20 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
 .prio-legend{display:flex;gap:16px;margin-top:16px;flex-wrap:wrap;justify-content:center}
 .prio-leg-item{display:flex;align-items:center;gap:6px;font-size:11px;color:#5f5e5a}
 .prio-leg-dot{width:8px;height:8px;border-radius:50%}
+
+/* Titre tuile éditable */
+.tile-label-input{font-size:11px;font-weight:500;color:#2c2c2a;text-align:center;line-height:1.35;border:none;outline:none;background:transparent;width:100%;font-family:inherit;cursor:text;padding:0;border-bottom:1px dashed transparent;transition:border-color .15s}
+.tile-label-input:hover{border-bottom-color:#d3d1c7}
+.tile-label-input:focus{border-bottom-color:#888780}
+.prio-tile-label-input{font-size:13px;font-weight:500;color:#2c2c2a;text-align:center;line-height:1.3;border:none;outline:none;background:transparent;width:100%;font-family:inherit;cursor:text;padding:0;border-bottom:1px dashed transparent;transition:border-color .15s}
+.prio-tile-label-input:hover{border-bottom-color:rgba(255,255,255,.5)}
+.prio-tile-label-input:focus{border-bottom-color:#fff}
+/* Barre outils modal bas */
+.modal-footer{display:flex;align-items:center;justify-content:space-between;margin-top:14px;padding-top:12px;border-top:.5px solid #e8e6e0}
+.add-btn{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:500;color:#1D9E75;background:#E1F5EE;border:none;border-radius:8px;padding:6px 12px;cursor:pointer;font-family:inherit;transition:background .12s}
+.add-btn:hover{background:#9FE1CB}
+.del-btn{width:22px;height:22px;border-radius:50%;background:#f1efe8;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;color:#888780;transition:background .12s;flex-shrink:0}
+.del-btn:hover{background:#F5C4B3;color:#993C1D}
 </style>
 </head>
 <body>
@@ -131,7 +145,6 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
       <div class="sync-dot" id="sync-dot"></div>
       <span id="sync-label">Chargement…</span>
       <button class="sync-btn primary" onclick="forceSave()" id="save-btn"><i class="ti ti-cloud-upload" style="font-size:13px"></i> Sauvegarder</button>
-      <button class="sync-btn" onclick="loadFromCloud()" title="Recharger depuis le cloud"><i class="ti ti-refresh" style="font-size:13px"></i></button>
     </div>
   </div>
   <div class="tabs">
@@ -180,6 +193,14 @@ const GITHUB_REPO  = "Alexchantry86/legaa-dg-role";
 const DATA_FILE    = "data.json";
 const API_BASE     = "https://api.github.com";
 
+
+/* ── Encodage/décodage base64 UTF-8 robuste ── */
+function b64enc(str){
+  return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,(_,p)=>String.fromCharCode('0x'+p)));
+}
+function b64dec(b64){
+  return decodeURIComponent(Array.from(atob(b64)).map(c=>'%'+c.charCodeAt(0).toString(16).padStart(2,'0')).join(''));
+}
 /* ═══════════════ DONNÉES PAR DÉFAUT ═══════════════ */
 const DEFAULT_DIMS=[
   {icon:"ti-chart-line",label:"Commercial",val:60,actions:[
@@ -286,7 +307,7 @@ async function loadFromCloud(){
     });
     const meta=await r.json();
     fileSHA=meta.sha||'';
-    const _raw=atob(meta.content.replace(/\n/g,''));const _b=new Uint8Array(_raw.length);for(let _i=0;_i<_raw.length;_i++)_b[_i]=_raw.charCodeAt(_i);const content=JSON.parse(new TextDecoder().decode(_b));
+    const content=JSON.parse(b64dec(meta.content.replace(/\n/g,'')));
     if(content.dims && content.dims.length){
       dims.splice(0,dims.length,...content.dims);
       prioData.splice(0,prioData.length,...content.prioData);
@@ -319,7 +340,7 @@ async function saveToCloud(silent=false){
     const payload={dims,prioData,savedAt:new Date().toISOString()};
     const body={
       message:'DG data update '+new Date().toISOString().slice(0,16),
-      content:(()=>{const e=new TextEncoder().encode(JSON.stringify(payload));let b='';e.forEach(x=>b+=String.fromCharCode(x));return btoa(b);})(),
+      content:b64enc(JSON.stringify(payload)),
     };
     if(fileSHA)body.sha=fileSHA;
     const r=await fetch(`${API_BASE}/repos/${GITHUB_REPO}/contents/${DATA_FILE}`,{
@@ -377,7 +398,10 @@ function buildAutoTile(d,i){
       <path d="${bgD()}" fill="none" stroke="#e8e6e0" stroke-width="6" stroke-linecap="round"/>
       <path id="arc${i}" d="${arcD(d.val)}" fill="none" stroke="${colA(d.val)}" stroke-width="6" stroke-linecap="round"/>
     </svg><span class="arc-pct" id="pct${i}" style="color:${colA(d.val)}">${d.val}%</span></div>
-    <div class="tile-label">${d.label}</div>`;
+    <input class="tile-label-input" id="tlabel${i}" value="${d.label}" title="Cliquer pour renommer"/>`;
+  div.querySelector('#tlabel'+i).addEventListener('input',e=>{dims[i].label=e.target.value;});
+  div.querySelector('#tlabel'+i).addEventListener('click',e=>e.stopPropagation());
+  div.querySelector('#tlabel'+i).addEventListener('mousedown',e=>e.stopPropagation());
   div.addEventListener('click',()=>openAutoModal(i));return div;
 }
 
@@ -406,7 +430,8 @@ function openAutoModal(i){
     row.innerHTML=`<span class="drag-handle">⋮</span><span class="action-num">${j+1}</span>
       <input class="action-name" type="text" value="${a.name}" id="aname-${i}-${j}"/>
       <div class="mini-track" id="mt-${i}-${j}"><div class="mini-fill" id="mf-${i}-${j}" style="width:${a.val}%;background:${colA(a.val)}"></div></div>
-      <span class="mini-pct" id="mp-${i}-${j}" style="color:${colA(a.val)}">${a.val}%</span>`;
+      <span class="mini-pct" id="mp-${i}-${j}" style="color:${colA(a.val)}">${a.val}%</span>
+      <button class="del-btn" title="Supprimer"><i class="ti ti-x" style="font-size:11px"></i></button>`;
     list.appendChild(row);
     attachAutoDrag(row,i,j);
     row.querySelector(`#aname-${i}-${j}`).addEventListener('input',e=>{d.actions[j].name=e.target.value;});
@@ -426,6 +451,19 @@ function openAutoModal(i){
     document.addEventListener('mouseup',()=>{drag=false;});
     track.addEventListener('touchstart',upG,{passive:true});
     track.addEventListener('touchmove',e=>{e.preventDefault();upG(e);},{passive:false});
+    row.querySelector('.del-btn').addEventListener('click',e=>{
+      e.stopPropagation();
+      dims[i].actions.splice(j,1);
+      renderAutoModal(i);updateTileArc(i);
+    });
+  });
+  /* Bouton Ajouter */
+  const footer=document.createElement('div');footer.className='modal-footer';
+  footer.innerHTML='<button class="add-btn" id="add-auto-btn"><i class="ti ti-plus" style="font-size:13px"></i> Ajouter une action</button><span style="font-size:11px;color:#b4b2a9">${dims[i].actions.length} action(s)</span>';
+  document.getElementById('a-actions').after(footer);
+  document.getElementById('add-auto-btn').addEventListener('click',()=>{
+    dims[i].actions.push({name:'Nouvelle action',val:50});
+    renderAutoModal(i);updateTileArc(i);
   });
   document.querySelectorAll('.tile').forEach(t=>t.classList.remove('active'));
   document.getElementById('atile'+i).classList.add('active');
@@ -461,7 +499,7 @@ function buildPrioTileEl(pd,i){
   div.innerHTML=`<div class="prio-tile-bar" style="background:${barColor}"></div>
     <div class="prio-tile-top">
       <i class="ti ${pd.icon} prio-tile-icon" style="color:${iconColor}" aria-hidden="true"></i>
-      <div class="prio-tile-label">${pd.label}</div>
+      <input class="prio-tile-label-input" id="plabel${i}" value="${pd.label}" title="Cliquer pour renommer"/>
     </div>
     <div class="prio-ring-wrap">
       <svg width="52" height="52" viewBox="0 0 52 52">
@@ -472,6 +510,8 @@ function buildPrioTileEl(pd,i){
       <div class="prio-ring-pct" style="color:${barColor}">${av}%</div>
     </div>
     <div class="prio-tile-pills">${pills||'<span class="prio-pill pill-basse">—</span>'}</div>`;
+  const pli=div.querySelector('#plabel'+i);
+  if(pli){pli.addEventListener('input',e=>{prioData[i].label=e.target.value;});pli.addEventListener('click',e=>e.stopPropagation());pli.addEventListener('mousedown',e=>e.stopPropagation());}
   div.addEventListener('click',()=>openPrioModal(i));return div;
 }
 function refreshPrioTile(i){
@@ -513,7 +553,8 @@ function renderPrioModal(i){
         <option value="moyenne" ${a.prio==='moyenne'?'selected':''}>🟡 Moy.</option>
         <option value="basse"   ${a.prio==='basse'  ?'selected':''}>⚪ Basse</option>
       </select>
-      <div class="prio-check-wrap"><input type="checkbox" class="prio-check" id="pchk-${i}-${j}" ${a.done?'checked':''}/></div>`;
+      <div class="prio-check-wrap"><input type="checkbox" class="prio-check" id="pchk-${i}-${j}" ${a.done?'checked':''}/></div>
+      <button class="del-btn" title="Supprimer"><i class="ti ti-x" style="font-size:11px"></i></button>`;
     list.appendChild(row);
     attachDrag(row,i,j);
     row.querySelector(`#pname-${i}-${j}`).addEventListener('input',e=>{pd.actions[j].name=e.target.value;});
@@ -549,6 +590,19 @@ function renderPrioModal(i){
       refreshPrioTile(i);
     });
     chk.addEventListener('click',e=>e.stopPropagation());
+    row.querySelector('.del-btn').addEventListener('click',e=>{
+      e.stopPropagation();
+      prioData[i].actions.splice(j,1);
+      renderPrioModal(i);refreshPrioTile(i);
+    });
+  });
+  /* Bouton Ajouter */
+  const pFooter=document.createElement('div');pFooter.className='modal-footer';
+  pFooter.innerHTML='<button class="add-btn" id="add-prio-btn"><i class="ti ti-plus" style="font-size:13px"></i> Ajouter une action</button><span style="font-size:11px;color:#b4b2a9">${prioData[i].actions.length} action(s)</span>';
+  document.getElementById('p-actions').after(pFooter);
+  document.getElementById('add-prio-btn').addEventListener('click',()=>{
+    prioData[i].actions.push({name:'Nouvelle action',prio:'basse',avancement:0,done:false});
+    renderPrioModal(i);refreshPrioTile(i);
   });
 }
 
