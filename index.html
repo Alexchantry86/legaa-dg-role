@@ -80,7 +80,7 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
 
 /* MODAL AUTONOMIE */
 .action-list{display:flex;flex-direction:column;gap:8px}
-.action-row{display:grid;grid-template-columns:22px 22px 1fr 160px 38px 24px;align-items:center;gap:10px;padding:10px 12px;background:#f7f7f5;border-radius:10px;border:1px solid transparent;transition:border-color .15s}
+.action-row{display:grid;grid-template-columns:22px 22px 1fr 160px 38px 18px 24px;align-items:center;gap:10px;padding:10px 12px;background:#f7f7f5;border-radius:10px;border:1px solid transparent;transition:border-color .15s}
 .action-row:hover{border-color:#d3d1c7}
 .action-num{font-size:11px;font-weight:500;color:#b4b2a9;text-align:center}
 .action-name{font-size:13px;font-weight:500;color:#2c2c2a;padding:2px 4px;border-radius:4px;border:1px solid transparent;transition:border-color .12s,background .12s;outline:none;width:100%;background:transparent;font-family:inherit}
@@ -542,6 +542,11 @@ function renderAutoModal(i){
       <input class="action-name" type="text" id="aname-${i}-${j}"/>
       <div class="mini-track" id="mt-${i}-${j}"><div class="mini-fill" id="mf-${i}-${j}" style="width:${a.val}%;background:${colA(a.val)}"></div></div>
       <span class="mini-pct" id="mp-${i}-${j}" style="color:${colA(a.val)}">${a.val}%</span>
+      <button class="chat-btn" title="Commentaires" id="acbtn-${i}-${j}">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M14 8.5C14 11.538 11.314 14 8 14c-.98 0-1.905-.226-2.714-.626L2 14l.8-2.8A5.364 5.364 0 0 1 2 8.5C2 5.462 4.686 3 8 3s6 2.462 6 5.5Z" stroke="#b4b2a9" stroke-width="1.2" stroke-linejoin="round"/>
+        </svg>
+      </button>
       <button class="del-btn" title="Supprimer">&#x2715;</button>`;
     row.querySelector(`#aname-${i}-${j}`).value=a.name;
     newList.appendChild(row);
@@ -574,6 +579,16 @@ function renderAutoModal(i){
       renderAutoModal(i);
       updateTileArc(i);
     });
+
+    /* Bouton chat */
+    const acbtn=row.querySelector(`#acbtn-${i}-${j}`);
+    const acMsgs=a.comments||[];
+    if(acMsgs.length>0){
+      const cnt=document.createElement('span');cnt.className='chat-bubble-count';
+      cnt.textContent=acMsgs.length;acbtn.appendChild(cnt);
+      acbtn.querySelector('path').setAttribute('stroke','#1D9E75');
+    }
+    acbtn.addEventListener('click',e=>{e.stopPropagation();openChatAuto(i,j);});
   });
 
   /* Footer unique dans le même conteneur */
@@ -974,9 +989,10 @@ function exportExcel(){
 }
 
 /* ═══════════════ CHAT COMMENTAIRES ═══════════════ */
-let _chatDomIdx=null,_chatActIdx=null;
+let _chatDomIdx=null,_chatActIdx=null,_chatSource=null;
 
 function openChat(domIdx,actIdx){
+  _chatSource='prio';
   _chatDomIdx=domIdx; _chatActIdx=actIdx;
   const a=prioData[domIdx].actions[actIdx];
   if(!a.comments)a.comments=[];
@@ -991,8 +1007,30 @@ function openChat(domIdx,actIdx){
   },50);
 }
 
+function openChatAuto(domIdx,actIdx){
+  _chatSource='auto';
+  _chatDomIdx=domIdx; _chatActIdx=actIdx;
+  const a=dims[domIdx].actions[actIdx];
+  if(!a.comments)a.comments=[];
+  document.getElementById('chat-title').textContent=a.name;
+  renderChat();
+  document.getElementById('chat-input').value='';
+  document.getElementById('overlay-chat').classList.add('open');
+  setTimeout(()=>{
+    const msgs=document.getElementById('chat-messages');
+    msgs.scrollTop=msgs.scrollHeight;
+    document.getElementById('chat-input').focus();
+  },50);
+}
+
+function getCurrentAction(){
+  return _chatSource==='auto'
+    ? dims[_chatDomIdx].actions[_chatActIdx]
+    : prioData[_chatDomIdx].actions[_chatActIdx];
+}
+
 function renderChat(){
-  const a=prioData[_chatDomIdx].actions[_chatActIdx];
+  const a=getCurrentAction();
   const msgs=a.comments||[];
   const el=document.getElementById('chat-messages');
   if(msgs.length===0){
@@ -1021,13 +1059,17 @@ function sendChatMsg(){
   const inp=document.getElementById('chat-input');
   const text=inp.value.trim();
   if(!text)return;
-  const a=prioData[_chatDomIdx].actions[_chatActIdx];
+  const a=getCurrentAction();
   if(!a.comments)a.comments=[];
   a.comments.push({text,ts:new Date().toISOString(),author:'DG'});
   inp.value='';
+  inp.style.height='auto';
   renderChat();
-  /* Rafraîchir le bouton chat dans la modal priorité */
-  const cbtn=document.getElementById(`cbtn-${_chatDomIdx}-${_chatActIdx}`);
+  /* Rafraîchir le bouton chat dans la modal */
+  const btnId=_chatSource==='auto'
+    ? `acbtn-${_chatDomIdx}-${_chatActIdx}`
+    : `cbtn-${_chatDomIdx}-${_chatActIdx}`;
+  const cbtn=document.getElementById(btnId);
   if(cbtn){
     let cnt=cbtn.querySelector('.chat-bubble-count');
     if(!cnt){cnt=document.createElement('span');cnt.className='chat-bubble-count';cbtn.appendChild(cnt);}
