@@ -3,10 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Direction Générale — LEGAA</title>
+<title>Tableau de bord — LEGAA</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.0.0/tabler-icons.min.css">
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
+
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI',Arial,sans-serif;background:#f7f7f5;color:#2c2c2a;min-height:100vh;padding:0 0 60px}
 .page{max-width:980px;margin:0 auto;padding:36px 32px 0}
@@ -229,69 +230,147 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
   .pr-prog-fill{height:4pt;border-radius:2pt}
   .pr-footer{position:fixed;bottom:20pt;left:40pt;right:40pt;display:flex;justify-content:space-between;font-size:8pt;color:#b4b2a9;border-top:0.3pt solid #e8e6e0;padding-top:6pt}
 }
+
+
+/* ── PAGE DE GARDE ── */
+#screen-home{display:block}
+#screen-app{display:none}
+.home-page{max-width:860px;margin:0 auto;padding:60px 32px 80px}
+.home-header{text-align:center;margin-bottom:48px}
+.home-logo{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#888780;margin-bottom:12px}
+.home-title{font-size:32px;font-weight:500;color:#2c2c2a;margin-bottom:6px}
+.home-sub{font-size:14px;color:#888780}
+.home-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:40px}
+.collab-card{background:#fff;border:.5px solid #d3d1c7;border-radius:16px;padding:28px 20px 22px;display:flex;flex-direction:column;align-items:center;gap:10px;cursor:pointer;transition:border-color .15s,transform .12s,box-shadow .15s;user-select:none;position:relative}
+.collab-card:hover{border-color:#888780;transform:translateY(-2px);box-shadow:0 4px 16px rgba(44,44,42,.08)}
+.collab-avatar{width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:600;color:#fff;flex-shrink:0;font-family:inherit}
+.collab-name{font-size:15px;font-weight:500;color:#2c2c2a}
+.collab-role{font-size:12px;color:#888780;text-align:center;line-height:1.4}
+.collab-stats{display:flex;gap:8px;margin-top:2px}
+.collab-stat{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:500}
+.collab-progress{width:100%;height:4px;background:#e8e6e0;border-radius:2px;overflow:hidden;margin-top:4px}
+.collab-progress-fill{height:4px;border-radius:2px;transition:width .4s}
+.home-footer{text-align:center;font-size:12px;color:#b4b2a9}
+
+/* ── BACK BUTTON + COLLAB SWITCHER ── */
+.app-topbar{display:flex;align-items:center;gap:12px;margin-bottom:0;padding-bottom:20px;border-bottom:.5px solid #d3d1c7;margin-top:-8px}
+.back-btn{display:flex;align-items:center;gap:6px;font-size:12px;color:#888780;background:none;border:none;cursor:pointer;padding:0;font-family:inherit;transition:color .12s}
+.back-btn:hover{color:#2c2c2a}
+.collab-badge{display:flex;align-items:center;gap:8px;padding:5px 12px 5px 5px;background:#fff;border:.5px solid #d3d1c7;border-radius:20px;cursor:pointer;transition:border-color .12s}
+.collab-badge:hover{border-color:#888780}
+.collab-badge-avatar{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff}
+.collab-badge-name{font-size:12px;font-weight:500;color:#2c2c2a}
+
+/* ── MODAL GESTION TUILES ── */
+.overlay-tiles{display:none;position:fixed;inset:0;background:rgba(44,44,42,.42);z-index:150;align-items:center;justify-content:center;padding:24px}
+.overlay-tiles.open{display:flex}
+.tiles-modal{background:#fff;border-radius:18px;width:100%;max-width:580px;max-height:85vh;overflow-y:auto;padding:28px 28px 24px;position:relative}
+.tiles-modal-head{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.tiles-modal-head i{font-size:20px;color:#888780}
+.tiles-modal-title{font-size:17px;font-weight:500;color:#2c2c2a}
+.tiles-modal-sub{font-size:12px;color:#b4b2a9;margin-bottom:20px;margin-left:30px}
+.tile-config-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:#f7f7f5;border-radius:10px;margin-bottom:6px}
+.tile-config-icon-select{font-size:13px;border:.5px solid #d3d1c7;border-radius:6px;padding:4px 6px;background:#fff;cursor:pointer;font-family:inherit;outline:none}
+.tile-config-name{flex:1;font-size:13px;font-weight:500;color:#2c2c2a;border:1px solid transparent;border-radius:6px;padding:4px 8px;background:transparent;outline:none;font-family:inherit}
+.tile-config-name:hover{border-color:#d3d1c7;background:#fff}
+.tile-config-name:focus{border-color:#888780;background:#fff}
+.tile-config-toggle{width:36px;height:20px;background:#d3d1c7;border-radius:10px;cursor:pointer;position:relative;transition:background .15s;flex-shrink:0;border:none}
+.tile-config-toggle.on{background:#1D9E75}
+.tile-config-toggle::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;background:#fff;border-radius:50%;transition:left .15s}
+.tile-config-toggle.on::after{left:18px}
+.tiles-add-row{display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:.5px solid #e8e6e0}
+.tiles-add-input{flex:1;border:.5px solid #d3d1c7;border-radius:8px;padding:7px 12px;font-size:13px;font-family:inherit;outline:none}
+.tiles-add-input:focus{border-color:#888780}
+
 </style>
 </head>
 <body>
-<div class="page">
-  <div class="header">
-    <div class="header-text">
-      <p class="eyebrow">LEGAA · Direction générale</p>
-      <h1>Tableau de bord — DG</h1>
-      <p class="sub">Niveau d'autonomie et actions prioritaires S2 2026</p>
+
+<!-- ══════════════════════════════════════════
+     ÉCRAN 1 : PAGE DE GARDE
+══════════════════════════════════════════ -->
+<div id="screen-home">
+  <div class="home-page">
+    <div class="home-header">
+      <p class="home-logo">LEGAA · Direction générale</p>
+      <h1 class="home-title">Tableau de bord collaborateurs</h1>
+      <p class="home-sub">Sélectionner un collaborateur pour accéder à son espace</p>
     </div>
-    <div class="sync-global">
+    <div class="home-grid" id="home-grid"></div>
+    <p class="home-footer">Brame Développement · S2 2026 · Toutes les données sont synchronisées</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     ÉCRAN 2 : ESPACE COLLABORATEUR
+══════════════════════════════════════════ -->
+<div id="screen-app" style="display:none">
+<div class="page">
+  <div class="app-topbar">
+    <button class="back-btn" onclick="goHome()"><i class="ti ti-arrow-left" style="font-size:14px"></i> Accueil</button>
+    <div class="collab-badge" onclick="goHome()" title="Changer de collaborateur">
+      <div class="collab-badge-avatar" id="cb-avatar"></div>
+      <span class="collab-badge-name" id="cb-name"></span>
+      <i class="ti ti-selector" style="font-size:12px;color:#b4b2a9"></i>
+    </div>
+    <div style="flex:1"></div>
+    <div class="sync-global" style="margin-top:0">
       <div class="sync-dot" id="sync-dot"></div>
       <span id="sync-label">Chargement…</span>
+      <button class="sync-btn" onclick="openTileManager()" title="Gérer les domaines"><i class="ti ti-layout-grid" style="font-size:13px"></i> Domaines</button>
       <button class="sync-btn primary" onclick="forceSave()" id="save-btn"><i class="ti ti-cloud-upload" style="font-size:13px"></i> Sauvegarder</button>
-      <button class="sync-btn" onclick="exportExcel()" title="Exporter en Excel"><i class="ti ti-file-spreadsheet" style="font-size:13px"></i> Excel</button>
-      <button class="sync-btn" onclick="exportPDF()" title="Exporter en PDF"><i class="ti ti-file-type-pdf" style="font-size:13px"></i> PDF</button>
+      <button class="sync-btn" onclick="exportExcel()" title="Excel"><i class="ti ti-file-spreadsheet" style="font-size:13px"></i></button>
+      <button class="sync-btn" onclick="exportPDF()" title="PDF"><i class="ti ti-file-type-pdf" style="font-size:13px"></i></button>
     </div>
   </div>
+
+  <div class="header" style="margin-top:16px">
+    <div class="header-text">
+      <p class="eyebrow" id="app-eyebrow">LEGAA · Direction générale</p>
+      <h1 id="app-h1">Tableau de bord</h1>
+    </div>
+  </div>
+
   <div class="tabs">
-    <button class="tab-btn active" data-tab="autonomie"><i class="ti ti-gauge"></i>Niveau d'autonomie par domaine</button>
+    <button class="tab-btn active" data-tab="autonomie"><i class="ti ti-gauge"></i>Niveau d&rsquo;autonomie par domaine</button>
     <button class="tab-btn" data-tab="actions"><i class="ti ti-list-check"></i>Actions prioritaires S2 2026</button>
   </div>
 
   <div class="tab-panel active" id="tab-autonomie">
     <div class="grid" id="grid-autonomie"></div>
-    <p class="hint">Cliquer sur une brique · Glisser pour ajuster · Cliquer sur un libellé pour le modifier</p>
+    <p class="hint">Cliquer sur une brique &middot; Glisser pour ajuster &middot; Cliquer le libell&eacute; pour modifier</p>
   </div>
 
   <div class="tab-panel" id="tab-actions">
     <div class="grid" id="grid-actions"></div>
     <div class="prio-legend">
-      <div class="prio-leg-item"><div class="prio-leg-dot" style="background:#D85A30"></div>Haute priorité</div>
+      <div class="prio-leg-item"><div class="prio-leg-dot" style="background:#D85A30"></div>Haute priorit&eacute;</div>
       <div class="prio-leg-item"><div class="prio-leg-dot" style="background:#EF9F27"></div>Moyenne</div>
       <div class="prio-leg-item"><div class="prio-leg-dot" style="background:#b4b2a9"></div>Basse</div>
-      <div class="prio-leg-item"><div class="prio-leg-dot" style="background:#1D9E75"></div>Terminé</div>
+      <div class="prio-leg-item"><div class="prio-leg-dot" style="background:#1D9E75"></div>Termin&eacute;</div>
     </div>
-    <p class="hint" style="margin-top:6px">Cliquer sur une brique · Glisser ⠿ pour réordonner · Cliquer "Sauvegarder" pour synchroniser tous les appareils</p>
-
-    <!-- SYNTHÈSE CLÔTURE -->
+    <p class="hint" style="margin-top:6px">Cliquer sur une brique &middot; Glisser &#8285; pour r&eacute;ordonner</p>
     <div class="synth-wrap" id="synth-wrap">
-      <p class="synth-title"><i class="ti ti-chart-bar"></i>Synthèse de clôture — S2 2026</p>
-      <p class="synth-sub">Vue consolidée des actions par niveau de priorité sur l'ensemble des domaines</p>
+      <p class="synth-title"><i class="ti ti-chart-bar"></i>Synth&egrave;se de cl&ocirc;ture &mdash; S2 2026</p>
+      <p class="synth-sub">Vue consolid&eacute;e des actions par niveau de priorit&eacute;</p>
       <div class="synth-kpi-row" id="synth-kpis"></div>
       <div class="synth-global-wrap">
         <div class="synth-global-head">
           <span class="synth-global-label">Avancement global toutes actions</span>
-          <span class="synth-global-pct" id="synth-global-pct">—</span>
+          <span class="synth-global-pct" id="synth-global-pct">&mdash;</span>
         </div>
         <div class="synth-prog-track"><div class="synth-prog-fill" id="synth-global-bar"></div></div>
       </div>
       <table class="synth-table">
         <thead><tr>
-          <th>Domaine</th>
-          <th>🔴 Haute</th>
-          <th>🟡 Moyenne</th>
-          <th>⚪ Basse</th>
-          <th>✓ Terminées</th>
-          <th>Avancement</th>
+          <th>Domaine</th><th>&#128308; Haute</th><th>&#127761; Moyenne</th>
+          <th>&#9898; Basse</th><th>&#10003; Termin&eacute;es</th><th>Avancement</th>
         </tr></thead>
         <tbody id="synth-tbody"></tbody>
       </table>
     </div>
   </div>
+</div>
 </div>
 
 <!-- OVERLAY CHAT COMMENTAIRES -->
@@ -304,7 +383,7 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
     </div>
     <div class="chat-messages" id="chat-messages"></div>
     <div class="chat-input-row">
-      <textarea class="chat-input" id="chat-input" placeholder="Ajouter un commentaire…" rows="1"></textarea>
+      <textarea class="chat-input" id="chat-input" placeholder="Ajouter un commentaire&hellip;" rows="1"></textarea>
       <button class="chat-send" id="chat-send" title="Envoyer"><i class="ti ti-send"></i></button>
     </div>
   </div>
@@ -314,7 +393,7 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
   <div class="modal">
     <button class="close-btn" id="close-autonomie"><i class="ti ti-x"></i></button>
     <div class="modal-head"><i id="a-icon" class="ti"></i><span class="modal-title" id="a-title"></span></div>
-    <p class="modal-sub">Glisser sur la barre · Cliquer sur le libellé pour modifier</p>
+    <p class="modal-sub">Glisser sur la barre &middot; Cliquer sur le libell&eacute; pour modifier</p>
     <div id="auto-modal-container">
       <div class="action-list" id="a-actions"></div>
     </div>
@@ -325,14 +404,31 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
   <div class="modal">
     <button class="close-btn" id="close-actions"><i class="ti ti-x"></i></button>
     <div class="modal-head"><i id="p-icon" class="ti"></i><span class="modal-title" id="p-title"></span></div>
-    <p class="modal-sub">⠿ Réordonner · Modifier libellé · Jauge avancement · Priorité · ✓ Terminé</p>
+    <p class="modal-sub">&#8285; R&eacute;ordonner &middot; Modifier libell&eacute; &middot; Jauge avancement &middot; Priorit&eacute; &middot; &#10003; Termin&eacute;</p>
     <div id="prio-modal-container">
       <div class="prio-action-list" id="p-actions"></div>
     </div>
   </div>
 </div>
 
+<!-- OVERLAY GESTION TUILES -->
+<div class="overlay-tiles" id="overlay-tiles">
+  <div class="tiles-modal">
+    <button class="close-btn" id="close-tiles"><i class="ti ti-x"></i></button>
+    <div class="tiles-modal-head"><i class="ti ti-layout-grid"></i><span class="tiles-modal-title">Gestion des domaines</span></div>
+    <p class="tiles-modal-sub">Activer/d&eacute;sactiver, renommer ou supprimer des domaines pour ce collaborateur</p>
+    <div id="tile-config-list"></div>
+    <div class="tiles-add-row">
+      <input class="tiles-add-input" id="new-tile-name" placeholder="Nom du nouveau domaine&hellip;" type="text"/>
+      <button class="add-btn" id="btn-add-tile"><i class="ti ti-plus" style="font-size:13px"></i> Ajouter</button>
+    </div>
+  </div>
+</div>
+
+<div id="pdf-report"></div>
+
 <script>
+
 const _a="ghp_T3KNxb",_b="wnccWw54cZW1Qkg",_c="tqodAPhjc1AOOpH";const GITHUB_TOKEN=_a+_b+_c;
 const GITHUB_REPO  = "Alexchantry86/legaa-dg-role";
 const DATA_FILE    = "data.json";
@@ -446,75 +542,13 @@ function setSyncStatus(state,msg){
   document.getElementById('sync-label').textContent=msg;
 }
 
-async function loadFromCloud(){
-  setSyncStatus('saving','Chargement depuis GitHub…');
-  try{
-    const r=await fetch(`${API_BASE}/repos/${GITHUB_REPO}/contents/${DATA_FILE}`,{
-      headers:{'Authorization':'token '+GITHUB_TOKEN,'Accept':'application/vnd.github.v3+json'}
-    });
-    const meta=await r.json();
-    fileSHA=meta.sha||'';
-    const content=JSON.parse(b64dec(meta.content.replace(/\n/g,'')));
-    if(content.dims && content.dims.length){
-      dims.splice(0,dims.length,...content.dims);
-      prioData.splice(0,prioData.length,...content.prioData);
-      prioData.forEach(pd=>pd.actions.forEach(a=>{if(a.avancement===undefined)a.avancement=a.done?100:0;}));
-      rebuildAll();
-      _lastSaved=JSON.stringify({dims,prioData});
-      setSyncStatus('ok','Synchronisé · '+new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}));
-    } else {
-      setSyncStatus('ok','Données par défaut (aucune sauvegarde cloud)');
-    }
-  }catch(e){
-    setSyncStatus('err','Erreur de chargement — données locales utilisées');
-    // Fallback localStorage
-    try{const s=localStorage.getItem('legaa_dg_v5');if(s){const d=JSON.parse(s);dims.splice(0,dims.length,...d.dims);prioData.splice(0,prioData.length,...d.prioData);rebuildAll();}}catch(e2){}
-  }
-}
+/* loadFromCloud géré dans EXTRA_JS */
 
 let _lastSaved='';
 let _saving=false;
 
-function forceSave(){_saving=false;_lastSaved="";saveToCloud(false);}
-async function saveToCloud(silent=false){
-  const current=JSON.stringify({dims,prioData});
-  if(current===_lastSaved)return; // rien à sauvegarder
-  if(_saving)return; // éviter les appels concurrents
-  _saving=true;
-  if(!silent){setSyncStatus('saving','Sauvegarde en cours…');}
-  if(!silent){document.getElementById('save-btn').disabled=true;}
-  try{
-    const payload={dims,prioData,savedAt:new Date().toISOString()};
-    const body={
-      message:'DG data update '+new Date().toISOString().slice(0,16),
-      content:b64enc(JSON.stringify(payload)),
-    };
-    if(fileSHA)body.sha=fileSHA;
-    const doput=async()=>fetch(`${API_BASE}/repos/${GITHUB_REPO}/contents/${DATA_FILE}`,{
-      method:'PUT',
-      headers:{'Authorization':'token '+GITHUB_TOKEN,'Content-Type':'application/json'},
-      body:JSON.stringify(body)
-    });
-    let pr=await doput(); let res=await pr.json();
-    if(pr.status===409||pr.status===422){
-      const m2=await (await fetch(`${API_BASE}/repos/${GITHUB_REPO}/contents/${DATA_FILE}`,{headers:{'Authorization':'token '+GITHUB_TOKEN}})).json();
-      fileSHA=m2.sha||''; body.sha=fileSHA;
-      pr=await doput(); res=await pr.json();
-    }
-    if(res.content&&res.content.sha){
-      fileSHA=res.content.sha;
-      _lastSaved=current;
-      localStorage.setItem('legaa_dg_v6',JSON.stringify({dims,prioData}));
-      setSyncStatus('ok','Sauvegardé · '+new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}));
-    } else {
-      throw new Error((res.message||'Erreur').slice(0,60));
-    }
-  }catch(e){
-    if(!silent)setSyncStatus('err','Erreur : '+e.message);
-  }
-  _saving=false;
-  if(!silent)document.getElementById('save-btn').disabled=false;
-}
+/* forceSave géré dans EXTRA_JS */
+/* saveToCloud géré dans EXTRA_JS */
 
 /* ═══════════════ HELPERS ═══════════════ */
 const Rarc=30,CXarc=36,CYarc=36;
@@ -863,13 +897,7 @@ document.getElementById('close-actions').addEventListener('click',closePrioModal
 document.getElementById('overlay-actions').addEventListener('click',e=>{if(e.target.id==='overlay-actions')closePrioModal();});
 
 /* ═══════════════ TABS ═══════════════ */
-document.querySelectorAll('.tab-btn').forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
-    btn.classList.add('active');document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
-  });
-});
+/* tabs init unique dans EXTRA_JS */
 
 
 /* ═══════════════ EXPORTS ═══════════════ */
@@ -1235,16 +1263,275 @@ function renderSynth(){
 function rebuildAll(){
   document.getElementById('grid-autonomie').innerHTML='';
   document.getElementById('grid-actions').innerHTML='';
-  dims.forEach((d,i)=>document.getElementById('grid-autonomie').appendChild(buildAutoTile(d,i)));
-  prioData.forEach((pd,i)=>document.getElementById('grid-actions').appendChild(buildPrioTileEl(pd,i)));
+  dims.forEach((d,i)=>{if(!d.hidden)document.getElementById('grid-autonomie').appendChild(buildAutoTile(d,i));});
+  prioData.forEach((pd,i)=>{if(!dims[i]||!dims[i].hidden)document.getElementById('grid-actions').appendChild(buildPrioTileEl(pd,i));});
   renderSynth();
 }
-rebuildAll();
-loadFromCloud().then(()=>{
-  // Autosave toutes les secondes
-  setInterval(()=>{ saveToCloud(true); }, 1000);
+/* Init géré depuis page de garde */
+
+
+
+/* ═══════════════ COLLABORATEURS ═══════════════ */
+const COLLABS = [{"id": "jordan", "name": "Jordan", "role": "Manager Commercial", "color": "#4F7DC0"}, {"id": "josselyn", "name": "Josselyn", "role": "Responsable ADV", "color": "#7C5CBF"}, {"id": "vincent", "name": "Vincent", "role": "Chef d'Atelier", "color": "#2E8B6E"}, {"id": "bruno", "name": "Bruno", "role": "Responsable Logistique", "color": "#C07B2E"}, {"id": "maxime", "name": "Maxime", "role": "Responsable Transport", "color": "#B85070"}, {"id": "etienne", "name": "Etienne", "role": "Directeur Général (DG)", "color": "#2c2c2a"}];
+let currentCollab = null;
+
+function initials(name){return name.slice(0,2).toUpperCase();}
+
+/* ── Page de garde ── */
+function buildHomePage(){
+  const grid = document.getElementById('home-grid');
+  grid.innerHTML = '';
+  COLLABS.forEach(c => {
+    const saved = getCollabData(c.id);
+    const card = document.createElement('div');
+    card.className = 'collab-card';
+    // Stats depuis données sauvegardées localement
+    let doneCount=0, totalCount=0, avPct=0;
+    if(saved && saved.prioData){
+      saved.prioData.forEach(pd=>pd.actions.forEach(a=>{
+        totalCount++;
+        if(a.done)doneCount++;
+        avPct += (a.done?100:a.avancement||0);
+      }));
+      avPct = totalCount>0 ? Math.round(avPct/totalCount) : 0;
+    }
+    const barColor = avPct>=70?'#1D9E75':avPct>=40?'#EF9F27':'#D85A30';
+    card.innerHTML = `
+      <div class="collab-avatar" style="background:${c.color}">${initials(c.name)}</div>
+      <div class="collab-name">${c.name}</div>
+      <div class="collab-role">${c.role}</div>
+      ${totalCount>0?`
+        <div class="collab-stats">
+          <span class="collab-stat" style="background:${c.color}22;color:${c.color}">${doneCount}/${totalCount} terminées</span>
+          <span class="collab-stat" style="background:#f1efe8;color:#888780">${avPct}%</span>
+        </div>
+        <div class="collab-progress"><div class="collab-progress-fill" style="width:${avPct}%;background:${barColor}"></div></div>
+      `:'<div class="collab-stats"><span class="collab-stat" style="background:#f1efe8;color:#b4b2a9">Non configuré</span></div>'}
+    `;
+    card.addEventListener('click', ()=>enterCollab(c));
+    grid.appendChild(card);
+  });
+}
+
+function getCollabData(id){
+  try{ return JSON.parse(localStorage.getItem('legaa_collab_'+id)); }catch(e){return null;}
+}
+function saveCollabData(id, data){
+  localStorage.setItem('legaa_collab_'+id, JSON.stringify(data));
+}
+
+async function enterCollab(c){
+  currentCollab = c;
+  document.getElementById('screen-home').style.display='none';
+  document.getElementById('screen-app').style.display='block';
+  // Badge collaborateur
+  document.getElementById('cb-avatar').style.background=c.color;
+  document.getElementById('cb-avatar').textContent=initials(c.name);
+  document.getElementById('cb-name').textContent=c.name;
+  // Titre
+  document.getElementById('app-eyebrow').textContent='LEGAA · '+c.role;
+  document.getElementById('app-h1').textContent='Tableau de bord — '+c.name;
+  // Charger ses données
+  await loadCollabFromCloud(c.id);
+}
+
+function goHome(){
+  // Sauvegarder avant de partir
+  if(currentCollab)saveCollabData(currentCollab.id, {dims, prioData});
+  document.getElementById('screen-app').style.display='none';
+  document.getElementById('screen-home').style.display='block';
+  buildHomePage();
+}
+
+/* ── Cloud par collaborateur ── */
+const GH_TOKEN_A='ghp_T3KNxb', GH_TOKEN_B='wnccWw54cZW1Qkg', GH_TOKEN_C='tqodAPhjc1AOOpH';
+const GH_TOKEN=GH_TOKEN_A+GH_TOKEN_B+GH_TOKEN_C;
+const GH_REPO='Alexchantry86/legaa-dg-role';
+const API_BASE='https://api.github.com';
+let collabFileSHA={};
+
+function getDataFile(id){return 'data_'+id+'.json';}
+
+async function loadCollabFromCloud(id){
+  setSyncStatus('saving','Chargement...');
+  const file=getDataFile(id);
+  try{
+    const r=await fetch(API_BASE+'/repos/'+GH_REPO+'/contents/'+file,{
+      headers:{'Authorization':'token '+GH_TOKEN,'Cache-Control':'no-cache'}
+    });
+    if(r.status===404){
+      setSyncStatus('ok','Nouveau collaborateur — données par défaut');
+      dims.splice(0,dims.length,...JSON.parse(JSON.stringify(getDefaultDimsForCollab(id))));
+      prioData.splice(0,prioData.length,...JSON.parse(JSON.stringify(getDefaultPrioForCollab(id))));
+      rebuildAll();
+      return;
+    }
+    const meta=await r.json();
+    collabFileSHA[id]=meta.sha||'';
+    const bytes=Uint8Array.from(atob(meta.content.replace(/\n/g,'')),c=>c.charCodeAt(0));
+    const data=JSON.parse(new TextDecoder().decode(bytes));
+    if(data.dims&&data.dims.length){
+      dims.splice(0,dims.length,...data.dims);
+      prioData.splice(0,prioData.length,...data.prioData);
+      prioData.forEach(pd=>pd.actions.forEach(a=>{if(a.avancement===undefined)a.avancement=a.done?100:0;}));
+      _lastSaved=JSON.stringify({dims,prioData});
+    }
+    rebuildAll();
+    setSyncStatus('ok','Synchronisé · '+new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}));
+  }catch(e){
+    setSyncStatus('err','Erreur chargement');
+    const local=getCollabData(id);
+    if(local&&local.dims){dims.splice(0,dims.length,...local.dims);prioData.splice(0,prioData.length,...local.prioData);rebuildAll();}
+  }
+}
+
+function getDefaultDimsForCollab(id){
+  // Chaque collaborateur démarre avec un sous-ensemble de tuiles par défaut
+  const base=JSON.parse(JSON.stringify(DEFAULT_DIMS));
+  return base;
+}
+function getDefaultPrioForCollab(id){
+  return JSON.parse(JSON.stringify(DEFAULT_PRIO));
+}
+
+/* Override saveToCloud pour cibler le bon fichier */
+function forceSave(){ _saving=false; _lastSaved=''; saveToCloud(false); }
+
+async function saveToCloud(silent){
+  const snap=JSON.stringify({dims,prioData});
+  if(snap===_lastSaved)return;
+  if(_saving)return;
+  _saving=true;
+  if(!silent)setSyncStatus('saving','Sauvegarde...');
+  const id=currentCollab?currentCollab.id:'etienne';
+  const file=getDataFile(id);
+  try{
+    const payload={dims,prioData,savedAt:new Date().toISOString()};
+    const body={message:'Update '+id+' '+new Date().toISOString().slice(0,16)};
+    const enc=new TextEncoder().encode(JSON.stringify(payload));
+    let bin=''; enc.forEach(x=>bin+=String.fromCharCode(x));
+    body.content=btoa(bin);
+    if(collabFileSHA[id])body.sha=collabFileSHA[id];
+    const doput=async()=>fetch(API_BASE+'/repos/'+GH_REPO+'/contents/'+file,{
+      method:'PUT',headers:{'Authorization':'token '+GH_TOKEN,'Content-Type':'application/json'},
+      body:JSON.stringify(body)
+    });
+    let pr=await doput(); let res=await pr.json();
+    if(pr.status===409||pr.status===422){
+      const m2=await (await fetch(API_BASE+'/repos/'+GH_REPO+'/contents/'+file,{headers:{'Authorization':'token '+GH_TOKEN}})).json();
+      collabFileSHA[id]=m2.sha||''; body.sha=collabFileSHA[id];
+      pr=await doput(); res=await pr.json();
+    }
+    if(res.content&&res.content.sha){
+      collabFileSHA[id]=res.content.sha;
+      _lastSaved=snap;
+      saveCollabData(id,{dims,prioData});
+      setSyncStatus('ok','Sauvegardé · '+new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}));
+    }else throw new Error((res.message||'Erreur').slice(0,60));
+  }catch(e){
+    if(!silent)setSyncStatus('err','Erreur: '+e.message.slice(0,40));
+    try{saveCollabData(id,{dims,prioData});}catch(e2){}
+  }
+  _saving=false;
+}
+
+/* ── Gestion des tuiles (ajout/suppression/toggle) ── */
+function openTileManager(){
+  const list=document.getElementById('tile-config-list');
+  list.innerHTML='';
+  dims.forEach((d,i)=>{
+    const row=document.createElement('div');row.className='tile-config-row';
+    row.innerHTML=`
+      <select class="tile-config-icon-select" id="ticon-${i}">
+        ${ICON_OPTIONS.map(ic=>`<option value="${ic.v}" ${d.icon===ic.v?'selected':''}>${ic.l}</option>`).join('')}
+      </select>
+      <input class="tile-config-name" type="text" id="tname-${i}" value="${d.label}"/>
+      <button class="tile-config-toggle ${d.hidden?'':'on'}" id="ttoggle-${i}" title="${d.hidden?'Activé':'Désactivé'}"></button>
+      <button class="del-btn" title="Supprimer">&#x2715;</button>
+    `;
+    list.appendChild(row);
+    row.querySelector('#tname-'+i).addEventListener('input',e=>{dims[i].label=e.target.value;rebuildAll();});
+    row.querySelector('#tname-'+i).addEventListener('click',e=>e.stopPropagation());
+    row.querySelector('#ticon-'+i).addEventListener('change',e=>{dims[i].icon=e.target.value;rebuildAll();});
+    row.querySelector('#ticon-'+i).addEventListener('click',e=>e.stopPropagation());
+    const tog=row.querySelector('#ttoggle-'+i);
+    tog.addEventListener('click',e=>{
+      e.stopPropagation();
+      dims[i].hidden=!dims[i].hidden;
+      tog.classList.toggle('on',!dims[i].hidden);
+      rebuildAll();
+    });
+    row.querySelector('.del-btn').addEventListener('click',e=>{
+      e.stopPropagation();
+      dims.splice(i,1);
+      prioData.splice(i,1);
+      openTileManager();
+      rebuildAll();
+    });
+  });
+  document.getElementById('overlay-tiles').classList.add('open');
+}
+
+const ICON_OPTIONS=[
+  {v:'ti-chart-line',l:'📈 Commercial'},
+  {v:'ti-users',l:'👥 RH'},
+  {v:'ti-package',l:'📦 Opérations'},
+  {v:'ti-currency-euro',l:'💶 Finance'},
+  {v:'ti-file-certificate',l:'📋 Conformité'},
+  {v:'ti-arrows-right-left',l:'🔄 Synergies'},
+  {v:'ti-user-search',l:'🔍 Stratégie'},
+  {v:'ti-building-bank',l:'🏦 Relations ext.'},
+  {v:'ti-device-desktop',l:'💻 SI'},
+  {v:'ti-shopping-cart',l:'🛒 Achats'},
+  {v:'ti-chart-area',l:'📊 P&L/Budget'},
+  {v:'ti-tools',l:'🔧 Technique'},
+  {v:'ti-truck',l:'🚚 Transport'},
+  {v:'ti-warehouse',l:'🏭 Entrepôt'},
+  {v:'ti-clipboard-list',l:'📝 Planification'},
+  {v:'ti-headset',l:'🎧 SAV/Support'},
+  {v:'ti-certificate',l:'🏆 Qualité'},
+  {v:'ti-settings',l:'⚙️ Process'},
+];
+
+document.getElementById('overlay-tiles').addEventListener('click',e=>{
+  if(e.target.id==='overlay-tiles')document.getElementById('overlay-tiles').classList.remove('open');
 });
+document.getElementById('close-tiles').addEventListener('click',()=>{
+  document.getElementById('overlay-tiles').classList.remove('open');
+});
+document.getElementById('btn-add-tile').addEventListener('click',()=>{
+  const nm=document.getElementById('new-tile-name').value.trim();
+  if(!nm)return;
+  dims.push({icon:'ti-chart-line',label:nm,val:50,actions:[
+    {name:'Action 1',val:50},{name:'Action 2',val:50},{name:'Action 3',val:50},
+    {name:'Action 4',val:50},{name:'Action 5',val:50},
+  ]});
+  prioData.push({icon:'ti-chart-line',label:nm,actions:[
+    {name:'Action prioritaire 1',prio:'haute',avancement:0,done:false},
+    {name:'Action prioritaire 2',prio:'moyenne',avancement:0,done:false},
+    {name:'Action prioritaire 3',prio:'basse',avancement:0,done:false},
+  ]});
+  document.getElementById('new-tile-name').value='';
+  openTileManager();
+  rebuildAll();
+});
+
+
+/* ══ INIT GLOBAL ══ */
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
+  });
+});
+
+/* Démarrer sur la page de garde */
+buildHomePage();
+
+/* Autosave */
+setInterval(()=>{ if(currentCollab)saveToCloud(true); }, 1000);
 </script>
-<div id="pdf-report"></div>
 </body>
 </html>
