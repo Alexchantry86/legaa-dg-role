@@ -251,6 +251,27 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
 .collab-progress{width:100%;height:4px;background:#e8e6e0;border-radius:2px;overflow:hidden;margin-top:4px}
 .collab-progress-fill{height:4px;border-radius:2px;transition:width .4s}
 .home-footer{text-align:center;font-size:12px;color:#b4b2a9}
+/* Bouton + nouveau collaborateur */
+.collab-card-add{background:transparent;border:1.5px dashed #d3d1c7;border-radius:16px;padding:28px 20px 22px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;cursor:pointer;transition:border-color .15s,background .15s;min-height:160px}
+.collab-card-add:hover{border-color:#888780;background:#fff}
+.collab-card-add-icon{width:54px;height:54px;border-radius:50%;background:#f1efe8;display:flex;align-items:center;justify-content:center;font-size:24px;color:#b4b2a9;transition:background .15s,color .15s}
+.collab-card-add:hover .collab-card-add-icon{background:#2c2c2a;color:#fff}
+.collab-card-add-label{font-size:13px;color:#888780;font-weight:500}
+/* Modal nouveau collab */
+.overlay-new-collab{display:none;position:fixed;inset:0;background:rgba(44,44,42,.42);z-index:200;align-items:center;justify-content:center;padding:24px}
+.overlay-new-collab.open{display:flex}
+.new-collab-modal{background:#fff;border-radius:18px;width:100%;max-width:420px;padding:28px 28px 24px;position:relative}
+.new-collab-title{font-size:17px;font-weight:500;color:#2c2c2a;margin-bottom:4px}
+.new-collab-sub{font-size:12px;color:#b4b2a9;margin-bottom:22px}
+.field-label{font-size:11px;font-weight:500;color:#888780;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.field-input{width:100%;border:.5px solid #d3d1c7;border-radius:8px;padding:9px 12px;font-size:13px;font-family:inherit;outline:none;margin-bottom:14px;color:#2c2c2a}
+.field-input:focus{border-color:#888780}
+.color-row{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.color-swatch{width:28px;height:28px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:border-color .12s,transform .1s;flex-shrink:0}
+.color-swatch.selected{border-color:#2c2c2a;transform:scale(1.15)}
+.collab-card-del{position:absolute;top:10px;right:10px;background:#f1efe8;border:none;border-radius:50%;width:22px;height:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;color:#888780;opacity:0;transition:opacity .15s;line-height:1}
+.collab-card:hover .collab-card-del{opacity:1}
+.collab-card-del:hover{background:#FAECE7;color:#993C1D}
 
 /* ── BACK BUTTON + COLLAB SWITCHER ── */
 .app-topbar{display:flex;align-items:center;gap:12px;margin-bottom:0;padding-bottom:20px;border-bottom:.5px solid #d3d1c7;margin-top:-8px}
@@ -386,6 +407,22 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
       <textarea class="chat-input" id="chat-input" placeholder="Ajouter un commentaire&hellip;" rows="1"></textarea>
       <button class="chat-send" id="chat-send" title="Envoyer"><i class="ti ti-send"></i></button>
     </div>
+  </div>
+</div>
+
+<!-- MODAL NOUVEAU COLLABORATEUR -->
+<div class="overlay-new-collab" id="overlay-new-collab">
+  <div class="new-collab-modal">
+    <button class="close-btn" id="close-new-collab"><i class="ti ti-x"></i></button>
+    <p class="new-collab-title">Nouveau collaborateur</p>
+    <p class="new-collab-sub">Cr&eacute;er un espace de suivi personnalis&eacute;</p>
+    <p class="field-label">Pr&eacute;nom</p>
+    <input class="field-input" id="nc-name" type="text" placeholder="Ex : Sophie"/>
+    <p class="field-label">R&ocirc;le / Poste</p>
+    <input class="field-input" id="nc-role" type="text" placeholder="Ex : Responsable Qualit&eacute;"/>
+    <p class="field-label">Couleur</p>
+    <div class="color-row" id="nc-colors"></div>
+    <button class="add-btn" id="nc-create" style="width:100%;justify-content:center;padding:10px;font-size:13px"><i class="ti ti-user-plus" style="font-size:14px"></i> Cr&eacute;er l&rsquo;espace</button>
   </div>
 </div>
 
@@ -1272,46 +1309,130 @@ function rebuildAll(){
 
 
 /* ═══════════════ COLLABORATEURS ═══════════════ */
-const COLLABS = [{"id": "jordan", "name": "Jordan", "role": "Manager Commercial", "color": "#4F7DC0"}, {"id": "josselyn", "name": "Josselyn", "role": "Responsable ADV", "color": "#7C5CBF"}, {"id": "vincent", "name": "Vincent", "role": "Chef d'Atelier", "color": "#2E8B6E"}, {"id": "bruno", "name": "Bruno", "role": "Responsable Logistique", "color": "#C07B2E"}, {"id": "maxime", "name": "Maxime", "role": "Responsable Transport", "color": "#B85070"}, {"id": "etienne", "name": "Etienne", "role": "Directeur Général (DG)", "color": "#2c2c2a"}];
-let currentCollab = null;
+const COLLAB_COLORS=['#4F7DC0','#7C5CBF','#2E8B6E','#C07B2E','#B85070','#2c2c2a','#3A8F8F','#B56B2E','#7A6E3E','#5A7A3E'];
+let selectedColor=COLLAB_COLORS[0];
+
+/* COLLABS dynamique — stocké en localStorage */
+function loadCollabs(){
+  try{
+    const stored=localStorage.getItem('legaa_collabs');
+    if(stored)return JSON.parse(stored);
+  }catch(e){}
+  // Défaut : liste initiale
+  return [
+    {id:'jordan',  name:'Jordan',   role:"Manager Commercial",        color:'#4F7DC0'},
+    {id:'josselyn',name:'Josselyn', role:"Responsable ADV",           color:'#7C5CBF'},
+    {id:'vincent', name:'Vincent',  role:"Chef d'Atelier",            color:'#2E8B6E'},
+    {id:'bruno',   name:'Bruno',    role:"Responsable Logistique",    color:'#C07B2E'},
+    {id:'maxime',  name:'Maxime',   role:"Responsable Transport",     color:'#B85070'},
+    {id:'etienne', name:'Etienne',  role:"Directeur G\u00e9n\u00e9ral (DG)", color:'#2c2c2a'},
+  ];
+}
+function saveCollabs(list){
+  localStorage.setItem('legaa_collabs',JSON.stringify(list));
+}
+let COLLABS=loadCollabs();
+let currentCollab=null;
 
 function initials(name){return name.slice(0,2).toUpperCase();}
 
 /* ── Page de garde ── */
 function buildHomePage(){
-  const grid = document.getElementById('home-grid');
-  grid.innerHTML = '';
-  COLLABS.forEach(c => {
-    const saved = getCollabData(c.id);
-    const card = document.createElement('div');
-    card.className = 'collab-card';
-    // Stats depuis données sauvegardées localement
-    let doneCount=0, totalCount=0, avPct=0;
-    if(saved && saved.prioData){
+  const grid=document.getElementById('home-grid');
+  grid.innerHTML='';
+  COLLABS.forEach(c=>{
+    const saved=getCollabData(c.id);
+    const card=document.createElement('div');
+    card.className='collab-card';
+    card.style.position='relative';
+    let doneCount=0,totalCount=0,avPct=0;
+    if(saved&&saved.prioData){
       saved.prioData.forEach(pd=>pd.actions.forEach(a=>{
         totalCount++;
         if(a.done)doneCount++;
-        avPct += (a.done?100:a.avancement||0);
+        avPct+=(a.done?100:a.avancement||0);
       }));
-      avPct = totalCount>0 ? Math.round(avPct/totalCount) : 0;
+      avPct=totalCount>0?Math.round(avPct/totalCount):0;
     }
-    const barColor = avPct>=70?'#1D9E75':avPct>=40?'#EF9F27':'#D85A30';
-    card.innerHTML = `
+    const barColor=avPct>=70?'#1D9E75':avPct>=40?'#EF9F27':'#D85A30';
+    card.innerHTML=`
       <div class="collab-avatar" style="background:${c.color}">${initials(c.name)}</div>
       <div class="collab-name">${c.name}</div>
       <div class="collab-role">${c.role}</div>
       ${totalCount>0?`
         <div class="collab-stats">
-          <span class="collab-stat" style="background:${c.color}22;color:${c.color}">${doneCount}/${totalCount} terminées</span>
+          <span class="collab-stat" style="background:${c.color}22;color:${c.color}">${doneCount}/${totalCount} termin\u00e9es</span>
           <span class="collab-stat" style="background:#f1efe8;color:#888780">${avPct}%</span>
         </div>
         <div class="collab-progress"><div class="collab-progress-fill" style="width:${avPct}%;background:${barColor}"></div></div>
-      `:'<div class="collab-stats"><span class="collab-stat" style="background:#f1efe8;color:#b4b2a9">Non configuré</span></div>'}
+      `:'<div class="collab-stats"><span class="collab-stat" style="background:#f1efe8;color:#b4b2a9">Non configur\u00e9</span></div>'}
+      <button class="collab-card-del" title="Supprimer ce collaborateur">&#x2715;</button>
     `;
-    card.addEventListener('click', ()=>enterCollab(c));
+    card.querySelector('.collab-card-del').addEventListener('click',e=>{
+      e.stopPropagation();
+      if(!confirm('Supprimer '+c.name+' ? Ses donn\u00e9es resteront sur GitHub.'))return;
+      COLLABS=COLLABS.filter(x=>x.id!==c.id);
+      saveCollabs(COLLABS);
+      buildHomePage();
+    });
+    card.addEventListener('click',()=>enterCollab(c));
     grid.appendChild(card);
   });
+  /* Bouton + */
+  const addCard=document.createElement('div');
+  addCard.className='collab-card-add';
+  addCard.innerHTML=`
+    <div class="collab-card-add-icon"><i class="ti ti-plus"></i></div>
+    <span class="collab-card-add-label">Nouveau collaborateur</span>
+  `;
+  addCard.addEventListener('click',openNewCollabModal);
+  grid.appendChild(addCard);
 }
+
+/* ── Modal nouveau collaborateur ── */
+function openNewCollabModal(){
+  document.getElementById('nc-name').value='';
+  document.getElementById('nc-role').value='';
+  // Swatches couleurs
+  const cr=document.getElementById('nc-colors');
+  cr.innerHTML='';
+  selectedColor=COLLAB_COLORS[0];
+  COLLAB_COLORS.forEach(col=>{
+    const sw=document.createElement('div');
+    sw.className='color-swatch'+(col===selectedColor?' selected':'');
+    sw.style.background=col;
+    sw.addEventListener('click',()=>{
+      selectedColor=col;
+      cr.querySelectorAll('.color-swatch').forEach(s=>s.classList.remove('selected'));
+      sw.classList.add('selected');
+    });
+    cr.appendChild(sw);
+  });
+  document.getElementById('overlay-new-collab').classList.add('open');
+  setTimeout(()=>document.getElementById('nc-name').focus(),80);
+}
+
+document.getElementById('nc-create').addEventListener('click',()=>{
+  const name=document.getElementById('nc-name').value.trim();
+  const role=document.getElementById('nc-role').value.trim();
+  if(!name){document.getElementById('nc-name').focus();return;}
+  const id=name.toLowerCase().replace(/[^a-z0-9]/g,'_').replace(/_+/g,'_');
+  const collab={id,name,role:role||'Collaborateur',color:selectedColor};
+  COLLABS.push(collab);
+  saveCollabs(COLLABS);
+  document.getElementById('overlay-new-collab').classList.remove('open');
+  buildHomePage();
+  // Entrer directement dans le nouvel espace
+  enterCollab(collab);
+});
+document.getElementById('nc-name').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('nc-role').focus();});
+document.getElementById('nc-role').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('nc-create').click();});
+document.getElementById('close-new-collab').addEventListener('click',()=>{
+  document.getElementById('overlay-new-collab').classList.remove('open');
+});
+document.getElementById('overlay-new-collab').addEventListener('click',e=>{
+  if(e.target.id==='overlay-new-collab')document.getElementById('overlay-new-collab').classList.remove('open');
+});
 
 function getCollabData(id){
   try{ return JSON.parse(localStorage.getItem('legaa_collab_'+id)); }catch(e){return null;}
