@@ -119,7 +119,38 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
 .prio-leg-item{display:flex;align-items:center;gap:6px;font-size:11px;color:#5f5e5a}
 .prio-leg-dot{width:8px;height:8px;border-radius:50%}
 
-/* ── CHAT COMMENTAIRES ── */
+/* ── SYNTHÈSE CLÔTURE ── */
+.synth-wrap{margin-top:28px;border-top:.5px solid #d3d1c7;padding-top:22px}
+.synth-title{font-size:13px;font-weight:500;color:#2c2c2a;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.synth-title i{font-size:15px;color:#888780}
+.synth-sub{font-size:12px;color:#888780;margin-bottom:18px}
+.synth-kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
+.synth-kpi{background:#fff;border:.5px solid #d3d1c7;border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:4px}
+.synth-kpi-label{font-size:11px;color:#888780;display:flex;align-items:center;gap:6px}
+.synth-kpi-label i{font-size:13px}
+.synth-kpi-val{font-size:22px;font-weight:600;color:#2c2c2a;line-height:1}
+.synth-kpi-sub{font-size:10px;color:#b4b2a9}
+.synth-kpi-bar{height:3px;border-radius:2px;margin-top:6px;background:#e8e6e0;overflow:hidden}
+.synth-kpi-bar-fill{height:3px;border-radius:2px;transition:width .4s}
+.synth-global-wrap{background:#fff;border:.5px solid #d3d1c7;border-radius:12px;padding:16px 18px;margin-bottom:16px}
+.synth-global-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.synth-global-label{font-size:12px;font-weight:500;color:#2c2c2a}
+.synth-global-pct{font-size:20px;font-weight:600}
+.synth-prog-track{height:8px;background:#e8e6e0;border-radius:4px;overflow:hidden}
+.synth-prog-fill{height:8px;border-radius:4px;transition:width .4s}
+.synth-table{width:100%;border-collapse:collapse;font-size:12px}
+.synth-table thead th{text-align:left;padding:7px 10px;font-size:11px;font-weight:500;color:#888780;border-bottom:.5px solid #d3d1c7;background:#f7f7f5}
+.synth-table thead th:not(:first-child){text-align:center}
+.synth-table tbody td{padding:7px 10px;border-bottom:.3px solid #f0eeea;vertical-align:middle;color:#2c2c2a}
+.synth-table tbody td:not(:first-child){text-align:center}
+.synth-table tbody tr:last-child td{border-bottom:none}
+.synth-table tbody tr:hover td{background:#faf9f7}
+.synth-sparkbar{display:inline-flex;align-items:center;gap:5px}
+.synth-sparkbar-track{width:52px;height:5px;background:#e8e6e0;border-radius:3px;overflow:hidden;flex-shrink:0}
+.synth-sparkbar-fill{height:5px;border-radius:3px}
+.synth-pill{display:inline-block;padding:1px 7px;border-radius:10px;font-size:10px;font-weight:500}
+.sp-h{background:#FAECE7;color:#993C1D}.sp-m{background:#FAEEDA;color:#633806}
+.sp-b{background:#f1efe8;color:#888780}.sp-d{background:#E1F5EE;color:#085041}
 .chat-btn{background:none;border:none;cursor:pointer;padding:0;flex-shrink:0;display:flex;align-items:center;justify-content:center;position:relative;transition:transform .12s}
 .chat-btn:hover{transform:scale(1.15)}
 .chat-btn svg{display:block}
@@ -235,6 +266,31 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
       <div class="prio-leg-item"><div class="prio-leg-dot" style="background:#1D9E75"></div>Terminé</div>
     </div>
     <p class="hint" style="margin-top:6px">Cliquer sur une brique · Glisser ⠿ pour réordonner · Cliquer "Sauvegarder" pour synchroniser tous les appareils</p>
+
+    <!-- SYNTHÈSE CLÔTURE -->
+    <div class="synth-wrap" id="synth-wrap">
+      <p class="synth-title"><i class="ti ti-chart-bar"></i>Synthèse de clôture — S2 2026</p>
+      <p class="synth-sub">Vue consolidée des actions par niveau de priorité sur l'ensemble des domaines</p>
+      <div class="synth-kpi-row" id="synth-kpis"></div>
+      <div class="synth-global-wrap">
+        <div class="synth-global-head">
+          <span class="synth-global-label">Avancement global toutes actions</span>
+          <span class="synth-global-pct" id="synth-global-pct">—</span>
+        </div>
+        <div class="synth-prog-track"><div class="synth-prog-fill" id="synth-global-bar"></div></div>
+      </div>
+      <table class="synth-table">
+        <thead><tr>
+          <th>Domaine</th>
+          <th>🔴 Haute</th>
+          <th>🟡 Moyenne</th>
+          <th>⚪ Basse</th>
+          <th>✓ Terminées</th>
+          <th>Avancement</th>
+        </tr></thead>
+        <tbody id="synth-tbody"></tbody>
+      </table>
+    </div>
   </div>
 </div>
 
@@ -665,6 +721,7 @@ function buildPrioTileEl(pd,i){
 function refreshPrioTile(i){
   const old=document.getElementById('ptile'+i);const nw=buildPrioTileEl(prioData[i],i);
   if(activePrioIdx===i)nw.classList.add('active');old.replaceWith(nw);
+  renderSynth();
 }
 
 let dragSrc=null,dragDimIdx=null;
@@ -1094,12 +1151,93 @@ document.getElementById('overlay-chat').addEventListener('click',e=>{
   if(e.target.id==='overlay-chat')document.getElementById('overlay-chat').classList.remove('open');
 });
 
+/* ═══════════════ SYNTHÈSE CLÔTURE ═══════════════ */
+function renderSynth(){
+  /* Calculs globaux */
+  let totH=0,totM=0,totB=0,totD=0,totAll=0,sumAv=0;
+  let doneH=0,doneM=0,doneB=0;
+  prioData.forEach(pd=>{
+    pd.actions.forEach(a=>{
+      totAll++;
+      const av=a.done?100:a.avancement;
+      sumAv+=av;
+      if(a.done){totD++;if(a.prio==='haute')doneH++;else if(a.prio==='moyenne')doneM++;else doneB++;}
+      if(!a.done){if(a.prio==='haute')totH++;else if(a.prio==='moyenne')totM++;else totB++;}
+    });
+  });
+  const totHAll=prioData.reduce((s,pd)=>s+pd.actions.filter(a=>a.prio==='haute').length,0);
+  const totMAll=prioData.reduce((s,pd)=>s+pd.actions.filter(a=>a.prio==='moyenne').length,0);
+  const totBAll=prioData.reduce((s,pd)=>s+pd.actions.filter(a=>a.prio==='basse').length,0);
+  const globalAv=totAll>0?Math.round(sumAv/totAll):0;
+  const globalPct=totAll>0?Math.round(totD/totAll*100):0;
+
+  /* KPI cards */
+  const kpis=[
+    {icon:'ti-circle-filled',color:'#D85A30',bg:'#FAECE7',label:'Haute priorité',
+     val:doneH+'/'+totHAll,sub:`${totH} en cours`,pct:totHAll?doneH/totHAll*100:0},
+    {icon:'ti-circle-filled',color:'#EF9F27',bg:'#FAEEDA',label:'Priorité moyenne',
+     val:doneM+'/'+totMAll,sub:`${totM} en cours`,pct:totMAll?doneM/totMAll*100:0},
+    {icon:'ti-circle-filled',color:'#b4b2a9',bg:'#f1efe8',label:'Basse priorité',
+     val:doneB+'/'+totBAll,sub:`${totB} en cours`,pct:totBAll?doneB/totBAll*100:0},
+    {icon:'ti-check',color:'#1D9E75',bg:'#E1F5EE',label:'Total terminées',
+     val:totD+'/'+totAll,sub:`Avancement moyen ${globalAv}%`,pct:globalPct},
+  ];
+  const kpiEl=document.getElementById('synth-kpis');
+  kpiEl.innerHTML='';
+  kpis.forEach(k=>{
+    const div=document.createElement('div');div.className='synth-kpi';
+    div.innerHTML=`<div class="synth-kpi-label"><i class="ti ${k.icon}" style="color:${k.color}"></i>${k.label}</div>
+      <div class="synth-kpi-val" style="color:${k.color}">${k.val}</div>
+      <div class="synth-kpi-sub">${k.sub}</div>
+      <div class="synth-kpi-bar"><div class="synth-kpi-bar-fill" style="width:${k.pct.toFixed(1)}%;background:${k.color}"></div></div>`;
+    kpiEl.appendChild(div);
+  });
+
+  /* Barre globale */
+  const barColor=globalPct>=70?'#1D9E75':globalPct>=40?'#EF9F27':'#D85A30';
+  document.getElementById('synth-global-pct').textContent=globalAv+'% avancement';
+  document.getElementById('synth-global-pct').style.color=barColor;
+  document.getElementById('synth-global-bar').style.width=globalAv+'%';
+  document.getElementById('synth-global-bar').style.background=barColor;
+
+  /* Tableau par domaine */
+  const tbody=document.getElementById('synth-tbody');
+  tbody.innerHTML='';
+  prioData.forEach(pd=>{
+    const h=pd.actions.filter(a=>a.prio==='haute').length;
+    const m=pd.actions.filter(a=>a.prio==='moyenne').length;
+    const b=pd.actions.filter(a=>a.prio==='basse').length;
+    const d=pd.actions.filter(a=>a.done).length;
+    const tot=pd.actions.length;
+    const av=tot>0?Math.round(pd.actions.map(a=>a.done?100:a.avancement).reduce((s,v)=>s+v,0)/tot):0;
+    const bc=d===tot&&tot>0?'#1D9E75':h>0?'#D85A30':m>0?'#EF9F27':'#b4b2a9';
+    const hDone=pd.actions.filter(a=>a.done&&a.prio==='haute').length;
+    const mDone=pd.actions.filter(a=>a.done&&a.prio==='moyenne').length;
+    const bDone=pd.actions.filter(a=>a.done&&a.prio==='basse').length;
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td style="font-weight:500">${pd.label}</td>
+      <td>${h>0?`<span class="synth-pill sp-h">${hDone}/${h}</span>`:'<span style="color:#d3d1c7">—</span>'}</td>
+      <td>${m>0?`<span class="synth-pill sp-m">${mDone}/${m}</span>`:'<span style="color:#d3d1c7">—</span>'}</td>
+      <td>${b>0?`<span class="synth-pill sp-b">${bDone}/${b}</span>`:'<span style="color:#d3d1c7">—</span>'}</td>
+      <td><span class="synth-pill sp-d">${d}/${tot}</span></td>
+      <td>
+        <div class="synth-sparkbar">
+          <div class="synth-sparkbar-track"><div class="synth-sparkbar-fill" style="width:${av}%;background:${bc}"></div></div>
+          <span style="font-size:11px;font-weight:500;color:${bc}">${av}%</span>
+        </div>
+      </td>`;
+    tbody.appendChild(tr);
+  });
+}
+
 /* ═══════════════ INIT ═══════════════ */
 function rebuildAll(){
   document.getElementById('grid-autonomie').innerHTML='';
   document.getElementById('grid-actions').innerHTML='';
   dims.forEach((d,i)=>document.getElementById('grid-autonomie').appendChild(buildAutoTile(d,i)));
   prioData.forEach((pd,i)=>document.getElementById('grid-actions').appendChild(buildPrioTileEl(pd,i)));
+  renderSynth();
 }
 rebuildAll();
 loadFromCloud().then(()=>{
