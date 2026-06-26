@@ -1521,10 +1521,10 @@ function getDataFile(id){return 'data_'+id+'.json';}
 async function loadCollabFromCloud(id){
   setSyncStatus('saving','Chargement...');
   const file=getDataFile(id);
+  /* Lecture via raw.githubusercontent.com — pas d'auth nécessaire, pas de CORS */
+  const rawUrl='https://raw.githubusercontent.com/'+GH_REPO+'/main/'+file+'?t='+Date.now();
   try{
-    const r=await fetch(API_BASE+'/repos/'+GH_REPO+'/contents/'+file,{
-      headers:{'Authorization':'token '+GH_TOKEN,'Cache-Control':'no-cache'}
-    });
+    const r=await fetch(rawUrl);
     if(r.status===404){
       setSyncStatus('ok','Nouveau collaborateur \u2014 donn\u00e9es par d\u00e9faut');
       dims.splice(0,dims.length,...JSON.parse(JSON.stringify(getDefaultDimsForCollab(id))));
@@ -1534,10 +1534,13 @@ async function loadCollabFromCloud(id){
       rebuildAll();
       return;
     }
-    const meta=await r.json();
-    collabFileSHA[id]=meta.sha||'';
-    const bytes=Uint8Array.from(atob(meta.content.replace(/\n/g,'')),c=>c.charCodeAt(0));
-    const data=JSON.parse(new TextDecoder().decode(bytes));
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    const text=await r.text();
+    const data=JSON.parse(text);
+    /* Récupérer le SHA via l'API pour les futures sauvegardes */
+    fetch(API_BASE+'/repos/'+GH_REPO+'/contents/'+file,{
+      headers:{'Authorization':'token '+GH_TOKEN}
+    }).then(res=>res.json()).then(meta=>{if(meta.sha)collabFileSHA[id]=meta.sha;}).catch(()=>{});
     if(data.dims&&data.dims.length){
       dims.splice(0,dims.length,...data.dims);
       prioData.splice(0,prioData.length,...data.prioData);
@@ -1549,12 +1552,18 @@ async function loadCollabFromCloud(id){
     } else {
       _cloudLoaded=true;
       rebuildAll();
-      setSyncStatus('ok','Charg\u00e9 (donn\u00e9es vides)');
+      setSyncStatus('ok','Charg\u00e9');
     }
   }catch(e){
-    setSyncStatus('err','Erreur chargement');
+    setSyncStatus('err',e.message.slice(0,50));
     const local=getCollabData(id);
-    if(local&&local.dims){dims.splice(0,dims.length,...local.dims);prioData.splice(0,prioData.length,...local.prioData);rebuildAll();}
+    if(local&&local.dims){
+      dims.splice(0,dims.length,...local.dims);
+      prioData.splice(0,prioData.length,...local.prioData);
+      _lastSaved=JSON.stringify({dims,prioData});
+      _cloudLoaded=true;
+      rebuildAll();
+    }
   }
 }
 
