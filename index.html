@@ -352,6 +352,7 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
 .pwd-config-section{background:#fff;border:.5px solid #d3d1c7;border-radius:12px;padding:14px 16px;margin-top:16px;display:flex;align-items:center;gap:12px}
 .pwd-config-label{font-size:12px;color:#5f5e5a;flex:1}
 .pwd-toggle-btn{font-size:11px;font-weight:500;padding:5px 12px;border-radius:6px;border:.5px solid #d3d1c7;background:#f7f7f5;cursor:pointer;font-family:inherit;color:#2c2c2a;white-space:nowrap}
+.overlay-pwd-cfg.open{display:flex}
 </style>
 </head>
 <body>
@@ -495,7 +496,7 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
 </div>
 
 <!-- MODAL CONFIGURATION MOT DE PASSE -->
-<div class="overlay-pwd" id="overlay-pwd-config" style="z-index:310">
+<div class="overlay-pwd-cfg" id="overlay-pwd-config" style="display:none;position:fixed;inset:0;background:rgba(44,44,42,.55);z-index:310;align-items:center;justify-content:center;padding:24px">
   <div class="pwd-modal">
     <button class="close-btn" onclick="document.getElementById('overlay-pwd-config').classList.remove('open')" style="position:absolute;top:12px;right:12px"><i class="ti ti-x"></i></button>
     <p class="pwd-modal-title">&#128274; Mot de passe accueil</p>
@@ -1608,6 +1609,8 @@ function saveCollabData(id, data){
 async function enterCollab(c){
   currentCollab = c;
   _cloudLoaded = false;
+  /* Fermer tous les overlays ouverts */
+  document.querySelectorAll('.overlay,.overlay-chat,.overlay-pwd,.overlay-pwd-cfg,.overlay-tiles,.overlay-new-collab,.overlay-edit-collab').forEach(el=>el.classList.remove('open'));
   document.getElementById('screen-home').style.display='none';
   document.getElementById('screen-app').style.display='block';
   // Badge collaborateur
