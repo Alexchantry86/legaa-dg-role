@@ -1621,11 +1621,11 @@ async function enterCollab(c){
 }
 
 function goHome(){
-  // Sauvegarder avant de partir
   if(currentCollab)saveCollabData(currentCollab.id, {dims, prioData});
   document.getElementById('screen-app').style.display='none';
   document.getElementById('screen-home').style.display='block';
   buildHomePage();
+  updatePwdStatus();
 }
 
 /* ── Cloud par collaborateur ── */
@@ -1651,6 +1651,7 @@ async function loadCollabFromCloud(id){
       prioData.splice(0,prioData.length,...JSON.parse(JSON.stringify(getDefaultPrioForCollab(id))));
       _lastSaved=JSON.stringify({dims,prioData});
       _cloudLoaded=true;
+      _lastCloudLoadTime=Date.now();
       rebuildAll();
       return;
     }
@@ -1668,10 +1669,12 @@ async function loadCollabFromCloud(id){
       prioData.forEach(pd=>pd.actions.forEach(a=>{if(a.avancement===undefined)a.avancement=a.done?100:0;}));
       _lastSaved=JSON.stringify({dims,prioData});
       _cloudLoaded=true;
+      _lastCloudLoadTime=Date.now();
       rebuildAll();
       setSyncStatus('ok','Synchronis\u00e9 \u00b7 '+new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}));
     } else {
       _cloudLoaded=true;
+      _lastCloudLoadTime=Date.now();
       rebuildAll();
       setSyncStatus('ok','Charg\u00e9');
     }
@@ -1684,6 +1687,7 @@ async function loadCollabFromCloud(id){
       prioData.splice(0,prioData.length,...local.prioData);
       _lastSaved=JSON.stringify({dims,prioData});
       _cloudLoaded=true;
+      _lastCloudLoadTime=Date.now();
       rebuildAll();
       setSyncStatus('ok','Donn\u00e9es locales charg\u00e9es');
     }
@@ -2146,12 +2150,16 @@ document.querySelectorAll('.tab-btn').forEach(btn=>{
 
 /* Démarrer sur la page de garde */
 buildHomePage();
+updatePwdStatus();
 
-/* Autosave — seulement si un collab est chargé ET que les données ont été reçues du cloud */
+/* Autosave — seulement si un collab est chargé ET données reçues du cloud */
 let _cloudLoaded=false;
+let _lastCloudLoadTime=0;
 setInterval(()=>{
-  if(currentCollab && _cloudLoaded) saveToCloud(true);
-}, 2000);
+  if(currentCollab && _cloudLoaded && (Date.now()-_lastCloudLoadTime > 5000)){
+    saveToCloud(true);
+  }
+}, 3000);
 </script>
 </body>
 </html>
