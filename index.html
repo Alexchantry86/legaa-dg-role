@@ -686,9 +686,11 @@ let activeAutoIdx=null;
 function buildAutoTile(d,i){
   const div=document.createElement('div');div.className='tile';div.id='atile'+i;
   const c=colA(d.val);
+  // Fond 20% opacité via hex 33, icône à la couleur pleine
+  const bg=c+'33';
   div.innerHTML=`
-    <div class="tile-icon-wrap" style="background:${c}18">
-      <i class="ti ${d.icon}" style="color:${c};font-size:22px" aria-hidden="true"></i>
+    <div class="tile-icon-wrap" style="background:${bg};width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center">
+      <i class="ti ${d.icon}" style="color:${c};font-size:24px"></i>
     </div>
     <div class="arc-wrap"><svg width="72" height="40" viewBox="0 0 72 40">
       <path d="${bgD()}" fill="none" stroke="#e8e6e0" stroke-width="6" stroke-linecap="round"/>
@@ -846,8 +848,8 @@ function buildPrioTileEl(pd,i){
   ].filter(Boolean).join('');
   div.innerHTML=`<div class="prio-tile-bar" style="background:${barColor}"></div>
     <div class="prio-tile-top">
-      <div class="prio-tile-icon-wrap" style="background:${barColor}18">
-        <i class="ti ${pd.icon}" style="color:${barColor};font-size:20px" aria-hidden="true"></i>
+      <div class="prio-tile-icon-wrap" style="background:${barColor}33;width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:4px">
+        <i class="ti ${pd.icon}" style="color:${barColor};font-size:22px"></i>
       </div>
       <input class="prio-tile-label-input" id="plabel${i}" value="${pd.label}" title="Cliquer pour renommer"/>
     </div>
