@@ -1982,26 +1982,32 @@ async function shortenCollabUrl(){
   const label = document.getElementById('ec-shorten-label');
   btn.disabled = true;
   label.textContent = 'G\u00e9n\u00e9ration en cours\u2026';
-  try{
-    // is.gd : API gratuite, sans pub, sans compte
-    const res = await fetch('https://is.gd/create.php?format=simple&url='+encodeURIComponent(longUrl));
-    if(!res.ok) throw new Error('HTTP '+res.status);
-    const short = (await res.text()).trim();
-    if(short && short.startsWith('https://is.gd/')){
-      document.getElementById('ec-url').value = short;
-      label.textContent = '\u2713 Lien raccourci g\u00e9n\u00e9r\u00e9 !';
-      btn.style.borderColor = '#1D9E75';
-      btn.style.color = '#1D9E75';
-      setTimeout(()=>{
-        label.textContent = 'G\u00e9n\u00e9rer un lien raccourci';
-        btn.style.borderColor = '#d3d1c7';
-        btn.style.color = '#5f5e5a';
-        btn.disabled = false;
-      }, 3000);
-    } else {
-      throw new Error('R\u00e9ponse invalide');
-    }
-  } catch(e){
+  // Essayer is.gd puis v.gd (même API, même service)
+  const apis = [
+    'https://is.gd/create.php?format=simple&url=',
+    'https://v.gd/create.php?format=simple&url='
+  ];
+  let short = null;
+  for(const api of apis){
+    try{
+      const res = await fetch(api + encodeURIComponent(longUrl));
+      if(!res.ok) continue;
+      const txt = (await res.text()).trim();
+      if(txt.startsWith('http')){ short = txt; break; }
+    }catch(e){ continue; }
+  }
+  if(short){
+    document.getElementById('ec-url').value = short;
+    label.textContent = '\u2713 Lien raccourci g\u00e9n\u00e9r\u00e9 !';
+    btn.style.borderColor = '#1D9E75';
+    btn.style.color = '#1D9E75';
+    setTimeout(()=>{
+      label.textContent = 'G\u00e9n\u00e9rer un lien raccourci';
+      btn.style.borderColor = '#d3d1c7';
+      btn.style.color = '#5f5e5a';
+      btn.disabled = false;
+    }, 3000);
+  } else {
     label.textContent = 'Erreur \u2014 v\u00e9rifiez votre connexion';
     btn.style.color = '#D85A30';
     setTimeout(()=>{
