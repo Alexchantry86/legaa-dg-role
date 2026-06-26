@@ -539,7 +539,7 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
     </div>
     <button onclick="shortenCollabUrl()" id="ec-shorten-btn"
       style="width:100%;margin-bottom:14px;padding:8px;border-radius:8px;border:.5px solid #d3d1c7;background:#f7f7f5;cursor:pointer;font-family:inherit;font-size:12px;font-weight:500;color:#5f5e5a;display:flex;align-items:center;justify-content:center;gap:6px;transition:background .12s">
-      <i class="ti ti-link" style="font-size:13px"></i> <span id="ec-shorten-label">G&eacute;n&eacute;rer un lien raccourci (TinyURL)</span>
+      <i class="ti ti-link" style="font-size:13px"></i> <span id="ec-shorten-label">G&eacute;n&eacute;rer un lien raccourci (is.gd)</span>
     </button>
     <button class="add-btn" id="ec-save" style="width:100%;justify-content:center;padding:10px;font-size:13px"><i class="ti ti-check" style="font-size:14px"></i> Enregistrer</button>
   </div>
@@ -1977,23 +1977,23 @@ const BASE_URL = 'https://alexchantry86.github.io/legaa-dg-role/';
 
 async function shortenCollabUrl(){
   const longUrl = document.getElementById('ec-url').value.trim();
-  if(!longUrl){ return; }
+  if(!longUrl) return;
   const btn = document.getElementById('ec-shorten-btn');
   const label = document.getElementById('ec-shorten-label');
   btn.disabled = true;
   label.textContent = 'G\u00e9n\u00e9ration en cours\u2026';
   try{
-    // TinyURL API publique — pas de clé requise
-    const res = await fetch('https://tinyurl.com/api-create.php?url='+encodeURIComponent(longUrl));
+    // is.gd : API gratuite, sans pub, sans compte
+    const res = await fetch('https://is.gd/create.php?format=simple&url='+encodeURIComponent(longUrl));
     if(!res.ok) throw new Error('HTTP '+res.status);
-    const short = await res.text();
-    if(short && short.startsWith('http')){
+    const short = (await res.text()).trim();
+    if(short && short.startsWith('https://is.gd/')){
       document.getElementById('ec-url').value = short;
       label.textContent = '\u2713 Lien raccourci g\u00e9n\u00e9r\u00e9 !';
       btn.style.borderColor = '#1D9E75';
       btn.style.color = '#1D9E75';
       setTimeout(()=>{
-        label.textContent = 'G\u00e9n\u00e9rer un lien raccourci (TinyURL)';
+        label.textContent = 'G\u00e9n\u00e9rer un lien raccourci';
         btn.style.borderColor = '#d3d1c7';
         btn.style.color = '#5f5e5a';
         btn.disabled = false;
@@ -2002,10 +2002,10 @@ async function shortenCollabUrl(){
       throw new Error('R\u00e9ponse invalide');
     }
   } catch(e){
-    label.textContent = 'Erreur — v\u00e9rifiez votre connexion';
+    label.textContent = 'Erreur \u2014 v\u00e9rifiez votre connexion';
     btn.style.color = '#D85A30';
     setTimeout(()=>{
-      label.textContent = 'G\u00e9n\u00e9rer un lien raccourci (TinyURL)';
+      label.textContent = 'G\u00e9n\u00e9rer un lien raccourci';
       btn.style.color = '#5f5e5a';
       btn.disabled = false;
     }, 3000);
