@@ -1521,10 +1521,11 @@ function getDataFile(id){return 'data_'+id+'.json';}
 async function loadCollabFromCloud(id){
   setSyncStatus('saving','Chargement...');
   const file=getDataFile(id);
-  /* Lecture via raw.githubusercontent.com — pas d'auth nécessaire, pas de CORS */
   const rawUrl='https://raw.githubusercontent.com/'+GH_REPO+'/main/'+file+'?t='+Date.now();
+  console.log('[load] URL:', rawUrl);
   try{
     const r=await fetch(rawUrl);
+    console.log('[load] status:', r.status);
     if(r.status===404){
       setSyncStatus('ok','Nouveau collaborateur \u2014 donn\u00e9es par d\u00e9faut');
       dims.splice(0,dims.length,...JSON.parse(JSON.stringify(getDefaultDimsForCollab(id))));
@@ -1536,8 +1537,9 @@ async function loadCollabFromCloud(id){
     }
     if(!r.ok) throw new Error('HTTP '+r.status);
     const text=await r.text();
+    console.log('[load] text length:', text.length, 'preview:', text.slice(0,80));
     const data=JSON.parse(text);
-    /* Récupérer le SHA via l'API pour les futures sauvegardes */
+    console.log('[load] dims:', data.dims&&data.dims.length, 'prioData:', data.prioData&&data.prioData.length);
     fetch(API_BASE+'/repos/'+GH_REPO+'/contents/'+file,{
       headers:{'Authorization':'token '+GH_TOKEN}
     }).then(res=>res.json()).then(meta=>{if(meta.sha)collabFileSHA[id]=meta.sha;}).catch(()=>{});
@@ -1555,7 +1557,8 @@ async function loadCollabFromCloud(id){
       setSyncStatus('ok','Charg\u00e9');
     }
   }catch(e){
-    setSyncStatus('err',e.message.slice(0,50));
+    console.error('[load] ERREUR:', e);
+    setSyncStatus('err','Err: '+e.message.slice(0,60));
     const local=getCollabData(id);
     if(local&&local.dims){
       dims.splice(0,dims.length,...local.dims);
@@ -1563,6 +1566,7 @@ async function loadCollabFromCloud(id){
       _lastSaved=JSON.stringify({dims,prioData});
       _cloudLoaded=true;
       rebuildAll();
+      setSyncStatus('ok','Donn\u00e9es locales charg\u00e9es');
     }
   }
 }
