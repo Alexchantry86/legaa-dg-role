@@ -303,6 +303,33 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
 .tiles-add-input{flex:1;border:.5px solid #d3d1c7;border-radius:8px;padding:7px 12px;font-size:13px;font-family:inherit;outline:none}
 .tiles-add-input:focus{border-color:#888780}
 
+
+/* ── PICTOS TUILES ONGLET 1 ── */
+.tile-icon-wrap{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:2px}
+
+/* ── PICTOS TUILES ONGLET 2 ── */
+.prio-tile-icon-wrap{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:2px}
+
+/* ── ENTREPRISE BADGE ── */
+.company-badge{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:600;padding:2px 8px;border-radius:10px;letter-spacing:.04em;text-transform:uppercase}
+.company-legaa{background:#E8F0FE;color:#2C5FAD}
+.company-capembal{background:#FFF0E8;color:#AD5C2C}
+.company-both{background:#F0E8FF;color:#6B2CAD}
+.collab-company{margin-top:2px}
+
+/* ── HOME FILTERS ── */
+.home-filters{display:flex;gap:8px;justify-content:center;margin-bottom:24px;flex-wrap:wrap}
+.filter-btn{font-size:12px;font-weight:500;padding:6px 14px;border-radius:20px;border:.5px solid #d3d1c7;background:#fff;cursor:pointer;color:#888780;transition:all .12s;font-family:inherit}
+.filter-btn:hover{border-color:#888780;color:#2c2c2a}
+.filter-btn.active{background:#2c2c2a;color:#fff;border-color:#2c2c2a}
+
+/* ── EDIT MODAL COLLAB ── */
+.overlay-edit-collab{display:none;position:fixed;inset:0;background:rgba(44,44,42,.42);z-index:200;align-items:center;justify-content:center;padding:24px}
+.overlay-edit-collab.open{display:flex}
+.edit-collab-modal{background:#fff;border-radius:18px;width:100%;max-width:420px;padding:28px 28px 24px;position:relative}
+.collab-card-edit{position:absolute;top:10px;left:10px;background:#f1efe8;border:none;border-radius:50%;width:22px;height:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;color:#888780;opacity:0;transition:opacity .15s;line-height:1}
+.collab-card:hover .collab-card-edit{opacity:1}
+.collab-card-edit:hover{background:#E8F0FE;color:#2C5FAD}
 </style>
 </head>
 <body>
@@ -416,6 +443,28 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
   </div>
 </div>
 
+<!-- MODAL EDITION COLLABORATEUR -->
+<div class="overlay-edit-collab" id="overlay-edit-collab">
+  <div class="edit-collab-modal">
+    <button class="close-btn" id="close-edit-collab"><i class="ti ti-x"></i></button>
+    <p class="new-collab-title">Modifier le collaborateur</p>
+    <p class="new-collab-sub">Mettre &agrave; jour les informations</p>
+    <p class="field-label">Pr&eacute;nom</p>
+    <input class="field-input" id="ec-name" type="text"/>
+    <p class="field-label">R&ocirc;le / Poste</p>
+    <input class="field-input" id="ec-role" type="text"/>
+    <p class="field-label">Entreprise</p>
+    <div style="display:flex;gap:8px;margin-bottom:16px" id="ec-company-btns">
+      <button class="filter-btn active" data-co="legaa" style="flex:1" onclick="selectCompany('legaa')">LEGAA</button>
+      <button class="filter-btn" data-co="capembal" style="flex:1" onclick="selectCompany('capembal')">CAP'EMBAL</button>
+      <button class="filter-btn" data-co="both" style="flex:1" onclick="selectCompany('both')">Les deux</button>
+    </div>
+    <p class="field-label">Couleur</p>
+    <div class="color-row" id="ec-colors"></div>
+    <button class="add-btn" id="ec-save" style="width:100%;justify-content:center;padding:10px;font-size:13px"><i class="ti ti-check" style="font-size:14px"></i> Enregistrer</button>
+  </div>
+</div>
+
 <!-- MODAL NOUVEAU COLLABORATEUR -->
 <div class="overlay-new-collab" id="overlay-new-collab">
   <div class="new-collab-modal">
@@ -426,6 +475,12 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
     <input class="field-input" id="nc-name" type="text" placeholder="Ex : Sophie"/>
     <p class="field-label">R&ocirc;le / Poste</p>
     <input class="field-input" id="nc-role" type="text" placeholder="Ex : Responsable Qualit&eacute;"/>
+    <p class="field-label">Entreprise</p>
+    <div style="display:flex;gap:8px;margin-bottom:16px" id="nc-company-btns">
+      <button class="filter-btn active" data-co="legaa" style="flex:1" onclick="selectNcCompany('legaa')">LEGAA</button>
+      <button class="filter-btn" data-co="capembal" style="flex:1" onclick="selectNcCompany('capembal')">CAP'EMBAL</button>
+      <button class="filter-btn" data-co="both" style="flex:1" onclick="selectNcCompany('both')">Les deux</button>
+    </div>
     <p class="field-label">Couleur</p>
     <div class="color-row" id="nc-colors"></div>
     <button class="add-btn" id="nc-create" style="width:100%;justify-content:center;padding:10px;font-size:13px"><i class="ti ti-user-plus" style="font-size:14px"></i> Cr&eacute;er l&rsquo;espace</button>
@@ -1320,12 +1375,12 @@ function loadCollabs(){
   }catch(e){}
   // Défaut : liste initiale
   return [
-    {id:'jordan',  name:'Jordan',   role:"Manager Commercial",        color:'#4F7DC0'},
-    {id:'josselyn',name:'Josselyn', role:"Responsable ADV",           color:'#7C5CBF'},
-    {id:'vincent', name:'Vincent',  role:"Chef d'Atelier",            color:'#2E8B6E'},
-    {id:'bruno',   name:'Bruno',    role:"Responsable Logistique",    color:'#C07B2E'},
-    {id:'maxime',  name:'Maxime',   role:"Responsable Transport",     color:'#B85070'},
-    {id:'etienne', name:'Etienne',  role:"Directeur G\u00e9n\u00e9ral (DG)", color:'#2c2c2a'},
+    {id:'jordan',  name:'Jordan',   role:"Manager Commercial",        color:'#4F7DC0', company:'legaa'},
+    {id:'josselyn',name:'Josselyn', role:"Responsable ADV",           color:'#7C5CBF', company:'legaa'},
+    {id:'vincent', name:'Vincent',  role:"Chef d'Atelier",            color:'#2E8B6E', company:'legaa'},
+    {id:'bruno',   name:'Bruno',    role:"Responsable Logistique",    color:'#C07B2E', company:'legaa'},
+    {id:'maxime',  name:'Maxime',   role:"Responsable Transport",     color:'#B85070', company:'legaa'},
+    {id:'etienne', name:'Etienne',  role:"Directeur G\u00e9n\u00e9ral (DG)", color:'#2c2c2a',company:'both'},
   ];
 }
 function saveCollabs(list){
@@ -1339,7 +1394,12 @@ function initials(name){return name.slice(0,2).toUpperCase();}
 function buildHomePage(){
   const grid=document.getElementById('home-grid');
   grid.innerHTML='';
-  COLLABS.forEach(c=>{
+  const filtered=COLLABS.filter(c=>{
+    if(_activeFilter==='all')return true;
+    return (c.company||'legaa')===_activeFilter;
+  });
+  filtered.forEach((c,fi)=>{
+    const idx=COLLABS.indexOf(c);
     const saved=getCollabData(c.id);
     const card=document.createElement('div');
     card.className='collab-card';
@@ -1354,134 +1414,68 @@ function buildHomePage(){
       avPct=totalCount>0?Math.round(avPct/totalCount):0;
     }
     const barColor=avPct>=70?'#1D9E75':avPct>=40?'#EF9F27':'#D85A30';
+    const company=c.company||'legaa';
 
     // Avatar
     const av=document.createElement('div');
-    av.className='collab-avatar';
-    av.style.background=c.color;
-    av.textContent=initials(c.name);
+    av.className='collab-avatar';av.style.background=c.color;av.textContent=initials(c.name);
     card.appendChild(av);
-
     // Nom
-    const nm=document.createElement('div');
-    nm.className='collab-name';
-    nm.textContent=c.name;
-    card.appendChild(nm);
-
+    const nm=document.createElement('div');nm.className='collab-name';nm.textContent=c.name;card.appendChild(nm);
     // Rôle
-    const rl=document.createElement('div');
-    rl.className='collab-role';
-    rl.textContent=c.role;
-    card.appendChild(rl);
-
+    const rl=document.createElement('div');rl.className='collab-role';rl.textContent=c.role;card.appendChild(rl);
+    // Badge entreprise
+    const co=document.createElement('div');co.className='collab-company';
+    const badge=document.createElement('span');
+    badge.className='company-badge '+companyClass(company);
+    badge.textContent=companyLabel(company);
+    co.appendChild(badge);card.appendChild(co);
     // Stats
     if(totalCount>0){
-      const stats=document.createElement('div');
-      stats.className='collab-stats';
-      const s1=document.createElement('span');
-      s1.className='collab-stat';
+      const stats=document.createElement('div');stats.className='collab-stats';
+      const s1=document.createElement('span');s1.className='collab-stat';
       s1.style.cssText='background:'+c.color+'22;color:'+c.color;
-      s1.textContent=doneCount+'/'+totalCount+' termin\u00e9es';
-      const s2=document.createElement('span');
-      s2.className='collab-stat';
-      s2.style.cssText='background:#f1efe8;color:#888780';
-      s2.textContent=avPct+'%';
-      stats.appendChild(s1);stats.appendChild(s2);
-      card.appendChild(stats);
-      const prog=document.createElement('div');
-      prog.className='collab-progress';
-      const fill=document.createElement('div');
-      fill.className='collab-progress-fill';
+      s1.textContent=doneCount+'/'+totalCount+' terminées';
+      const s2=document.createElement('span');s2.className='collab-stat';
+      s2.style.cssText='background:#f1efe8;color:#888780';s2.textContent=avPct+'%';
+      stats.appendChild(s1);stats.appendChild(s2);card.appendChild(stats);
+      const prog=document.createElement('div');prog.className='collab-progress';
+      const fill=document.createElement('div');fill.className='collab-progress-fill';
       fill.style.cssText='width:'+avPct+'%;background:'+barColor;
-      prog.appendChild(fill);
-      card.appendChild(prog);
+      prog.appendChild(fill);card.appendChild(prog);
     } else {
-      const stats=document.createElement('div');
-      stats.className='collab-stats';
-      const s1=document.createElement('span');
-      s1.className='collab-stat';
-      s1.style.cssText='background:#f1efe8;color:#b4b2a9';
-      s1.textContent='Non configur\u00e9';
-      stats.appendChild(s1);
-      card.appendChild(stats);
+      const stats=document.createElement('div');stats.className='collab-stats';
+      const s1=document.createElement('span');s1.className='collab-stat';
+      s1.style.cssText='background:#f1efe8;color:#b4b2a9';s1.textContent='Non configuré';
+      stats.appendChild(s1);card.appendChild(stats);
     }
-
+    // Bouton éditer (stylo)
+    const edit=document.createElement('button');edit.className='collab-card-edit';
+    edit.title='Modifier';edit.innerHTML='<i class="ti ti-pencil" style="font-size:10px"></i>';
+    edit.addEventListener('click',e=>openEditCollab(idx,e));
+    card.appendChild(edit);
     // Bouton supprimer
-    const del=document.createElement('button');
-    del.className='collab-card-del';
-    del.title='Supprimer ce collaborateur';
-    del.innerHTML='&#x2715;';
+    const del=document.createElement('button');del.className='collab-card-del';
+    del.title='Supprimer';del.innerHTML='&#x2715;';
     del.addEventListener('click',e=>{
       e.stopPropagation();
-      if(!confirm('Supprimer '+c.name+' ? Ses donn\u00e9es resteront sur GitHub.'))return;
-      COLLABS=COLLABS.filter(x=>x.id!==c.id);
-      saveCollabs(COLLABS);
-      buildHomePage();
+      if(!confirm('Supprimer '+c.name+' ?'))return;
+      COLLABS=COLLABS.filter(x=>x.id!==c.id);saveCollabs(COLLABS);buildHomePage();
     });
     card.appendChild(del);
     card.addEventListener('click',()=>enterCollab(c));
     grid.appendChild(card);
   });
-
   // Bouton +
-  const addCard=document.createElement('div');
-  addCard.className='collab-card-add';
-  const addIcon=document.createElement('div');
-  addIcon.className='collab-card-add-icon';
+  const addCard=document.createElement('div');addCard.className='collab-card-add';
+  const addIcon=document.createElement('div');addIcon.className='collab-card-add-icon';
   addIcon.innerHTML='<i class="ti ti-plus"></i>';
-  const addLabel=document.createElement('span');
-  addLabel.className='collab-card-add-label';
+  const addLabel=document.createElement('span');addLabel.className='collab-card-add-label';
   addLabel.textContent='Nouveau collaborateur';
-  addCard.appendChild(addIcon);
-  addCard.appendChild(addLabel);
+  addCard.appendChild(addIcon);addCard.appendChild(addLabel);
   addCard.addEventListener('click',openNewCollabModal);
   grid.appendChild(addCard);
 }
-
-/* ── Modal nouveau collaborateur ── */
-function openNewCollabModal(){
-  document.getElementById('nc-name').value='';
-  document.getElementById('nc-role').value='';
-  // Swatches couleurs
-  const cr=document.getElementById('nc-colors');
-  cr.innerHTML='';
-  selectedColor=COLLAB_COLORS[0];
-  COLLAB_COLORS.forEach(col=>{
-    const sw=document.createElement('div');
-    sw.className='color-swatch'+(col===selectedColor?' selected':'');
-    sw.style.background=col;
-    sw.addEventListener('click',()=>{
-      selectedColor=col;
-      cr.querySelectorAll('.color-swatch').forEach(s=>s.classList.remove('selected'));
-      sw.classList.add('selected');
-    });
-    cr.appendChild(sw);
-  });
-  document.getElementById('overlay-new-collab').classList.add('open');
-  setTimeout(()=>document.getElementById('nc-name').focus(),80);
-}
-
-document.getElementById('nc-create').addEventListener('click',()=>{
-  const name=document.getElementById('nc-name').value.trim();
-  const role=document.getElementById('nc-role').value.trim();
-  if(!name){document.getElementById('nc-name').focus();return;}
-  const id=name.toLowerCase().replace(/[^a-z0-9]/g,'_').replace(/_+/g,'_');
-  const collab={id,name,role:role||'Collaborateur',color:selectedColor};
-  COLLABS.push(collab);
-  saveCollabs(COLLABS);
-  document.getElementById('overlay-new-collab').classList.remove('open');
-  buildHomePage();
-  // Entrer directement dans le nouvel espace
-  enterCollab(collab);
-});
-document.getElementById('nc-name').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('nc-role').focus();});
-document.getElementById('nc-role').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('nc-create').click();});
-document.getElementById('close-new-collab').addEventListener('click',()=>{
-  document.getElementById('overlay-new-collab').classList.remove('open');
-});
-document.getElementById('overlay-new-collab').addEventListener('click',e=>{
-  if(e.target.id==='overlay-new-collab')document.getElementById('overlay-new-collab').classList.remove('open');
-});
 
 function getCollabData(id){
   try{ return JSON.parse(localStorage.getItem('legaa_collab_'+id)); }catch(e){return null;}
@@ -1708,6 +1702,82 @@ document.getElementById('btn-add-tile').addEventListener('click',()=>{
 });
 
 
+
+/* ── FILTRE ENTREPRISE ── */
+let _activeFilter='all';
+function setFilter(f,btn){
+  _activeFilter=f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  buildHomePage();
+}
+function companyLabel(c){return c==='legaa'?'LEGAA':c==='capembal'?"CAP'EMBAL":'LEGAA + CAP';}
+function companyClass(c){return c==='legaa'?'company-legaa':c==='capembal'?'company-capembal':'company-both';}
+
+/* ── MODAL EDIT COLLAB ── */
+let _editIdx=null;
+let _ecSelectedColor=null;
+let _ecSelectedCompany='legaa';
+
+function openEditCollab(idx,e){
+  e.stopPropagation();
+  _editIdx=idx;
+  const c=COLLABS[idx];
+  document.getElementById('ec-name').value=c.name;
+  document.getElementById('ec-role').value=c.role;
+  _ecSelectedCompany=c.company||'legaa';
+  _ecSelectedColor=c.color;
+  // Boutons entreprise
+  document.querySelectorAll('#ec-company-btns button').forEach(b=>{
+    b.classList.toggle('active',b.dataset.co===_ecSelectedCompany);
+  });
+  // Swatches couleur
+  const cr=document.getElementById('ec-colors');
+  cr.innerHTML='';
+  COLLAB_COLORS.forEach(col=>{
+    const sw=document.createElement('div');
+    sw.className='color-swatch'+(col===_ecSelectedColor?' selected':'');
+    sw.style.background=col;
+    sw.addEventListener('click',()=>{
+      _ecSelectedColor=col;
+      cr.querySelectorAll('.color-swatch').forEach(s=>s.classList.remove('selected'));
+      sw.classList.add('selected');
+    });
+    cr.appendChild(sw);
+  });
+  document.getElementById('overlay-edit-collab').classList.add('open');
+  setTimeout(()=>document.getElementById('ec-name').focus(),80);
+}
+
+function selectNcCompany(co){
+  document.querySelectorAll('#nc-company-btns button').forEach(b=>b.classList.toggle('active',b.dataset.co===co));
+}
+function selectCompany(co){
+  _ecSelectedCompany=co;
+  document.querySelectorAll('#ec-company-btns button').forEach(b=>{
+    b.classList.toggle('active',b.dataset.co===co);
+  });
+}
+
+document.getElementById('ec-save').addEventListener('click',()=>{
+  if(_editIdx===null)return;
+  const name=document.getElementById('ec-name').value.trim();
+  const role=document.getElementById('ec-role').value.trim();
+  if(!name)return;
+  COLLABS[_editIdx].name=name;
+  COLLABS[_editIdx].role=role;
+  COLLABS[_editIdx].color=_ecSelectedColor||COLLABS[_editIdx].color;
+  COLLABS[_editIdx].company=_ecSelectedCompany;
+  saveCollabs(COLLABS);
+  document.getElementById('overlay-edit-collab').classList.remove('open');
+  buildHomePage();
+});
+document.getElementById('close-edit-collab').addEventListener('click',()=>{
+  document.getElementById('overlay-edit-collab').classList.remove('open');
+});
+document.getElementById('overlay-edit-collab').addEventListener('click',e=>{
+  if(e.target.id==='overlay-edit-collab')document.getElementById('overlay-edit-collab').classList.remove('open');
+});
 /* ── Menu ··· ── */
 function toggleMenu(){
   const m=document.getElementById('more-menu');
