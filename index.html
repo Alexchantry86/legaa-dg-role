@@ -340,8 +340,9 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
       <span id="sync-label">Chargement…</span>
       <button class="sync-btn" onclick="openTileManager()" title="Gérer les domaines"><i class="ti ti-layout-grid" style="font-size:13px"></i> Domaines</button>
       <button class="sync-btn primary" onclick="forceSave()" id="save-btn"><i class="ti ti-cloud-upload" style="font-size:13px"></i> Sauvegarder</button>
-      <button class="sync-btn" onclick="exportExcel()" title="Excel"><i class="ti ti-file-spreadsheet" style="font-size:13px"></i></button>
-      <button class="sync-btn" onclick="exportPDF()" title="PDF"><i class="ti ti-file-type-pdf" style="font-size:13px"></i></button>
+      <button class="sync-btn" onclick="loadCollabFromCloud(currentCollab?currentCollab.id:'etienne')" title="Recharger depuis le cloud"><i class="ti ti-refresh" style="font-size:13px"></i></button>
+      <button class="sync-btn" onclick="exportExcel()" title="Exporter Excel"><i class="ti ti-file-spreadsheet" style="font-size:13px"></i></button>
+      <button class="sync-btn" onclick="exportPDF()" title="Exporter PDF"><i class="ti ti-file-type-pdf" style="font-size:13px"></i></button>
     </div>
   </div>
 
@@ -1539,9 +1540,12 @@ async function loadCollabFromCloud(id){
       prioData.splice(0,prioData.length,...data.prioData);
       prioData.forEach(pd=>pd.actions.forEach(a=>{if(a.avancement===undefined)a.avancement=a.done?100:0;}));
       _lastSaved=JSON.stringify({dims,prioData});
+      rebuildAll();
+      setSyncStatus('ok','Synchronis\u00e9 \u00b7 '+new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}));
+    } else {
+      rebuildAll();
+      setSyncStatus('ok','Charg\u00e9 (donn\u00e9es vides)');
     }
-    rebuildAll();
-    setSyncStatus('ok','Synchronisé · '+new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}));
   }catch(e){
     setSyncStatus('err','Erreur chargement');
     const local=getCollabData(id);
