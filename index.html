@@ -472,14 +472,18 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
     <div class="color-row" id="ec-colors"></div>
     <!-- Lien personnel -->
     <p class="field-label" style="margin-top:16px">Lien personnel &agrave; partager</p>
-    <div style="display:flex;gap:8px;align-items:center;margin-bottom:16px">
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px">
       <input class="field-input" id="ec-url" type="text"
         style="margin-bottom:0;font-size:11px;flex:1"/>
       <button onclick="copyCollabUrl()" id="ec-copy-btn"
-        style="flex-shrink:0;padding:9px 14px;border-radius:8px;border:.5px solid #d3d1c7;background:#fff;cursor:pointer;font-family:inherit;font-size:12px;font-weight:500;color:#2c2c2a;display:flex;align-items:center;gap:5px;white-space:nowrap;transition:background .12s">
+        style="flex-shrink:0;padding:9px 12px;border-radius:8px;border:.5px solid #d3d1c7;background:#fff;cursor:pointer;font-family:inherit;font-size:12px;font-weight:500;color:#2c2c2a;display:flex;align-items:center;gap:5px;white-space:nowrap;transition:background .12s">
         <i class="ti ti-copy" style="font-size:13px"></i> Copier
       </button>
     </div>
+    <button onclick="shortenCollabUrl()" id="ec-shorten-btn"
+      style="width:100%;margin-bottom:14px;padding:8px;border-radius:8px;border:.5px solid #d3d1c7;background:#f7f7f5;cursor:pointer;font-family:inherit;font-size:12px;font-weight:500;color:#5f5e5a;display:flex;align-items:center;justify-content:center;gap:6px;transition:background .12s">
+      <i class="ti ti-link" style="font-size:13px"></i> <span id="ec-shorten-label">G&eacute;n&eacute;rer un lien raccourci (TinyURL)</span>
+    </button>
     <button class="add-btn" id="ec-save" style="width:100%;justify-content:center;padding:10px;font-size:13px"><i class="ti ti-check" style="font-size:14px"></i> Enregistrer</button>
   </div>
 </div>
@@ -1822,6 +1826,43 @@ document.getElementById('overlay-new-collab').addEventListener('click',e=>{
 
 /* ── URL PERSONNALISÉE PAR COLLABORATEUR ── */
 const BASE_URL = 'https://alexchantry86.github.io/legaa-dg-role/';
+
+async function shortenCollabUrl(){
+  const longUrl = document.getElementById('ec-url').value.trim();
+  if(!longUrl){ return; }
+  const btn = document.getElementById('ec-shorten-btn');
+  const label = document.getElementById('ec-shorten-label');
+  btn.disabled = true;
+  label.textContent = 'G\u00e9n\u00e9ration en cours\u2026';
+  try{
+    // TinyURL API publique — pas de clé requise
+    const res = await fetch('https://tinyurl.com/api-create.php?url='+encodeURIComponent(longUrl));
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const short = await res.text();
+    if(short && short.startsWith('http')){
+      document.getElementById('ec-url').value = short;
+      label.textContent = '\u2713 Lien raccourci g\u00e9n\u00e9r\u00e9 !';
+      btn.style.borderColor = '#1D9E75';
+      btn.style.color = '#1D9E75';
+      setTimeout(()=>{
+        label.textContent = 'G\u00e9n\u00e9rer un lien raccourci (TinyURL)';
+        btn.style.borderColor = '#d3d1c7';
+        btn.style.color = '#5f5e5a';
+        btn.disabled = false;
+      }, 3000);
+    } else {
+      throw new Error('R\u00e9ponse invalide');
+    }
+  } catch(e){
+    label.textContent = 'Erreur — v\u00e9rifiez votre connexion';
+    btn.style.color = '#D85A30';
+    setTimeout(()=>{
+      label.textContent = 'G\u00e9n\u00e9rer un lien raccourci (TinyURL)';
+      btn.style.color = '#5f5e5a';
+      btn.disabled = false;
+    }, 3000);
+  }
+}
 
 function getCollabUrl(id){
   return BASE_URL + '?collab=' + encodeURIComponent(id);
