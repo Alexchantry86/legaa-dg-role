@@ -470,6 +470,16 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
     </div>
     <p class="field-label">Couleur</p>
     <div class="color-row" id="ec-colors"></div>
+    <!-- Lien personnel -->
+    <p class="field-label" style="margin-top:16px">Lien personnel &agrave; partager</p>
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:16px">
+      <input class="field-input" id="ec-url" type="text" readonly
+        style="margin-bottom:0;background:#f7f7f5;color:#888780;font-size:11px;cursor:text;flex:1"/>
+      <button onclick="copyCollabUrl()" id="ec-copy-btn"
+        style="flex-shrink:0;padding:9px 14px;border-radius:8px;border:.5px solid #d3d1c7;background:#fff;cursor:pointer;font-family:inherit;font-size:12px;font-weight:500;color:#2c2c2a;display:flex;align-items:center;gap:5px;white-space:nowrap;transition:background .12s">
+        <i class="ti ti-copy" style="font-size:13px"></i> Copier
+      </button>
+    </div>
     <button class="add-btn" id="ec-save" style="width:100%;justify-content:center;padding:10px;font-size:13px"><i class="ti ti-check" style="font-size:14px"></i> Enregistrer</button>
   </div>
 </div>
@@ -1809,6 +1819,63 @@ document.getElementById('close-new-collab').addEventListener('click',()=>{
 document.getElementById('overlay-new-collab').addEventListener('click',e=>{
   if(e.target.id==='overlay-new-collab')document.getElementById('overlay-new-collab').classList.remove('open');
 });
+
+/* ── URL PERSONNALISÉE PAR COLLABORATEUR ── */
+const BASE_URL = window.location.origin + window.location.pathname;
+
+function getCollabUrl(id){
+  return BASE_URL + '?collab=' + encodeURIComponent(id);
+}
+
+function copyCollabUrl(){
+  const url = document.getElementById('ec-url').value;
+  if(!url) return;
+  navigator.clipboard.writeText(url).then(()=>{
+    const btn = document.getElementById('ec-copy-btn');
+    btn.innerHTML = '<i class="ti ti-check" style="font-size:13px;color:#1D9E75"></i> Copié !';
+    btn.style.borderColor = '#1D9E75';
+    setTimeout(()=>{
+      btn.innerHTML = '<i class="ti ti-copy" style="font-size:13px"></i> Copier';
+      btn.style.borderColor = '#d3d1c7';
+    }, 2000);
+  }).catch(()=>{
+    // Fallback si clipboard API indisponible
+    const inp = document.getElementById('ec-url');
+    inp.select();
+    document.execCommand('copy');
+    document.getElementById('ec-copy-btn').textContent = 'Copié !';
+    setTimeout(()=>{document.getElementById('ec-copy-btn').innerHTML='<i class="ti ti-copy" style="font-size:13px"></i> Copier';},2000);
+  });
+}
+
+/* Mettre à jour le champ URL quand on ouvre la modal edit */
+const _origOpenEditCollab = openEditCollab;
+function openEditCollab(idx, e){
+  _origOpenEditCollab(idx, e);
+  const c = COLLABS[idx];
+  const urlField = document.getElementById('ec-url');
+  if(urlField && c) urlField.value = getCollabUrl(c.id);
+}
+
+/* ── DÉMARRAGE DIRECT VIA URL ?collab=xxx ── */
+(function detectCollabFromUrl(){
+  const params = new URLSearchParams(window.location.search);
+  const collabId = params.get('collab');
+  if(!collabId) return;
+  // Attendre que COLLABS soit chargé puis ouvrir le bon espace
+  const tryEnter = () => {
+    const c = COLLABS.find(x => x.id === collabId);
+    if(c){
+      enterCollab(c);
+    } else {
+      // Collaborateur inconnu : créer un espace vide avec cet ID
+      const ghost = {id: collabId, name: collabId, role: 'Collaborateur', color: '#4F7DC0', company: 'legaa'};
+      enterCollab(ghost);
+    }
+  };
+  // Déclencher après l'init
+  setTimeout(tryEnter, 100);
+})();
 
 /* ── FILTRE ENTREPRISE ── */
 let _activeFilter='all';
