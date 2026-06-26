@@ -333,6 +333,25 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
 .collab-card-edit{position:absolute;top:10px;left:10px;background:#f1efe8;border:none;border-radius:50%;width:22px;height:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;color:#888780;opacity:0;transition:opacity .15s;line-height:1}
 .collab-card:hover .collab-card-edit{opacity:1}
 .collab-card-edit:hover{background:#E8F0FE;color:#2C5FAD}
+
+/* ── MOT DE PASSE ACCUEIL ── */
+.overlay-pwd{display:none;position:fixed;inset:0;background:rgba(44,44,42,.55);z-index:300;align-items:center;justify-content:center;padding:24px}
+.overlay-pwd.open{display:flex}
+.pwd-modal{background:#fff;border-radius:18px;width:100%;max-width:360px;padding:32px 28px 24px;position:relative;text-align:center}
+.pwd-modal-title{font-size:17px;font-weight:500;color:#2c2c2a;margin-bottom:6px}
+.pwd-modal-sub{font-size:12px;color:#b4b2a9;margin-bottom:20px}
+.pwd-input{width:100%;border:.5px solid #d3d1c7;border-radius:8px;padding:10px 14px;font-size:14px;font-family:inherit;outline:none;text-align:center;letter-spacing:.1em;margin-bottom:12px}
+.pwd-input:focus{border-color:#888780}
+.pwd-input.error{border-color:#D85A30;animation:shake .3s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.pwd-err{font-size:11px;color:#D85A30;margin-bottom:10px;min-height:16px}
+/* Cadenas sur bouton Accueil */
+.back-btn-locked{display:flex;align-items:center;gap:6px;font-size:12px;color:#888780;background:none;border:none;cursor:pointer;padding:0;font-family:inherit;transition:color .12s}
+.back-btn-locked:hover{color:#2c2c2a}
+/* Section mot de passe dans home */
+.pwd-config-section{background:#fff;border:.5px solid #d3d1c7;border-radius:12px;padding:14px 16px;margin-top:16px;display:flex;align-items:center;gap:12px}
+.pwd-config-label{font-size:12px;color:#5f5e5a;flex:1}
+.pwd-toggle-btn{font-size:11px;font-weight:500;padding:5px 12px;border-radius:6px;border:.5px solid #d3d1c7;background:#f7f7f5;cursor:pointer;font-family:inherit;color:#2c2c2a;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -353,9 +372,19 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
         <span id="home-save-status" style="margin-left:12px;font-size:12px;color:#b4b2a9;align-self:center"></span>
       </div>
     </div>
-    <div class="home-grid" id="home-grid"></div>
-    <p class="home-footer">Brame Développement · S2 2026 · Toutes les données sont synchronisées</p>
-  </div>
+        <div class="home-grid" id="home-grid"></div>
+    <!-- Configuration mot de passe -->
+    <div class="pwd-config-section">
+      <div style="display:flex;align-items:center;gap:8px;flex:1">
+        <i class="ti ti-lock" style="font-size:16px;color:#888780"></i>
+        <div>
+          <div class="pwd-config-label" style="font-weight:500;color:#2c2c2a">Protection par mot de passe</div>
+          <div class="pwd-config-label" id="pwd-status-label">Désactivée &mdash; l&rsquo;accueil est accessible &agrave; tous</div>
+        </div>
+      </div>
+      <button class="pwd-toggle-btn" id="pwd-config-btn" onclick="openPwdConfig()">Configurer</button>
+    </div>
+    <p class="home-footer" style="margin-top:16px">Brame D&eacute;veloppement &middot; S2 2026 &middot; Toutes les donn&eacute;es sont synchronis&eacute;es</p>
 </div>
 
 <!-- ══════════════════════════════════════════
@@ -364,8 +393,8 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
 <div id="screen-app" style="display:none">
 <div class="page">
   <div class="app-topbar">
-    <button class="back-btn" onclick="goHome()"><i class="ti ti-arrow-left" style="font-size:14px"></i> Accueil</button>
-    <div class="collab-badge" onclick="goHome()" title="Changer de collaborateur">
+    <button class="back-btn-locked" onclick="requestGoHome()"><i class="ti ti-arrow-left" style="font-size:14px"></i> Accueil</button>
+    <div class="collab-badge" onclick="requestGoHome()" title="Changer de collaborateur">
       <div class="collab-badge-avatar" id="cb-avatar"></div>
       <span class="collab-badge-name" id="cb-name"></span>
       <i class="ti ti-selector" style="font-size:12px;color:#b4b2a9"></i>
@@ -449,6 +478,18 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
       <textarea class="chat-input" id="chat-input" placeholder="Ajouter un commentaire&hellip;" rows="1"></textarea>
       <button class="chat-send" id="chat-send" title="Envoyer"><i class="ti ti-send"></i></button>
     </div>
+  </div>
+</div>
+
+<!-- OVERLAY MOT DE PASSE ACCUEIL -->
+<div class="overlay-pwd" id="overlay-pwd">
+  <div class="pwd-modal">
+    <p class="pwd-modal-title">&#128274; Acc&egrave;s prot&eacute;g&eacute;</p>
+    <p class="pwd-modal-sub">Entrez le mot de passe administrateur pour revenir &agrave; l&rsquo;accueil</p>
+    <input class="pwd-input" id="pwd-input" type="password" placeholder="Mot de passe" maxlength="30"/>
+    <p class="pwd-err" id="pwd-err"></p>
+    <button onclick="checkPassword()" style="width:100%;padding:10px;border-radius:8px;border:none;background:#2c2c2a;color:#fff;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit">Valider</button>
+    <button onclick="document.getElementById('overlay-pwd').classList.remove('open')" style="width:100%;margin-top:8px;padding:8px;border-radius:8px;border:.5px solid #d3d1c7;background:none;color:#888780;font-size:12px;cursor:pointer;font-family:inherit">Annuler</button>
   </div>
 </div>
 
@@ -1521,6 +1562,7 @@ function buildHomePage(){
       e.stopPropagation();e.preventDefault();
       if(!confirm('Supprimer '+c.name+' ?'))return;
       COLLABS=COLLABS.filter(x=>x.id!==c.id);saveCollabs(COLLABS);buildHomePage();
+updatePwdStatus();
     });
     card.appendChild(del);
     card.addEventListener('click',e=>{
@@ -1767,6 +1809,73 @@ document.getElementById('btn-add-tile').addEventListener('click',()=>{
 
 
 
+
+/* ── MOT DE PASSE ACCUEIL ── */
+const PWD_KEY = 'legaa_home_pwd';
+
+function getHomePwd(){ return localStorage.getItem(PWD_KEY) || ''; }
+
+function requestGoHome(){
+  const pwd = getHomePwd();
+  if(!pwd){ goHome(); return; }
+  document.getElementById('pwd-input').value='';
+  document.getElementById('pwd-err').textContent='';
+  document.getElementById('overlay-pwd').classList.add('open');
+  setTimeout(()=>document.getElementById('pwd-input').focus(),80);
+}
+
+function checkPassword(){
+  const val = document.getElementById('pwd-input').value;
+  const pwd = getHomePwd();
+  if(val === pwd){
+    document.getElementById('overlay-pwd').classList.remove('open');
+    goHome();
+  } else {
+    const inp = document.getElementById('pwd-input');
+    inp.classList.add('error');
+    document.getElementById('pwd-err').textContent = 'Mot de passe incorrect';
+    setTimeout(()=>inp.classList.remove('error'), 400);
+  }
+}
+document.getElementById('pwd-input').addEventListener('keydown', e=>{ if(e.key==='Enter') checkPassword(); });
+
+function openPwdConfig(){
+  const current = getHomePwd();
+  const msg = current
+    ? 'Mot de passe actuel : ' + '*'.repeat(current.length) + '\n\nNouveau mot de passe (laisser vide pour désactiver) :'
+    : 'Définir un mot de passe pour protéger l'accueil \n(laisser vide = pas de protection) :';
+  const val = prompt(msg, '');
+  if(val === null) return; // annulé
+  if(val.trim() === ''){
+    localStorage.removeItem(PWD_KEY);
+    updatePwdStatus();
+    alert('Protection désactivée.');
+  } else {
+    localStorage.setItem(PWD_KEY, val.trim());
+    updatePwdStatus();
+    alert('Mot de passe enregistré ✓\nL\'accueil est maintenant protégé.');
+  }
+}
+
+function updatePwdStatus(){
+  const pwd = getHomePwd();
+  const lbl = document.getElementById('pwd-status-label');
+  const btn = document.getElementById('pwd-config-btn');
+  if(!lbl) return;
+  if(pwd){
+    lbl.textContent = 'Activée \u2014 mot de passe requis pour revenir à l\'accueil';
+    lbl.style.color = '#1D9E75';
+    btn.textContent = 'Modifier';
+    btn.style.borderColor = '#1D9E75';
+    btn.style.color = '#085041';
+  } else {
+    lbl.textContent = 'Désactivée \u2014 l\'accueil est accessible à tous';
+    lbl.style.color = '#888780';
+    btn.textContent = 'Configurer';
+    btn.style.borderColor = '#d3d1c7';
+    btn.style.color = '#2c2c2a';
+  }
+}
 function saveHomeConfig(){
   saveCollabs(COLLABS);
   const btn=document.getElementById('home-save-btn');
