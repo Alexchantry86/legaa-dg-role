@@ -1896,15 +1896,23 @@ function updatePwdStatus(){
   const pwd = getHomePwd();
   const lbl = document.getElementById('pwd-status-label');
   const btn = document.getElementById('pwd-config-btn');
-  if(!lbl) return;
+  if(!lbl||!btn) return;
   if(pwd){
-    lbl.textContent = 'Activée \u2014 mot de passe requis pour revenir à l\'accueil';
+    lbl.textContent = 'Activ\u00e9e \u2014 mot de passe requis pour revenir \u00e0 l\u2019accueil';
     lbl.style.color = '#1D9E75';
     btn.textContent = 'Modifier';
     btn.style.borderColor = '#1D9E75';
     btn.style.color = '#085041';
+    btn.onclick = openPwdConfig;
   } else {
-    lbl.textContent = 'Désactivée \u2014 l\'accueil est accessible à tous';
+    lbl.textContent = 'D\u00e9sactiv\u00e9e \u2014 l\u2019accueil est accessible \u00e0 tous';
+    lbl.style.color = '#888780';
+    btn.textContent = 'Configurer';
+    btn.style.borderColor = '#d3d1c7';
+    btn.style.color = '#2c2c2a';
+    btn.onclick = openPwdConfig;
+  }
+}ible à tous';
     lbl.style.color = '#888780';
     btn.textContent = 'Configurer';
     btn.style.borderColor = '#d3d1c7';
