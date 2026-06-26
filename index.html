@@ -1487,6 +1487,7 @@ function saveCollabData(id, data){
 
 async function enterCollab(c){
   currentCollab = c;
+  _cloudLoaded = false;
   document.getElementById('screen-home').style.display='none';
   document.getElementById('screen-app').style.display='block';
   // Badge collaborateur
@@ -1525,9 +1526,11 @@ async function loadCollabFromCloud(id){
       headers:{'Authorization':'token '+GH_TOKEN,'Cache-Control':'no-cache'}
     });
     if(r.status===404){
-      setSyncStatus('ok','Nouveau collaborateur — données par défaut');
+      setSyncStatus('ok','Nouveau collaborateur \u2014 donn\u00e9es par d\u00e9faut');
       dims.splice(0,dims.length,...JSON.parse(JSON.stringify(getDefaultDimsForCollab(id))));
       prioData.splice(0,prioData.length,...JSON.parse(JSON.stringify(getDefaultPrioForCollab(id))));
+      _lastSaved=JSON.stringify({dims,prioData});
+      _cloudLoaded=true;
       rebuildAll();
       return;
     }
@@ -1540,9 +1543,11 @@ async function loadCollabFromCloud(id){
       prioData.splice(0,prioData.length,...data.prioData);
       prioData.forEach(pd=>pd.actions.forEach(a=>{if(a.avancement===undefined)a.avancement=a.done?100:0;}));
       _lastSaved=JSON.stringify({dims,prioData});
+      _cloudLoaded=true;
       rebuildAll();
       setSyncStatus('ok','Synchronis\u00e9 \u00b7 '+new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}));
     } else {
+      _cloudLoaded=true;
       rebuildAll();
       setSyncStatus('ok','Charg\u00e9 (donn\u00e9es vides)');
     }
@@ -1698,8 +1703,11 @@ document.querySelectorAll('.tab-btn').forEach(btn=>{
 /* Démarrer sur la page de garde */
 buildHomePage();
 
-/* Autosave */
-setInterval(()=>{ if(currentCollab)saveToCloud(true); }, 1000);
+/* Autosave — seulement si un collab est chargé ET que les données ont été reçues du cloud */
+let _cloudLoaded=false;
+setInterval(()=>{
+  if(currentCollab && _cloudLoaded) saveToCloud(true);
+}, 2000);
 </script>
 </body>
 </html>
