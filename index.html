@@ -537,10 +537,7 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
         <i class="ti ti-copy" style="font-size:13px"></i> Copier
       </button>
     </div>
-    <button onclick="shortenCollabUrl()" id="ec-shorten-btn"
-      style="width:100%;margin-bottom:14px;padding:8px;border-radius:8px;border:.5px solid #d3d1c7;background:#f7f7f5;cursor:pointer;font-family:inherit;font-size:12px;font-weight:500;color:#5f5e5a;display:flex;align-items:center;justify-content:center;gap:6px;transition:background .12s">
-      <i class="ti ti-link" style="font-size:13px"></i> <span id="ec-shorten-label">G&eacute;n&eacute;rer un lien raccourci (is.gd)</span>
-    </button>
+
     <button class="add-btn" id="ec-save" style="width:100%;justify-content:center;padding:10px;font-size:13px"><i class="ti ti-check" style="font-size:14px"></i> Enregistrer</button>
   </div>
 </div>
@@ -1975,51 +1972,9 @@ document.getElementById('overlay-new-collab').addEventListener('click',e=>{
 /* ── URL PERSONNALISÉE PAR COLLABORATEUR ── */
 const BASE_URL = 'https://alexchantry86.github.io/legaa-dg-role/';
 
-async function shortenCollabUrl(){
-  const longUrl = document.getElementById('ec-url').value.trim();
-  if(!longUrl) return;
-  const btn = document.getElementById('ec-shorten-btn');
-  const label = document.getElementById('ec-shorten-label');
-  btn.disabled = true;
-  label.textContent = 'G\u00e9n\u00e9ration en cours\u2026';
-  // Essayer is.gd puis v.gd (même API, même service)
-  const apis = [
-    'https://is.gd/create.php?format=simple&url=',
-    'https://v.gd/create.php?format=simple&url='
-  ];
-  let short = null;
-  for(const api of apis){
-    try{
-      const res = await fetch(api + encodeURIComponent(longUrl));
-      if(!res.ok) continue;
-      const txt = (await res.text()).trim();
-      if(txt.startsWith('http')){ short = txt; break; }
-    }catch(e){ continue; }
-  }
-  if(short){
-    document.getElementById('ec-url').value = short;
-    label.textContent = '\u2713 Lien raccourci g\u00e9n\u00e9r\u00e9 !';
-    btn.style.borderColor = '#1D9E75';
-    btn.style.color = '#1D9E75';
-    setTimeout(()=>{
-      label.textContent = 'G\u00e9n\u00e9rer un lien raccourci';
-      btn.style.borderColor = '#d3d1c7';
-      btn.style.color = '#5f5e5a';
-      btn.disabled = false;
-    }, 3000);
-  } else {
-    label.textContent = 'Erreur \u2014 v\u00e9rifiez votre connexion';
-    btn.style.color = '#D85A30';
-    setTimeout(()=>{
-      label.textContent = 'G\u00e9n\u00e9rer un lien raccourci';
-      btn.style.color = '#5f5e5a';
-      btn.disabled = false;
-    }, 3000);
-  }
-}
 
 function getCollabUrl(id){
-  return BASE_URL + '?collab=' + encodeURIComponent(id);
+  return BASE_URL + '#' + encodeURIComponent(id);
 }
 
 function copyCollabUrl(){
@@ -2043,8 +1998,12 @@ function copyCollabUrl(){
 
 /* ── DÉMARRAGE DIRECT VIA URL ?collab=xxx ── */
 (function detectCollabFromUrl(){
-  const params = new URLSearchParams(window.location.search);
-  const collabId = params.get('collab');
+  /* Lire depuis le hash (#etienne) ou le query (?collab=etienne) pour compatibilité */
+  let collabId = window.location.hash.replace('#','').trim();
+  if(!collabId){
+    const params = new URLSearchParams(window.location.search);
+    collabId = params.get('collab') || '';
+  }
   if(!collabId) return;
   // Attendre que COLLABS soit chargé puis ouvrir le bon espace
   const tryEnter = () => {
