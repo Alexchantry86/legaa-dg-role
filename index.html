@@ -1336,7 +1336,6 @@ let currentCollab=null;
 
 function initials(name){return name.slice(0,2).toUpperCase();}
 
-/* ── Page de garde ── */
 function buildHomePage(){
   const grid=document.getElementById('home-grid');
   grid.innerHTML='';
@@ -1350,41 +1349,91 @@ function buildHomePage(){
       saved.prioData.forEach(pd=>pd.actions.forEach(a=>{
         totalCount++;
         if(a.done)doneCount++;
-        avPct+=(a.done?100:a.avancement||0);
+        avPct+=(a.done?100:(a.avancement||0));
       }));
       avPct=totalCount>0?Math.round(avPct/totalCount):0;
     }
     const barColor=avPct>=70?'#1D9E75':avPct>=40?'#EF9F27':'#D85A30';
-    card.innerHTML=`
-      <div class="collab-avatar" style="background:${c.color}">${initials(c.name)}</div>
-      <div class="collab-name">${c.name}</div>
-      <div class="collab-role">${c.role}</div>
-      ${totalCount>0?`
-        <div class="collab-stats">
-          <span class="collab-stat" style="background:${c.color}22;color:${c.color}">${doneCount}/${totalCount} termin\u00e9es</span>
-          <span class="collab-stat" style="background:#f1efe8;color:#888780">${avPct}%</span>
-        </div>
-        <div class="collab-progress"><div class="collab-progress-fill" style="width:${avPct}%;background:${barColor}"></div></div>
-      `:'<div class="collab-stats"><span class="collab-stat" style="background:#f1efe8;color:#b4b2a9">Non configur\u00e9</span></div>'}
-      <button class="collab-card-del" title="Supprimer ce collaborateur">&#x2715;</button>
-    `;
-    card.querySelector('.collab-card-del').addEventListener('click',e=>{
+
+    // Avatar
+    const av=document.createElement('div');
+    av.className='collab-avatar';
+    av.style.background=c.color;
+    av.textContent=initials(c.name);
+    card.appendChild(av);
+
+    // Nom
+    const nm=document.createElement('div');
+    nm.className='collab-name';
+    nm.textContent=c.name;
+    card.appendChild(nm);
+
+    // Rôle
+    const rl=document.createElement('div');
+    rl.className='collab-role';
+    rl.textContent=c.role;
+    card.appendChild(rl);
+
+    // Stats
+    if(totalCount>0){
+      const stats=document.createElement('div');
+      stats.className='collab-stats';
+      const s1=document.createElement('span');
+      s1.className='collab-stat';
+      s1.style.cssText='background:'+c.color+'22;color:'+c.color;
+      s1.textContent=doneCount+'/'+totalCount+' termin\u00e9es';
+      const s2=document.createElement('span');
+      s2.className='collab-stat';
+      s2.style.cssText='background:#f1efe8;color:#888780';
+      s2.textContent=avPct+'%';
+      stats.appendChild(s1);stats.appendChild(s2);
+      card.appendChild(stats);
+      const prog=document.createElement('div');
+      prog.className='collab-progress';
+      const fill=document.createElement('div');
+      fill.className='collab-progress-fill';
+      fill.style.cssText='width:'+avPct+'%;background:'+barColor;
+      prog.appendChild(fill);
+      card.appendChild(prog);
+    } else {
+      const stats=document.createElement('div');
+      stats.className='collab-stats';
+      const s1=document.createElement('span');
+      s1.className='collab-stat';
+      s1.style.cssText='background:#f1efe8;color:#b4b2a9';
+      s1.textContent='Non configur\u00e9';
+      stats.appendChild(s1);
+      card.appendChild(stats);
+    }
+
+    // Bouton supprimer
+    const del=document.createElement('button');
+    del.className='collab-card-del';
+    del.title='Supprimer ce collaborateur';
+    del.innerHTML='&#x2715;';
+    del.addEventListener('click',e=>{
       e.stopPropagation();
       if(!confirm('Supprimer '+c.name+' ? Ses donn\u00e9es resteront sur GitHub.'))return;
       COLLABS=COLLABS.filter(x=>x.id!==c.id);
       saveCollabs(COLLABS);
       buildHomePage();
     });
+    card.appendChild(del);
     card.addEventListener('click',()=>enterCollab(c));
     grid.appendChild(card);
   });
-  /* Bouton + */
+
+  // Bouton +
   const addCard=document.createElement('div');
   addCard.className='collab-card-add';
-  addCard.innerHTML=`
-    <div class="collab-card-add-icon"><i class="ti ti-plus"></i></div>
-    <span class="collab-card-add-label">Nouveau collaborateur</span>
-  `;
+  const addIcon=document.createElement('div');
+  addIcon.className='collab-card-add-icon';
+  addIcon.innerHTML='<i class="ti ti-plus"></i>';
+  const addLabel=document.createElement('span');
+  addLabel.className='collab-card-add-label';
+  addLabel.textContent='Nouveau collaborateur';
+  addCard.appendChild(addIcon);
+  addCard.appendChild(addLabel);
   addCard.addEventListener('click',openNewCollabModal);
   grid.appendChild(addCard);
 }
