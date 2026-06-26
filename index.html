@@ -2063,7 +2063,7 @@ function setFilter(f,btn){
   btn.classList.add('active');
   buildHomePage();
 }
-function companyLabel(c){return c==='legaa'?'LEGAA':c==='capembal'?"CAP'EMBAL":'LEGAA + CAP';}
+function companyLabel(c){if(c==='legaa')return 'LEGAA';if(c==='capembal')return "CAP\u2019EMBAL";return "LEGAA + CAP\u2019EMBAL";}
 function companyClass(c){return c==='legaa'?'company-legaa':c==='capembal'?'company-capembal':'company-both';}
 
 /* ── MODAL EDIT COLLAB ── */
