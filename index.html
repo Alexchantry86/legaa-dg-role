@@ -269,9 +269,12 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
 .color-row{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
 .color-swatch{width:28px;height:28px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:border-color .12s,transform .1s;flex-shrink:0}
 .color-swatch.selected{border-color:#2c2c2a;transform:scale(1.15)}
-.collab-card-del{position:absolute;top:10px;right:10px;background:#f1efe8;border:none;border-radius:50%;width:22px;height:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;color:#888780;opacity:0;transition:opacity .15s;line-height:1}
-.collab-card:hover .collab-card-del{opacity:1}
+.collab-card-del{position:absolute;top:10px;right:10px;background:#f1efe8;border:none;border-radius:50%;width:22px;height:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;color:#888780;opacity:0;transition:opacity .15s;line-height:1;pointer-events:none}
+.collab-card:hover .collab-card-del{opacity:1;pointer-events:auto}
 .collab-card-del:hover{background:#FAECE7;color:#993C1D}
+.collab-card-edit{position:absolute;top:10px;left:10px;background:#f1efe8;border:none;border-radius:50%;width:22px;height:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;color:#888780;opacity:0;transition:opacity .15s;line-height:1;pointer-events:none}
+.collab-card:hover .collab-card-edit{opacity:1;pointer-events:auto}
+.collab-card-edit:hover{background:#E8F0FE;color:#2C5FAD}
 
 /* ── BACK BUTTON + COLLAB SWITCHER ── */
 .app-topbar{display:flex;align-items:center;gap:12px;margin-bottom:0;padding-bottom:20px;border-bottom:.5px solid #d3d1c7;margin-top:-8px}
@@ -1458,18 +1461,22 @@ function buildHomePage(){
     // Bouton éditer (stylo)
     const edit=document.createElement('button');edit.className='collab-card-edit';
     edit.title='Modifier';edit.innerHTML='<i class="ti ti-pencil" style="font-size:10px"></i>';
-    edit.addEventListener('click',e=>openEditCollab(idx,e));
+    edit.addEventListener('click',e=>{e.stopPropagation();e.preventDefault();openEditCollab(idx,e);});
     card.appendChild(edit);
     // Bouton supprimer
     const del=document.createElement('button');del.className='collab-card-del';
     del.title='Supprimer';del.innerHTML='&#x2715;';
     del.addEventListener('click',e=>{
-      e.stopPropagation();
+      e.stopPropagation();e.preventDefault();
       if(!confirm('Supprimer '+c.name+' ?'))return;
       COLLABS=COLLABS.filter(x=>x.id!==c.id);saveCollabs(COLLABS);buildHomePage();
     });
     card.appendChild(del);
-    card.addEventListener('click',()=>enterCollab(c));
+    card.addEventListener('click',e=>{
+      // Ne pas déclencher si clic sur un bouton enfant
+      if(e.target.closest('.collab-card-edit,.collab-card-del'))return;
+      enterCollab(c);
+    });
     grid.appendChild(card);
   });
   // Bouton +
@@ -1717,6 +1724,54 @@ function saveHomeConfig(){
   status.textContent='\u2713 Sauvegardé \u00b7 '+new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
   setTimeout(()=>{btn.style.background='#2c2c2a';},2000);
 }
+
+/* ── Modal nouveau collaborateur ── */
+function openNewCollabModal(){
+  document.getElementById('nc-name').value='';
+  document.getElementById('nc-role').value='';
+  selectedColor=COLLAB_COLORS[0];
+  // Reset company buttons
+  document.querySelectorAll('#nc-company-btns button').forEach((b,i)=>b.classList.toggle('active',i===0));
+  // Swatches couleurs
+  const cr=document.getElementById('nc-colors');
+  cr.innerHTML='';
+  COLLAB_COLORS.forEach(col=>{
+    const sw=document.createElement('div');
+    sw.className='color-swatch'+(col===selectedColor?' selected':'');
+    sw.style.background=col;
+    sw.addEventListener('click',()=>{
+      selectedColor=col;
+      cr.querySelectorAll('.color-swatch').forEach(s=>s.classList.remove('selected'));
+      sw.classList.add('selected');
+    });
+    cr.appendChild(sw);
+  });
+  document.getElementById('overlay-new-collab').classList.add('open');
+  setTimeout(()=>document.getElementById('nc-name').focus(),80);
+}
+
+document.getElementById('nc-create').addEventListener('click',()=>{
+  const name=document.getElementById('nc-name').value.trim();
+  const role=document.getElementById('nc-role').value.trim();
+  if(!name){document.getElementById('nc-name').focus();return;}
+  const id=name.toLowerCase().replace(/[^a-z0-9]/g,'_').replace(/_+/g,'_');
+  const ncCoBtn=document.querySelector('#nc-company-btns button.active');
+  const ncCo=ncCoBtn?ncCoBtn.dataset.co:'legaa';
+  const collab={id,name,role:role||'Collaborateur',color:selectedColor,company:ncCo};
+  COLLABS.push(collab);
+  saveCollabs(COLLABS);
+  document.getElementById('overlay-new-collab').classList.remove('open');
+  buildHomePage();
+  enterCollab(collab);
+});
+document.getElementById('nc-name').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('nc-role').focus();});
+document.getElementById('nc-role').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('nc-create').click();});
+document.getElementById('close-new-collab').addEventListener('click',()=>{
+  document.getElementById('overlay-new-collab').classList.remove('open');
+});
+document.getElementById('overlay-new-collab').addEventListener('click',e=>{
+  if(e.target.id==='overlay-new-collab')document.getElementById('overlay-new-collab').classList.remove('open');
+});
 
 /* ── FILTRE ENTREPRISE ── */
 let _activeFilter='all';
