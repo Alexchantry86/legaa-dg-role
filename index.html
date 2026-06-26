@@ -498,7 +498,7 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
 <!-- MODAL CONFIGURATION MOT DE PASSE -->
 <div class="overlay-pwd-cfg" id="overlay-pwd-config" style="display:none;position:fixed;inset:0;background:rgba(44,44,42,.55);z-index:310;align-items:center;justify-content:center;padding:24px">
   <div class="pwd-modal">
-    <button class="close-btn" onclick="document.getElementById('overlay-pwd-config').classList.remove('open')" style="position:absolute;top:12px;right:12px"><i class="ti ti-x"></i></button>
+    <button class="close-btn" onclick="closePwdConfig()" style="position:absolute;top:12px;right:12px"><i class="ti ti-x"></i></button>
     <p class="pwd-modal-title">&#128274; Mot de passe accueil</p>
     <p class="pwd-modal-sub" id="pwd-config-sub">D&eacute;finir un mot de passe pour prot&eacute;ger la page d&rsquo;accueil</p>
     <input class="pwd-input" id="pwd-config-input" type="password" placeholder="Nouveau mot de passe"/>
@@ -1862,7 +1862,7 @@ function checkPassword(){
 document.getElementById('pwd-input').addEventListener('keydown', e=>{ if(e.key==='Enter') checkPassword(); });
 document.getElementById('pwd-config-input').addEventListener('keydown', e=>{ if(e.key==='Enter') document.getElementById('pwd-config-confirm').focus(); });
 document.getElementById('pwd-config-confirm').addEventListener('keydown', e=>{ if(e.key==='Enter') savePwdConfig(); });
-document.getElementById('overlay-pwd-config').addEventListener('click', e=>{ if(e.target.id==='overlay-pwd-config') document.getElementById('overlay-pwd-config').classList.remove('open'); });
+document.getElementById('overlay-pwd-config').addEventListener('click', e=>{ if(e.target.id==='overlay-pwd-config') document.getElementById('overlay-pwd-config').style.display='none'; });
 
 function openPwdConfig(){
   const current = getHomePwd();
@@ -1873,7 +1873,7 @@ function openPwdConfig(){
     ? 'Mot de passe actuel défini — saisir un nouveau ou supprimer'
     : 'Définir un mot de passe pour protéger la page d’accueil';
   document.getElementById('pwd-remove-btn').style.display = current ? 'block' : 'none';
-  document.getElementById('overlay-pwd-config').classList.add('open');
+  document.getElementById('overlay-pwd-config').style.cssText='display:flex;position:fixed;inset:0;background:rgba(44,44,42,.55);z-index:310;align-items:center;justify-content:center;padding:24px';
   setTimeout(()=>document.getElementById('pwd-config-input').focus(), 80);
 }
 function savePwdConfig(){
@@ -1884,12 +1884,12 @@ function savePwdConfig(){
   if(v1 !== v2){ err.textContent = 'Les mots de passe ne correspondent pas'; return; }
   localStorage.setItem(PWD_KEY, v1);
   updatePwdStatus();
-  document.getElementById('overlay-pwd-config').classList.remove('open');
+  document.getElementById('overlay-pwd-config').style.display='none';
 }
 function removePwdConfig(){
   localStorage.removeItem(PWD_KEY);
   updatePwdStatus();
-  document.getElementById('overlay-pwd-config').classList.remove('open');
+  document.getElementById('overlay-pwd-config').style.display='none';
 }
 
 function updatePwdStatus(){
