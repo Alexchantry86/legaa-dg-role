@@ -335,14 +335,19 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
       <i class="ti ti-selector" style="font-size:12px;color:#b4b2a9"></i>
     </div>
     <div style="flex:1"></div>
-    <div class="sync-global" style="margin-top:0">
+    <div class="sync-global" style="margin-top:0;position:relative">
       <div class="sync-dot" id="sync-dot"></div>
       <span id="sync-label">Chargement…</span>
       <button class="sync-btn" onclick="openTileManager()" title="Gérer les domaines"><i class="ti ti-layout-grid" style="font-size:13px"></i> Domaines</button>
       <button class="sync-btn primary" onclick="forceSave()" id="save-btn"><i class="ti ti-cloud-upload" style="font-size:13px"></i> Sauvegarder</button>
-      <button class="sync-btn" onclick="loadCollabFromCloud(currentCollab?currentCollab.id:'etienne')" title="Recharger depuis le cloud"><i class="ti ti-refresh" style="font-size:13px"></i></button>
-      <button class="sync-btn" onclick="exportExcel()" title="Exporter Excel"><i class="ti ti-file-spreadsheet" style="font-size:13px"></i></button>
-      <button class="sync-btn" onclick="exportPDF()" title="Exporter PDF"><i class="ti ti-file-type-pdf" style="font-size:13px"></i></button>
+      <div style="position:relative;display:inline-block">
+        <button class="sync-btn" onclick="toggleMenu()" id="more-btn" title="Plus d'options" style="font-size:16px;font-weight:500;letter-spacing:1px">···</button>
+        <div id="more-menu" style="display:none;position:absolute;right:0;top:38px;background:#fff;border:.5px solid #d3d1c7;border-radius:10px;box-shadow:0 4px 16px rgba(44,44,42,.12);min-width:180px;z-index:50;overflow:hidden">
+          <button onclick="loadCollabFromCloud(currentCollab?currentCollab.id:'etienne');toggleMenu()" style="display:flex;align-items:center;gap:10px;width:100%;padding:11px 16px;border:none;background:none;cursor:pointer;font-size:13px;color:#2c2c2a;font-family:inherit;text-align:left" onmouseover="this.style.background='#f7f7f5'" onmouseout="this.style.background='none'"><i class="ti ti-refresh" style="font-size:14px;color:#888780"></i> Recharger</button>
+          <button onclick="exportExcel();toggleMenu()" style="display:flex;align-items:center;gap:10px;width:100%;padding:11px 16px;border:none;background:none;cursor:pointer;font-size:13px;color:#2c2c2a;font-family:inherit;text-align:left" onmouseover="this.style.background='#f7f7f5'" onmouseout="this.style.background='none'"><i class="ti ti-file-spreadsheet" style="font-size:14px;color:#888780"></i> Exporter Excel</button>
+          <button onclick="exportPDF();toggleMenu()" style="display:flex;align-items:center;gap:10px;width:100%;padding:11px 16px;border:none;background:none;cursor:pointer;font-size:13px;color:#2c2c2a;font-family:inherit;text-align:left" onmouseover="this.style.background='#f7f7f5'" onmouseout="this.style.background='none'"><i class="ti ti-file-type-pdf" style="font-size:14px;color:#888780"></i> Exporter PDF</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1702,6 +1707,19 @@ document.getElementById('btn-add-tile').addEventListener('click',()=>{
   rebuildAll();
 });
 
+
+/* ── Menu ··· ── */
+function toggleMenu(){
+  const m=document.getElementById('more-menu');
+  m.style.display=m.style.display==='none'?'block':'none';
+}
+document.addEventListener('click',e=>{
+  const btn=document.getElementById('more-btn');
+  const menu=document.getElementById('more-menu');
+  if(btn&&menu&&!btn.contains(e.target)&&!menu.contains(e.target)){
+    menu.style.display='none';
+  }
+});
 
 /* ══ INIT GLOBAL ══ */
 document.querySelectorAll('.tab-btn').forEach(btn=>{
