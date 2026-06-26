@@ -1848,15 +1848,6 @@ function copyCollabUrl(){
   });
 }
 
-/* Mettre à jour le champ URL quand on ouvre la modal edit */
-const _origOpenEditCollab = openEditCollab;
-function openEditCollab(idx, e){
-  _origOpenEditCollab(idx, e);
-  const c = COLLABS[idx];
-  const urlField = document.getElementById('ec-url');
-  if(urlField && c) urlField.value = getCollabUrl(c.id);
-}
-
 /* ── DÉMARRAGE DIRECT VIA URL ?collab=xxx ── */
 (function detectCollabFromUrl(){
   const params = new URLSearchParams(window.location.search);
@@ -1920,6 +1911,9 @@ function openEditCollab(idx,e){
     cr.appendChild(sw);
   });
   document.getElementById('overlay-edit-collab').classList.add('open');
+  /* Remplir le champ URL */
+  const urlField=document.getElementById('ec-url');
+  if(urlField) urlField.value=getCollabUrl(c.id);
   setTimeout(()=>document.getElementById('ec-name').focus(),80);
 }
 
