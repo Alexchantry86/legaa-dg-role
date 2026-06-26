@@ -473,8 +473,8 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
     <!-- Lien personnel -->
     <p class="field-label" style="margin-top:16px">Lien personnel &agrave; partager</p>
     <div style="display:flex;gap:8px;align-items:center;margin-bottom:16px">
-      <input class="field-input" id="ec-url" type="text" readonly
-        style="margin-bottom:0;background:#f7f7f5;color:#888780;font-size:11px;cursor:text;flex:1"/>
+      <input class="field-input" id="ec-url" type="text"
+        style="margin-bottom:0;font-size:11px;flex:1"/>
       <button onclick="copyCollabUrl()" id="ec-copy-btn"
         style="flex-shrink:0;padding:9px 14px;border-radius:8px;border:.5px solid #d3d1c7;background:#fff;cursor:pointer;font-family:inherit;font-size:12px;font-weight:500;color:#2c2c2a;display:flex;align-items:center;gap:5px;white-space:nowrap;transition:background .12s">
         <i class="ti ti-copy" style="font-size:13px"></i> Copier
@@ -1821,31 +1821,29 @@ document.getElementById('overlay-new-collab').addEventListener('click',e=>{
 });
 
 /* ── URL PERSONNALISÉE PAR COLLABORATEUR ── */
-const BASE_URL = window.location.origin + window.location.pathname;
+const BASE_URL = 'https://alexchantry86.github.io/legaa-dg-role/';
 
 function getCollabUrl(id){
   return BASE_URL + '?collab=' + encodeURIComponent(id);
 }
 
 function copyCollabUrl(){
-  const url = document.getElementById('ec-url').value;
+  const url = document.getElementById('ec-url').value.trim();
   if(!url) return;
-  navigator.clipboard.writeText(url).then(()=>{
-    const btn = document.getElementById('ec-copy-btn');
-    btn.innerHTML = '<i class="ti ti-check" style="font-size:13px;color:#1D9E75"></i> Copié !';
-    btn.style.borderColor = '#1D9E75';
-    setTimeout(()=>{
-      btn.innerHTML = '<i class="ti ti-copy" style="font-size:13px"></i> Copier';
-      btn.style.borderColor = '#d3d1c7';
-    }, 2000);
-  }).catch(()=>{
-    // Fallback si clipboard API indisponible
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(url).then(()=>{
+      const btn = document.getElementById('ec-copy-btn');
+      btn.innerHTML = '<i class="ti ti-check" style="font-size:13px;color:#1D9E75"></i> Copi\u00e9\u00a0!';
+      btn.style.borderColor = '#1D9E75';
+      setTimeout(()=>{btn.innerHTML='<i class="ti ti-copy" style="font-size:13px"></i> Copier';btn.style.borderColor='#d3d1c7';},2000);
+    });
+  } else {
     const inp = document.getElementById('ec-url');
-    inp.select();
+    inp.select(); inp.setSelectionRange(0,9999);
     document.execCommand('copy');
-    document.getElementById('ec-copy-btn').textContent = 'Copié !';
+    document.getElementById('ec-copy-btn').textContent='Copi\u00e9\u00a0!';
     setTimeout(()=>{document.getElementById('ec-copy-btn').innerHTML='<i class="ti ti-copy" style="font-size:13px"></i> Copier';},2000);
-  });
+  }
 }
 
 /* ── DÉMARRAGE DIRECT VIA URL ?collab=xxx ── */
