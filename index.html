@@ -493,6 +493,20 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
   </div>
 </div>
 
+<!-- MODAL CONFIGURATION MOT DE PASSE -->
+<div class="overlay-pwd" id="overlay-pwd-config" style="z-index:310">
+  <div class="pwd-modal">
+    <button class="close-btn" onclick="document.getElementById('overlay-pwd-config').classList.remove('open')" style="position:absolute;top:12px;right:12px"><i class="ti ti-x"></i></button>
+    <p class="pwd-modal-title">&#128274; Mot de passe accueil</p>
+    <p class="pwd-modal-sub" id="pwd-config-sub">D&eacute;finir un mot de passe pour prot&eacute;ger la page d&rsquo;accueil</p>
+    <input class="pwd-input" id="pwd-config-input" type="password" placeholder="Nouveau mot de passe"/>
+    <input class="pwd-input" id="pwd-config-confirm" type="password" placeholder="Confirmer" style="margin-top:8px"/>
+    <p class="pwd-err" id="pwd-config-err"></p>
+    <button onclick="savePwdConfig()" style="width:100%;padding:10px;border-radius:8px;border:none;background:#2c2c2a;color:#fff;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;margin-bottom:8px">Enregistrer</button>
+    <button onclick="removePwdConfig()" id="pwd-remove-btn" style="width:100%;padding:8px;border-radius:8px;border:.5px solid #D85A30;background:none;color:#D85A30;font-size:12px;cursor:pointer;font-family:inherit">Supprimer le mot de passe</button>
+  </div>
+</div>
+
 <!-- MODAL EDITION COLLABORATEUR -->
 <div class="overlay-edit-collab" id="overlay-edit-collab">
   <div class="edit-collab-modal">
@@ -1838,23 +1852,36 @@ function checkPassword(){
   }
 }
 document.getElementById('pwd-input').addEventListener('keydown', e=>{ if(e.key==='Enter') checkPassword(); });
+document.getElementById('pwd-config-input').addEventListener('keydown', e=>{ if(e.key==='Enter') document.getElementById('pwd-config-confirm').focus(); });
+document.getElementById('pwd-config-confirm').addEventListener('keydown', e=>{ if(e.key==='Enter') savePwdConfig(); });
+document.getElementById('overlay-pwd-config').addEventListener('click', e=>{ if(e.target.id==='overlay-pwd-config') document.getElementById('overlay-pwd-config').classList.remove('open'); });
 
 function openPwdConfig(){
   const current = getHomePwd();
-  const msg = current
-    ? 'Mot de passe actuel : ' + '*'.repeat(current.length) + '\n\nNouveau mot de passe (laisser vide pour désactiver) :'
-    : 'Définir un mot de passe pour protéger l'accueil \n(laisser vide = pas de protection) :';
-  const val = prompt(msg, '');
-  if(val === null) return; // annulé
-  if(val.trim() === ''){
-    localStorage.removeItem(PWD_KEY);
-    updatePwdStatus();
-    alert('Protection désactivée.');
-  } else {
-    localStorage.setItem(PWD_KEY, val.trim());
-    updatePwdStatus();
-    alert('Mot de passe enregistré ✓\nL\'accueil est maintenant protégé.');
-  }
+  document.getElementById('pwd-config-input').value = '';
+  document.getElementById('pwd-config-confirm').value = '';
+  document.getElementById('pwd-config-err').textContent = '';
+  document.getElementById('pwd-config-sub').textContent = current
+    ? 'Mot de passe actuel défini — saisir un nouveau ou supprimer'
+    : 'Définir un mot de passe pour protéger la page d’accueil';
+  document.getElementById('pwd-remove-btn').style.display = current ? 'block' : 'none';
+  document.getElementById('overlay-pwd-config').classList.add('open');
+  setTimeout(()=>document.getElementById('pwd-config-input').focus(), 80);
+}
+function savePwdConfig(){
+  const v1 = document.getElementById('pwd-config-input').value.trim();
+  const v2 = document.getElementById('pwd-config-confirm').value.trim();
+  const err = document.getElementById('pwd-config-err');
+  if(!v1){ err.textContent = 'Saisir un mot de passe'; return; }
+  if(v1 !== v2){ err.textContent = 'Les mots de passe ne correspondent pas'; return; }
+  localStorage.setItem(PWD_KEY, v1);
+  updatePwdStatus();
+  document.getElementById('overlay-pwd-config').classList.remove('open');
+}
+function removePwdConfig(){
+  localStorage.removeItem(PWD_KEY);
+  updatePwdStatus();
+  document.getElementById('overlay-pwd-config').classList.remove('open');
 }
 
 function updatePwdStatus(){
