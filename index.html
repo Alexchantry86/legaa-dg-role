@@ -765,7 +765,13 @@ function buildAutoTile(d,i){
       <path id="arc${i}" d="${arcD(d.val)}" fill="none" stroke="${c}" stroke-width="6" stroke-linecap="round"/>
     </svg><span class="arc-pct" id="pct${i}" style="color:${c}">${d.val}%</span></div>
     <input class="tile-label-input" id="tlabel${i}" value="${d.label}" title="Cliquer pour renommer"/>`;
-  div.querySelector('#tlabel'+i).addEventListener('input',e=>{dims[i].label=e.target.value;});
+  div.querySelector('#tlabel'+i).addEventListener('input',e=>{
+    dims[i].label=e.target.value;
+    if(prioData[i])prioData[i].label=e.target.value;
+    /* Mettre à jour le label de la tuile onglet 2 si visible */
+    const pl=document.getElementById('plabel'+i);
+    if(pl)pl.value=e.target.value;
+  });
   div.querySelector('#tlabel'+i).addEventListener('click',e=>e.stopPropagation());
   div.querySelector('#tlabel'+i).addEventListener('mousedown',e=>e.stopPropagation());
   div.addEventListener('click',()=>openAutoModal(i));return div;
@@ -955,7 +961,16 @@ function buildPrioTileEl(pd,i){
     </div>
     <div class="prio-tile-pills">${pills||'<span class="prio-pill pill-basse">—</span>'}</div>`;
   const pli=div.querySelector('#plabel'+i);
-  if(pli){pli.addEventListener('input',e=>{prioData[i].label=e.target.value;});pli.addEventListener('click',e=>e.stopPropagation());pli.addEventListener('mousedown',e=>e.stopPropagation());}
+  if(pli){
+    pli.addEventListener('input',e=>{
+      prioData[i].label=e.target.value;
+      if(dims[i])dims[i].label=e.target.value;
+      const tl=document.getElementById('tlabel'+i);
+      if(tl)tl.value=e.target.value;
+    });
+    pli.addEventListener('click',e=>e.stopPropagation());
+    pli.addEventListener('mousedown',e=>e.stopPropagation());
+  }
   div.addEventListener('click',()=>openPrioModal(i));return div;
 }
 function refreshPrioTile(i){
@@ -1760,7 +1775,11 @@ function openTileManager(){
       <button class="del-btn" title="Supprimer">&#x2715;</button>
     `;
     list.appendChild(row);
-    row.querySelector('#tname-'+i).addEventListener('input',e=>{dims[i].label=e.target.value;rebuildAll();});
+    row.querySelector('#tname-'+i).addEventListener('input',e=>{
+      dims[i].label=e.target.value;
+      if(prioData[i])prioData[i].label=e.target.value;
+      rebuildAll();
+    });
     row.querySelector('#tname-'+i).addEventListener('click',e=>e.stopPropagation());
     row.querySelector('#ticon-'+i).addEventListener('change',e=>{dims[i].icon=e.target.value;rebuildAll();});
     row.querySelector('#ticon-'+i).addEventListener('click',e=>e.stopPropagation());
