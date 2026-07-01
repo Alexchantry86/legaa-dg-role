@@ -764,13 +764,13 @@ function buildAutoTile(d,i){
       <path d="${bgD()}" fill="none" stroke="#e8e6e0" stroke-width="6" stroke-linecap="round"/>
       <path id="arc${i}" d="${arcD(d.val)}" fill="none" stroke="${c}" stroke-width="6" stroke-linecap="round"/>
     </svg><span class="arc-pct" id="pct${i}" style="color:${c}">${d.val}%</span></div>
-    <input class="tile-label-input" id="tlabel${i}" value="${d.label}" title="Cliquer pour renommer"/>`;
-  div.querySelector('#tlabel'+i).addEventListener('input',e=>{
+    <input class="tile-label-input" id="tlabel${i}" title="Cliquer pour renommer"/>`;
+  div.querySelector('#tlabel'+i).value = d.label;  div.querySelector('#tlabel'+i).addEventListener('input',e=>{
     dims[i].label=e.target.value;
     if(prioData[i])prioData[i].label=e.target.value;
-    /* Mettre à jour le label de la tuile onglet 2 si visible */
     const pl=document.getElementById('plabel'+i);
     if(pl)pl.value=e.target.value;
+    _lastSaved=''; /* Forcer l'autosave au prochain cycle */
   });
   div.querySelector('#tlabel'+i).addEventListener('click',e=>e.stopPropagation());
   div.querySelector('#tlabel'+i).addEventListener('mousedown',e=>e.stopPropagation());
@@ -949,7 +949,7 @@ function buildPrioTileEl(pd,i){
       <div style="background:${barColor}33;width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:4px">
         ${iconSVG(pd.icon, barColor, 24)}
       </div>
-      <input class="prio-tile-label-input" id="plabel${i}" value="${pd.label}" title="Cliquer pour renommer"/>
+      <input class="prio-tile-label-input" id="plabel${i}" title="Cliquer pour renommer"/>
     </div>
     <div class="prio-ring-wrap">
       <svg width="52" height="52" viewBox="0 0 52 52">
@@ -962,6 +962,7 @@ function buildPrioTileEl(pd,i){
     <div class="prio-tile-pills">${pills||'<span class="prio-pill pill-basse">—</span>'}</div>`;
   const pli=div.querySelector('#plabel'+i);
   if(pli){
+    pli.value = pd.label;
     pli.addEventListener('input',e=>{
       prioData[i].label=e.target.value;
       if(dims[i])dims[i].label=e.target.value;
