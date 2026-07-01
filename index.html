@@ -1403,10 +1403,13 @@ document.getElementById('overlay-chat').addEventListener('click',e=>{
 
 /* ═══════════════ SYNTHÈSE CLÔTURE ═══════════════ */
 function renderSynth(){
-  /* Calculs globaux */
+  /* Filtrer les domaines désactivés */
+  const activePrio = prioData.filter((pd,i) => !dims[i] || !dims[i].hidden);
+
+  /* Calculs globaux sur les domaines actifs uniquement */
   let totH=0,totM=0,totB=0,totD=0,totAll=0,sumAv=0;
   let doneH=0,doneM=0,doneB=0;
-  prioData.forEach(pd=>{
+  activePrio.forEach(pd=>{
     pd.actions.forEach(a=>{
       totAll++;
       const av=a.done?100:a.avancement;
@@ -1415,9 +1418,9 @@ function renderSynth(){
       if(!a.done){if(a.prio==='haute')totH++;else if(a.prio==='moyenne')totM++;else totB++;}
     });
   });
-  const totHAll=prioData.reduce((s,pd)=>s+pd.actions.filter(a=>a.prio==='haute').length,0);
-  const totMAll=prioData.reduce((s,pd)=>s+pd.actions.filter(a=>a.prio==='moyenne').length,0);
-  const totBAll=prioData.reduce((s,pd)=>s+pd.actions.filter(a=>a.prio==='basse').length,0);
+  const totHAll=activePrio.reduce((s,pd)=>s+pd.actions.filter(a=>a.prio==='haute').length,0);
+  const totMAll=activePrio.reduce((s,pd)=>s+pd.actions.filter(a=>a.prio==='moyenne').length,0);
+  const totBAll=activePrio.reduce((s,pd)=>s+pd.actions.filter(a=>a.prio==='basse').length,0);
   const globalAv=totAll>0?Math.round(sumAv/totAll):0;
   const globalPct=totAll>0?Math.round(totD/totAll*100):0;
 
@@ -1450,10 +1453,10 @@ function renderSynth(){
   document.getElementById('synth-global-bar').style.width=globalAv+'%';
   document.getElementById('synth-global-bar').style.background=barColor;
 
-  /* Tableau par domaine */
+  /* Tableau par domaine — domaines actifs uniquement */
   const tbody=document.getElementById('synth-tbody');
   tbody.innerHTML='';
-  prioData.forEach(pd=>{
+  activePrio.forEach(pd=>{
     const h=pd.actions.filter(a=>a.prio==='haute').length;
     const m=pd.actions.filter(a=>a.prio==='moyenne').length;
     const b=pd.actions.filter(a=>a.prio==='basse').length;
