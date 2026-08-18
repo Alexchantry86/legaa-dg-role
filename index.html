@@ -1665,7 +1665,14 @@ async function loadCollabsFromGitHub(){
     _collabsSHA=meta.sha||'';
     const bytes=Uint8Array.from(atob(meta.content.replace(/\n/g,'')),c=>c.charCodeAt(0));
     const list=JSON.parse(new TextDecoder().decode(bytes));
-    if(list&&list.length){COLLABS=list;localStorage.setItem('legaa_collabs',JSON.stringify(COLLABS));}
+    let collabList = list;
+    if(Array.isArray(list)){ collabList = list; }
+    else if(list && list.collabs){ 
+      collabList = list.collabs;
+      /* Charger le mot de passe */
+      if(list.pwd !== undefined){ _homePwd = list.pwd; if(list.pwd) localStorage.setItem('legaa_home_pwd',list.pwd); else localStorage.removeItem('legaa_home_pwd'); }
+    }
+    if(collabList&&collabList.length){COLLABS=collabList;localStorage.setItem('legaa_collabs',JSON.stringify(COLLABS));}
   }catch(e){console.warn('loadCollabsFromGitHub:',e);}
 }
 
@@ -1675,11 +1682,11 @@ async function saveCollabs(list){
   try{
     const enc=new TextEncoder().encode(JSON.stringify(list));
     let bin='';enc.forEach(x=>bin+=String.fromCharCode(x));
-    const body={message:'Update collabs',content:btoa(bin)};
-    if(_collabsSHA)body.sha=_collabsSHA;
+    const cbody={message:'Update collabs',content:btoa(bin)};
+    if(_collabsSHA)cbody.sha=_collabsSHA;
     const r=await fetch('https://api.github.com/repos/Alexchantry86/legaa-dg-role/contents/collabs.json',{
       method:'PUT',headers:{'Authorization':'token '+GH_TOKEN,'Content-Type':'application/json'},
-      body:JSON.stringify(body)
+      body:JSON.stringify(cbody)
     });
     const res=await r.json();
     if(res.content&&res.content.sha)_collabsSHA=res.content.sha;
@@ -1885,9 +1892,36 @@ document.getElementById('btn-add-tile').addEventListener('click',()=>{
 
 
 /* ── MOT DE PASSE ACCUEIL ── */
-const PWD_KEY = 'legaa_home_pwd';
+let _homePwd = localStorage.getItem('legaa_home_pwd') || '';
 
-function getHomePwd(){ return localStorage.getItem(PWD_KEY) || ''; }
+function getHomePwd(){ return _homePwd; }
+
+async function saveHomePwd(pwd){
+  _homePwd = pwd;
+  if(pwd) localStorage.setItem('legaa_home_pwd', pwd);
+  else localStorage.removeItem('legaa_home_pwd');
+  /* Sauvegarder dans collabs.json sur GitHub */
+  try{
+    const r = await fetch('https://api.github.com/repos/Alexchantry86/legaa-dg-role/contents/collabs.json',{
+      headers:{'Authorization':'token '+GH_TOKEN,'Cache-Control':'no-cache'}
+    });
+    if(!r.ok) return;
+    const meta = await r.json();
+    let list; 
+    try{ const bytes=Uint8Array.from(atob(meta.content.replace(/\n/g,'')),c=>c.charCodeAt(0)); list=JSON.parse(new TextDecoder().decode(bytes)); }
+    catch(e){ list = COLLABS; }
+    const config = {collabs: list, pwd: pwd};
+    const enc = new TextEncoder().encode(JSON.stringify(config));
+    let bin=''; enc.forEach(x=>bin+=String.fromCharCode(x));
+    const body = {message:'Update config', content: btoa(bin), sha: meta.sha};
+    const wr = await fetch('https://api.github.com/repos/Alexchantry86/legaa-dg-role/contents/collabs.json',{
+      method:'PUT', headers:{'Authorization':'token '+GH_TOKEN,'Content-Type':'application/json'},
+      body: JSON.stringify(body)
+    });
+    const wres = await wr.json();
+    if(wres.content) _collabsSHA = wres.content.sha;
+  }catch(e){ console.warn('saveHomePwd:', e); }
+}
 
 function requestGoHome(){
   const pwd = getHomePwd();
