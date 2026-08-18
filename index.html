@@ -1593,7 +1593,7 @@ function buildHomePage(){
     del.addEventListener('click',e=>{
       e.stopPropagation();e.preventDefault();
       if(!confirm('Supprimer '+c.name+' ?'))return;
-      COLLABS=COLLABS.filter(x=>x.id!==c.id);saveCollabs(COLLABS);buildHomePage();
+      COLLABS=COLLABS.filter(x=>x.id!==c.id);saveCollabs(COLLABS).then(()=>buildHomePage());
 updatePwdStatus();
     });
     card.appendChild(del);
@@ -1935,7 +1935,7 @@ function updatePwdStatus(){
 }
 
 function saveHomeConfig(){
-  saveCollabs(COLLABS);
+  saveCollabs(COLLABS).then(()=>{});
   const btn=document.getElementById('home-save-btn');
   const status=document.getElementById('home-save-status');
   btn.style.background='#1D9E75';
@@ -1979,7 +1979,6 @@ document.getElementById('nc-create').addEventListener('click',()=>{
   COLLABS.push(collab);
   saveCollabs(COLLABS);
   document.getElementById('overlay-new-collab').classList.remove('open');
-  buildHomePage();
   enterCollab(collab);
 });
 document.getElementById('nc-name').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('nc-role').focus();});
@@ -2110,9 +2109,8 @@ document.getElementById('ec-save').addEventListener('click',()=>{
   COLLABS[_editIdx].role=role;
   COLLABS[_editIdx].color=_ecSelectedColor||COLLABS[_editIdx].color;
   COLLABS[_editIdx].company=_ecSelectedCompany;
-  saveCollabs(COLLABS);
+  saveCollabs(COLLABS).then(()=>buildHomePage());
   document.getElementById('overlay-edit-collab').classList.remove('open');
-  buildHomePage();
 });
 document.getElementById('close-edit-collab').addEventListener('click',()=>{
   document.getElementById('overlay-edit-collab').classList.remove('open');
@@ -2144,8 +2142,13 @@ document.querySelectorAll('.tab-btn').forEach(btn=>{
 });
 
 /* Démarrer sur la page de garde */
+loadCollabs(); /* Cache local */
 buildHomePage();
 updatePwdStatus();
+/* Puis charger depuis GitHub et rafraîchir */
+loadCollabsFromGitHub().then(()=>{
+  buildHomePage();
+});
 
 /* Autosave — seulement si un collab est chargé ET données reçues du cloud */
 let _cloudLoaded=false;
