@@ -1698,53 +1698,73 @@ function getDataFile(id){return 'data_'+id+'.json';}
 async function loadCollabFromCloud(id){
   setSyncStatus('saving','Chargement...');
   const file=getDataFile(id);
-  
+
+  /* Essayer d'abord l'API GitHub (avec auth), puis raw.githubusercontent en fallback */
+  async function fetchData(){
+    /* Méthode 1 : API GitHub avec authentification */
+    try{
+      const r=await fetch(API_BASE+'/repos/'+GH_REPO+'/contents/'+file,{
+        headers:{'Authorization':'token '+GH_TOKEN,'Cache-Control':'no-cache'}
+      });
+      if(r.status===404) return {status:404};
+      if(!r.ok) throw new Error('API HTTP '+r.status);
+      const meta=await r.json();
+      collabFileSHA[id]=meta.sha||'';
+      const bytes=Uint8Array.from(atob(meta.content.replace(/\n/g,'')),c=>c.charCodeAt(0));
+      return {status:200, data:JSON.parse(new TextDecoder().decode(bytes))};
+    }catch(e1){
+      console.warn('[load] API GitHub echec:',e1.message,'; essai raw.githubusercontent...');
+    }
+    /* Méthode 2 : raw.githubusercontent (pas d'auth, peut être en cache 5min) */
+    try{
+      const r2=await fetch('https://raw.githubusercontent.com/'+GH_REPO+'/main/'+file+'?t='+Date.now());
+      if(r2.status===404) return {status:404};
+      if(!r2.ok) throw new Error('raw HTTP '+r2.status);
+      /* Récupérer le SHA séparément pour les futures sauvegardes */
+      fetch(API_BASE+'/repos/'+GH_REPO+'/contents/'+file,{headers:{'Authorization':'token '+GH_TOKEN}})
+        .then(x=>x.json()).then(m=>{if(m.sha)collabFileSHA[id]=m.sha;}).catch(()=>{});
+      return {status:200, data:JSON.parse(await r2.text())};
+    }catch(e2){
+      throw new Error('API: echec, raw: '+e2.message);
+    }
+  }
+
   try{
-    const r=await fetch(API_BASE+'/repos/'+GH_REPO+'/contents/'+file,{headers:{'Authorization':'token '+GH_TOKEN,'Cache-Control':'no-cache'}});
-    
-    if(r.status===404){
-      setSyncStatus('saving','Cr\u00e9ation en cours...');
+    const result=await fetchData();
+    if(result.status===404){
+      setSyncStatus('saving','Cr\u00e9ation...');
       dims.splice(0,dims.length,...JSON.parse(JSON.stringify(getDefaultDimsForCollab(id))));
       prioData.splice(0,prioData.length,...JSON.parse(JSON.stringify(getDefaultPrioForCollab(id))));
-      _cloudLoaded=true;
-      _lastCloudLoadTime=Date.now();
-      _lastSaved='';
+      _cloudLoaded=true; _lastCloudLoadTime=Date.now(); _lastSaved='';
       rebuildAll();
       await saveToCloud(false);
       return;
     }
-    if(!r.ok) throw new Error('HTTP '+r.status);
-    const meta=await r.json();
-    collabFileSHA[id]=meta.sha||'';
-    const bytes=Uint8Array.from(atob(meta.content.replace(/\n/g,'')),c=>c.charCodeAt(0));
-    const data=JSON.parse(new TextDecoder().decode(bytes));
+    const data=result.data;
     if(data.dims&&data.dims.length){
       dims.splice(0,dims.length,...data.dims);
       prioData.splice(0,prioData.length,...data.prioData);
       prioData.forEach(pd=>pd.actions.forEach(a=>{if(a.avancement===undefined)a.avancement=a.done?100:0;}));
       _lastSaved=JSON.stringify({dims,prioData});
-      _cloudLoaded=true;
-      _lastCloudLoadTime=Date.now();
+      _cloudLoaded=true; _lastCloudLoadTime=Date.now();
       rebuildAll();
       setSyncStatus('ok','Synchronis\u00e9 \u00b7 '+new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}));
     } else {
-      _cloudLoaded=true;
-      _lastCloudLoadTime=Date.now();
+      _cloudLoaded=true; _lastCloudLoadTime=Date.now();
       rebuildAll();
       setSyncStatus('ok','Charg\u00e9');
     }
   }catch(e){
-    console.error('[load] ERREUR:', e);
-    setSyncStatus('err','Err: '+e.message.slice(0,60));
+    console.error('[load] ERREUR finale:', e.message);
+    setSyncStatus('err','Erreur sync: '+e.message.slice(0,50));
     const local=getCollabData(id);
     if(local&&local.dims){
       dims.splice(0,dims.length,...local.dims);
       prioData.splice(0,prioData.length,...local.prioData);
       _lastSaved=JSON.stringify({dims,prioData});
-      _cloudLoaded=true;
-      _lastCloudLoadTime=Date.now();
+      _cloudLoaded=true; _lastCloudLoadTime=Date.now();
       rebuildAll();
-      setSyncStatus('ok','Donn\u00e9es locales charg\u00e9es');
+      setSyncStatus('warn','Cache local - GitHub inaccessible');
     }
   }
 }
