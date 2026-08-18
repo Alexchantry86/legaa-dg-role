@@ -2222,10 +2222,10 @@ loadCollabsFromGitHub().then(()=>{
 let _cloudLoaded=false;
 let _lastCloudLoadTime=0;
 setInterval(()=>{
-  if(currentCollab && _cloudLoaded && (Date.now()-_lastCloudLoadTime > 5000)){
+  if(currentCollab && _cloudLoaded && (Date.now()-_lastCloudLoadTime > 10000)){
     saveToCloud(true);
   }
-}, 3000);
+}, 5000);
 </script>
 </body>
 </html>
