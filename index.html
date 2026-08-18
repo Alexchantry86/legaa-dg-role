@@ -120,6 +120,15 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
 .prio-leg-item{display:flex;align-items:center;gap:6px;font-size:11px;color:#5f5e5a}
 .prio-leg-dot{width:8px;height:8px;border-radius:50%}
 
+
+/* ── PÉRIODES ── */
+.period-bar{display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.period-btn{font-size:12px;font-weight:500;padding:5px 14px;border-radius:16px;border:.5px solid #d3d1c7;background:#fff;cursor:pointer;color:#888780;transition:all .12s;font-family:inherit;white-space:nowrap}
+.period-btn:hover{border-color:#888780;color:#2c2c2a}
+.period-btn.active{background:#2c2c2a;color:#fff;border-color:#2c2c2a}
+.period-btn-add{font-size:12px;padding:5px 10px;border-radius:16px;border:.5px dashed #d3d1c7;background:transparent;cursor:pointer;color:#b4b2a9;font-family:inherit;transition:all .12s}
+.period-btn-add:hover{border-color:#888780;color:#2c2c2a}
+.period-label{font-size:11px;color:#b4b2a9;margin-right:4px}
 /* ── SYNTHÈSE CLÔTURE ── */
 .synth-wrap{margin-top:28px;border-top:.5px solid #d3d1c7;padding-top:22px}
 .synth-title{font-size:13px;font-weight:500;color:#2c2c2a;margin-bottom:4px;display:flex;align-items:center;gap:8px}
@@ -200,15 +209,15 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
   body{background:#fff!important;padding:0!important;font-size:11pt}
   .page,.tabs,.sync-global,.overlay,.prio-legend,.hint{display:none!important}
   #pdf-report{display:block!important}
-  .pr-page{page-break-after:always;padding:32pt 40pt}
+  .pr-page{page-break-after:always;padding:18pt 28pt}
   .pr-page:last-child{page-break-after:avoid}
-  .pr-cover{text-align:center;padding-top:120pt}
+  .pr-cover{text-align:center;padding-top:60pt}
   .pr-cover-eye{font-size:9pt;letter-spacing:.12em;text-transform:uppercase;color:#888780;margin-bottom:8pt}
   .pr-cover-title{font-size:28pt;font-weight:600;color:#2c2c2a;margin-bottom:6pt}
   .pr-cover-sub{font-size:12pt;color:#888780;margin-bottom:40pt}
   .pr-cover-date{font-size:10pt;color:#b4b2a9}
-  .pr-section-title{font-size:14pt;font-weight:600;color:#2c2c2a;margin-bottom:4pt;padding-bottom:4pt;border-bottom:1pt solid #e8e6e0}
-  .pr-section-sub{font-size:9pt;color:#888780;margin-bottom:16pt}
+  .pr-section-title{font-size:12pt;font-weight:600;color:#2c2c2a;margin-bottom:3pt;padding-bottom:3pt;border-bottom:0.5pt solid #e8e6e0}
+  .pr-section-sub{font-size:8pt;color:#888780;margin-bottom:8pt}
   .pr-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10pt;margin-bottom:14pt}
   .pr-card{border:0.5pt solid #d3d1c7;border-radius:6pt;padding:10pt 12pt}
   .pr-card-head{display:flex;align-items:center;gap:8pt;margin-bottom:6pt}
@@ -219,9 +228,9 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
   .pr-bar-track{height:5pt;background:#e8e6e0;border-radius:3pt;overflow:hidden}
   .pr-bar-fill{height:5pt;border-radius:3pt}
   .pr-autonomie-badge{display:inline-block;font-size:9pt;font-weight:600;padding:2pt 8pt;border-radius:4pt;margin-bottom:8pt}
-  .pr-prio-table{width:100%;border-collapse:collapse;font-size:8.5pt}
-  .pr-prio-table th{text-align:left;padding:4pt 6pt;background:#f7f7f5;font-weight:600;color:#5f5e5a;border-bottom:0.5pt solid #d3d1c7}
-  .pr-prio-table td{padding:4pt 6pt;border-bottom:0.3pt solid #f0eeea;vertical-align:middle}
+  .pr-prio-table{width:100%;border-collapse:collapse;font-size:7.5pt}
+  .pr-prio-table th{text-align:left;padding:2pt 4pt;background:#f7f7f5;font-weight:600;color:#5f5e5a;border-bottom:0.5pt solid #d3d1c7}
+  .pr-prio-table td{padding:2pt 4pt;border-bottom:0.2pt solid #f0eeea;vertical-align:middle;line-height:1.2}
   .pr-prio-table tr:last-child td{border-bottom:none}
   .pr-badge{display:inline-block;padding:1pt 5pt;border-radius:3pt;font-size:7.5pt;font-weight:500}
   .badge-h{background:#FAECE7;color:#993C1D}.badge-m{background:#FAEEDA;color:#633806}
@@ -353,6 +362,23 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
 .pwd-config-label{font-size:12px;color:#5f5e5a;flex:1}
 .pwd-toggle-btn{font-size:11px;font-weight:500;padding:5px 12px;border-radius:6px;border:.5px solid #d3d1c7;background:#f7f7f5;cursor:pointer;font-family:inherit;color:#2c2c2a;white-space:nowrap}
 .overlay-pwd-cfg.open{display:flex}
+
+/* ── MOBILE ── */
+@media(max-width:700px){
+  .grid{grid-template-columns:1fr 1fr!important}
+  .tile{padding:14px 10px}
+  .home-grid{grid-template-columns:1fr 1fr!important}
+  .collab-card{padding:18px 12px 16px}
+  .synth-kpi-row{grid-template-columns:1fr 1fr!important}
+  .synth-table{font-size:10px}
+  .app-topbar{flex-wrap:wrap;gap:6px}
+  .sync-global{flex-wrap:wrap;gap:4px}
+  .arc-wrap svg{width:56px;height:32px}
+}
+@media(max-width:400px){
+  .grid{grid-template-columns:1fr!important}
+  .home-grid{grid-template-columns:1fr!important}
+}
 </style>
 </head>
 <body>
@@ -425,17 +451,17 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
     </div>
   </div>
 
-  <div class="tabs">
-    <button class="tab-btn active" data-tab="autonomie"><i class="ti ti-gauge"></i>Niveau d&rsquo;autonomie par domaine</button>
-    <button class="tab-btn" data-tab="actions"><i class="ti ti-list-check"></i>Actions prioritaires S2 2026</button>
+  <div class="tabs" style="display:none">
+    <button class="tab-btn active" data-tab="actions"><i class="ti ti-list-check"></i>Actions prioritaires S2 2026</button>
   </div>
 
-  <div class="tab-panel active" id="tab-autonomie">
+  <div class="tab-panel" id="tab-autonomie" style="display:none!important">
     <div class="grid" id="grid-autonomie"></div>
     <p class="hint">Cliquer sur une brique &middot; Glisser pour ajuster &middot; Cliquer le libell&eacute; pour modifier</p>
   </div>
 
-  <div class="tab-panel" id="tab-actions">
+  <div class="tab-panel active" id="tab-actions">
+    <div id="period-bar" class="period-bar"></div>
     <div class="grid" id="grid-actions"></div>
     <div class="prio-legend">
       <div class="prio-leg-item"><div class="prio-leg-dot" style="background:#D85A30"></div>Haute priorit&eacute;</div>
@@ -944,10 +970,12 @@ function buildPrioTileEl(pd,i){
     basse?`<span class="prio-pill pill-basse">${basse}⚪</span>`:'',
     done?`<span class="prio-pill pill-done">${done}✓</span>`:'',
   ].filter(Boolean).join('');
+  /* Utiliser l'icône du dim correspondant si disponible */
+  const _pIcon = (dims[i] && dims[i].icon) ? dims[i].icon : pd.icon;
   div.innerHTML=`<div class="prio-tile-bar" style="background:${barColor}"></div>
     <div class="prio-tile-top">
       <div style="background:${barColor}33;width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:4px">
-        ${iconSVG(pd.icon, barColor, 24)}
+        ${iconSVG(_pIcon, barColor, 24)}
       </div>
       <input class="prio-tile-label-input" id="plabel${i}" title="Cliquer pour renommer"/>
     </div>
@@ -1122,6 +1150,92 @@ document.getElementById('overlay-actions').addEventListener('click',e=>{if(e.tar
 /* tabs init unique dans EXTRA_JS */
 
 
+
+/* ═══════════════ PÉRIODES ═══════════════ */
+let currentPeriod = '';
+let allPeriods = {}; /* {label: prioData[]} */
+
+function initPeriods(data){
+  if(data.periods && Object.keys(data.periods).length > 0){
+    allPeriods = data.periods;
+    currentPeriod = data.currentPeriod || Object.keys(data.periods)[0];
+  } else {
+    /* Migration : prioData existant -> période par défaut */
+    const defaultLabel = '2026-2027';
+    allPeriods = {};
+    allPeriods[defaultLabel] = data.prioData || [];
+    currentPeriod = defaultLabel;
+  }
+  /* Charger la période courante dans prioData */
+  prioData.splice(0, prioData.length, ...JSON.parse(JSON.stringify(allPeriods[currentPeriod] || [])));
+}
+
+function switchPeriod(label){
+  /* Sauvegarder la période courante */
+  allPeriods[currentPeriod] = JSON.parse(JSON.stringify(prioData));
+  currentPeriod = label;
+  /* Charger la nouvelle période */
+  prioData.splice(0, prioData.length, ...JSON.parse(JSON.stringify(allPeriods[label] || [])));
+  rebuildAll();
+  renderPeriodBar();
+  _lastSaved = ''; /* Forcer sauvegarde */
+}
+
+function addPeriod(){
+  const label = prompt('Nom de la nouvelle période (ex: 2027-2028):', '');
+  if(!label || !label.trim()) return;
+  const lbl = label.trim();
+  if(allPeriods[lbl]){ alert('Cette période existe déjà.'); return; }
+  /* Créer avec les mêmes domaines mais actions vides */
+  allPeriods[lbl] = prioData.map(pd=>({
+    icon: pd.icon, label: pd.label,
+    actions: [{name:'Action prioritaire 1',prio:'haute',avancement:0,done:false},
+              {name:'Action prioritaire 2',prio:'moyenne',avancement:0,done:false}]
+  }));
+  switchPeriod(lbl);
+}
+
+function deletePeriod(label){
+  if(Object.keys(allPeriods).length <= 1){ alert('Impossible de supprimer la seule période.'); return; }
+  if(!confirm('Supprimer la période "'+label+'" et toutes ses actions ?')) return;
+  delete allPeriods[label];
+  const first = Object.keys(allPeriods)[0];
+  switchPeriod(first);
+}
+
+function renderPeriodBar(){
+  const bar = document.getElementById('period-bar');
+  if(!bar) return;
+  bar.innerHTML = '';
+  const lbl = document.createElement('span');
+  lbl.className = 'period-label';
+  lbl.textContent = 'Période :';
+  bar.appendChild(lbl);
+  Object.keys(allPeriods).forEach(p=>{
+    const btn = document.createElement('button');
+    btn.className = 'period-btn' + (p===currentPeriod?' active':'');
+    btn.textContent = p;
+    btn.addEventListener('click', ()=>switchPeriod(p));
+    /* Clic long -> supprimer */
+    let timer;
+    btn.addEventListener('mousedown', ()=>{ timer=setTimeout(()=>deletePeriod(p), 800); });
+    btn.addEventListener('mouseup', ()=>clearTimeout(timer));
+    btn.addEventListener('mouseleave', ()=>clearTimeout(timer));
+    bar.appendChild(btn);
+  });
+  const addBtn = document.createElement('button');
+  addBtn.className = 'period-btn-add';
+  addBtn.innerHTML = '+ période';
+  addBtn.addEventListener('click', addPeriod);
+  bar.appendChild(addBtn);
+}
+
+/* Override getSavePayload pour inclure les périodes */
+function getFullPayload(){
+  /* Sauvegarder la période courante avant d'exporter */
+  allPeriods[currentPeriod] = JSON.parse(JSON.stringify(prioData));
+  return {dims, prioData, periods: allPeriods, currentPeriod, savedAt: new Date().toISOString()};
+}
 /* ═══════════════ EXPORTS ═══════════════ */
 function colLabel(v){return v>=70?'Forte':'Forte';}
 
@@ -1491,6 +1605,7 @@ function rebuildAll(){
   dims.forEach((d,i)=>{if(!d.hidden)document.getElementById('grid-autonomie').appendChild(buildAutoTile(d,i));});
   prioData.forEach((pd,i)=>{if(!dims[i]||!dims[i].hidden)document.getElementById('grid-actions').appendChild(buildPrioTileEl(pd,i));});
   renderSynth();
+  renderPeriodBar();
 }
 /* Init géré depuis page de garde */
 
@@ -1743,7 +1858,7 @@ async function loadCollabFromCloud(id){
     const data=result.data;
     if(data.dims&&data.dims.length){
       dims.splice(0,dims.length,...data.dims);
-      prioData.splice(0,prioData.length,...data.prioData);
+      initPeriods(data);
       prioData.forEach(pd=>pd.actions.forEach(a=>{if(a.avancement===undefined)a.avancement=a.done?100:0;}));
       _lastSaved=JSON.stringify({dims,prioData});
       _cloudLoaded=true; _lastCloudLoadTime=Date.now();
@@ -1790,7 +1905,7 @@ async function saveToCloud(silent){
   const id=currentCollab?currentCollab.id:'etienne';
   const file=getDataFile(id);
   try{
-    const payload={dims,prioData,savedAt:new Date().toISOString()};
+    const payload=getFullPayload();
     const body={message:'Update '+id+' '+new Date().toISOString().slice(0,16)};
     const enc=new TextEncoder().encode(JSON.stringify(payload));
     let bin=''; enc.forEach(x=>bin+=String.fromCharCode(x));
