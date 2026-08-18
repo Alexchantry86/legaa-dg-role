@@ -1792,10 +1792,12 @@ async function saveToCloud(silent){
       collabFileSHA[id]=res.content.sha;
       _lastSaved=snap;
       saveCollabData(id,{dims,prioData});
-      setSyncStatus('ok','Sauvegardé · '+new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}));
-    }else const errMsg=(res.message||'Erreur inconnue').slice(0,60);
+      setSyncStatus('ok','Sauvegard\u00e9 \u00b7 '+new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}));
+    }else{
+      const errMsg=(res.message||'Erreur inconnue').slice(0,60);
       console.error('[save] Erreur GitHub:', errMsg, 'status:', pr.status);
       throw new Error(errMsg);
+    }
   }catch(e){
     if(!silent)setSyncStatus('err','Erreur: '+e.message.slice(0,40));
     try{saveCollabData(id,{dims,prioData});}catch(e2){}
