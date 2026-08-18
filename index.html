@@ -1665,13 +1665,14 @@ async function loadCollabFromCloud(id){
     const r=await fetch(API_BASE+'/repos/'+GH_REPO+'/contents/'+file,{headers:{'Authorization':'token '+GH_TOKEN,'Cache-Control':'no-cache'}});
     
     if(r.status===404){
-      setSyncStatus('ok','Nouveau collaborateur \u2014 donn\u00e9es par d\u00e9faut');
+      setSyncStatus('saving','Cr\u00e9ation en cours...');
       dims.splice(0,dims.length,...JSON.parse(JSON.stringify(getDefaultDimsForCollab(id))));
       prioData.splice(0,prioData.length,...JSON.parse(JSON.stringify(getDefaultPrioForCollab(id))));
-      _lastSaved=JSON.stringify({dims,prioData});
       _cloudLoaded=true;
       _lastCloudLoadTime=Date.now();
+      _lastSaved='';
       rebuildAll();
+      await saveToCloud(false);
       return;
     }
     if(!r.ok) throw new Error('HTTP '+r.status);
