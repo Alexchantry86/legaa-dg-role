@@ -1501,55 +1501,6 @@ const COLLAB_COLORS=['#4F7DC0','#7C5CBF','#2E8B6E','#C07B2E','#B85070','#2c2c2a'
 let selectedColor=COLLAB_COLORS[0];
 
 /* COLLABS dynamique — stocké en localStorage */
-/* Liste collaborateurs depuis GitHub + localStorage en cache */
-let _collabsSHA = '';
-let COLLABS = [];
-
-function loadCollabs(){
-  try{
-    const stored=localStorage.getItem('legaa_collabs');
-    if(stored){COLLABS=JSON.parse(stored);return;}
-  }catch(e){}
-  COLLABS=[
-    {id:'jordan',  name:'Jordan',   role:"Manager Commercial",        color:'#4F7DC0',company:'legaa'},
-    {id:'josselyn',name:'Josselyn', role:"Responsable ADV",           color:'#7C5CBF',company:'legaa'},
-    {id:'vincent', name:'Vincent',  role:"Chef d'Atelier",            color:'#2E8B6E',company:'legaa'},
-    {id:'bruno',   name:'Bruno',    role:"Responsable Logistique",    color:'#C07B2E',company:'legaa'},
-    {id:'maxime',  name:'Maxime',   role:"Responsable Transport",     color:'#B85070',company:'legaa'},
-    {id:'etienne', name:'Etienne',  role:"Directeur Général (DG)", color:'#2c2c2a',company:'both'},
-  ];
-}
-
-async function loadCollabsFromGitHub(){
-  try{
-    const r=await fetch(API_BASE+'/repos/'+GH_REPO+'/contents/collabs.json',{
-      headers:{'Authorization':'token '+GH_TOKEN,'Cache-Control':'no-cache'}
-    });
-    if(!r.ok)return;
-    const meta=await r.json();
-    _collabsSHA=meta.sha||'';
-    const bytes=Uint8Array.from(atob(meta.content.replace(/\n/g,'')),c=>c.charCodeAt(0));
-    const list=JSON.parse(new TextDecoder().decode(bytes));
-    if(list&&list.length){COLLABS=list;localStorage.setItem('legaa_collabs',JSON.stringify(COLLABS));}
-  }catch(e){console.warn('loadCollabsFromGitHub:',e);}
-}
-
-async function saveCollabs(list){
-  COLLABS=list;
-  localStorage.setItem('legaa_collabs',JSON.stringify(list));
-  try{
-    const enc=new TextEncoder().encode(JSON.stringify(list));
-    let bin='';enc.forEach(x=>bin+=String.fromCharCode(x));
-    const body={message:'Update collabs',content:btoa(bin)};
-    if(_collabsSHA)body.sha=_collabsSHA;
-    const r=await fetch(API_BASE+'/repos/'+GH_REPO+'/contents/collabs.json',{
-      method:'PUT',headers:{'Authorization':'token '+GH_TOKEN,'Content-Type':'application/json'},
-      body:JSON.stringify(body)
-    });
-    const res=await r.json();
-    if(res.content&&res.content.sha)_collabsSHA=res.content.sha;
-  }catch(e){console.warn('saveCollabs GitHub:',e);}
-}
 let currentCollab=null;
 
 function initials(name){return name.slice(0,2).toUpperCase();}
@@ -1684,6 +1635,58 @@ const GH_TOKEN=GH_TOKEN_A+GH_TOKEN_B+GH_TOKEN_C;
 const GH_REPO='Alexchantry86/legaa-dg-role';
 const API_BASE='https://api.github.com';
 let collabFileSHA={};
+
+/* Liste collaborateurs depuis GitHub + localStorage en cache */
+let _collabsSHA = '';
+let COLLABS = [];
+
+function loadCollabs(){
+  try{
+    const stored=localStorage.getItem('legaa_collabs');
+    if(stored){COLLABS=JSON.parse(stored);return;}
+  }catch(e){}
+  COLLABS=[
+    {id:'jordan',  name:'Jordan',   role:"Manager Commercial",        color:'#4F7DC0',company:'legaa'},
+    {id:'josselyn',name:'Josselyn', role:"Responsable ADV",           color:'#7C5CBF',company:'legaa'},
+    {id:'vincent', name:'Vincent',  role:"Chef d'Atelier",            color:'#2E8B6E',company:'legaa'},
+    {id:'bruno',   name:'Bruno',    role:"Responsable Logistique",    color:'#C07B2E',company:'legaa'},
+    {id:'maxime',  name:'Maxime',   role:"Responsable Transport",     color:'#B85070',company:'legaa'},
+    {id:'etienne', name:'Etienne',  role:"Directeur Général (DG)", color:'#2c2c2a',company:'both'},
+  ];
+}
+
+async function loadCollabsFromGitHub(){
+  try{
+    const r=await fetch('https://api.github.com/repos/Alexchantry86/legaa-dg-role/contents/collabs.json',{
+      headers:{'Authorization':'token '+GH_TOKEN,'Cache-Control':'no-cache'}
+    });
+    if(!r.ok)return;
+    const meta=await r.json();
+    _collabsSHA=meta.sha||'';
+    const bytes=Uint8Array.from(atob(meta.content.replace(/\n/g,'')),c=>c.charCodeAt(0));
+    const list=JSON.parse(new TextDecoder().decode(bytes));
+    if(list&&list.length){COLLABS=list;localStorage.setItem('legaa_collabs',JSON.stringify(COLLABS));}
+  }catch(e){console.warn('loadCollabsFromGitHub:',e);}
+}
+
+async function saveCollabs(list){
+  COLLABS=list;
+  localStorage.setItem('legaa_collabs',JSON.stringify(list));
+  try{
+    const enc=new TextEncoder().encode(JSON.stringify(list));
+    let bin='';enc.forEach(x=>bin+=String.fromCharCode(x));
+    const body={message:'Update collabs',content:btoa(bin)};
+    if(_collabsSHA)body.sha=_collabsSHA;
+    const r=await fetch('https://api.github.com/repos/Alexchantry86/legaa-dg-role/contents/collabs.json',{
+      method:'PUT',headers:{'Authorization':'token '+GH_TOKEN,'Content-Type':'application/json'},
+      body:JSON.stringify(body)
+    });
+    const res=await r.json();
+    if(res.content&&res.content.sha)_collabsSHA=res.content.sha;
+  }catch(e){console.warn('saveCollabs GitHub:',e);}
+}
+
+
 
 function getDataFile(id){return 'data_'+id+'.json';}
 
