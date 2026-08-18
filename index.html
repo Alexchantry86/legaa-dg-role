@@ -1641,17 +1641,15 @@ let _collabsSHA = '';
 let COLLABS = [];
 
 function loadCollabs(){
-  try{
-    const stored=localStorage.getItem('legaa_collabs');
-    if(stored){COLLABS=JSON.parse(stored);return;}
-  }catch(e){}
+  /* Initialisation minimale - GitHub aura le dernier mot via loadCollabsFromGitHub */
   COLLABS=[
     {id:'jordan',  name:'Jordan',   role:"Manager Commercial",        color:'#4F7DC0',company:'legaa'},
     {id:'josselyn',name:'Josselyn', role:"Responsable ADV",           color:'#7C5CBF',company:'legaa'},
-    {id:'vincent', name:'Vincent',  role:"Chef d'Atelier",            color:'#2E8B6E',company:'legaa'},
+    {id:'vincent', name:'Vincent',  role:"Chef d\'Atelier",            color:'#2E8B6E',company:'legaa'},
     {id:'bruno',   name:'Bruno',    role:"Responsable Logistique",    color:'#C07B2E',company:'legaa'},
     {id:'maxime',  name:'Maxime',   role:"Responsable Transport",     color:'#B85070',company:'legaa'},
-    {id:'etienne', name:'Etienne',  role:"Directeur Général (DG)", color:'#2c2c2a',company:'both'},
+    {id:'etienne', name:'Etienne',  role:"Directeur G\u00e9n\u00e9ral (DG)", color:'#2c2c2a',company:'both'},
+    {id:'alexandre',name:'Alexandre',role:"Pr\u00e9sident",           color:'#3A8F8F',company:'both'},
   ];
 }
 
@@ -2210,13 +2208,14 @@ document.querySelectorAll('.tab-btn').forEach(btn=>{
   });
 });
 
-/* Démarrer sur la page de garde */
-loadCollabs(); /* Cache local */
+/* Démarrer sur la page de garde avec collabs par défaut */
+loadCollabs();
 buildHomePage();
 updatePwdStatus();
-/* Puis charger depuis GitHub et rafraîchir */
+/* Charger depuis GitHub et rafraîchir - GitHub a priorité */
 loadCollabsFromGitHub().then(()=>{
   buildHomePage();
+  updatePwdStatus();
 });
 
 /* Autosave — seulement si un collab est chargé ET données reçues du cloud */
