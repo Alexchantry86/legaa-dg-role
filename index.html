@@ -381,8 +381,16 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
 }
 
 /* ── ONGLET DOCUMENTS ── */
-.doc-page{display:grid;grid-template-columns:1fr 300px;gap:28px;align-items:start;padding-top:4px}
-@media(max-width:780px){.doc-page{grid-template-columns:1fr;gap:20px}}
+.doc-container{display:flex;flex-direction:column;gap:16px;max-width:760px}
+.doc-add-bar{background:#fff;border:.5px solid #e8e6e0;border-radius:14px;padding:16px 18px;display:flex;flex-direction:column;gap:12px}
+.doc-add-bar-label{font-size:10px;font-weight:600;color:#b4b2a9;text-transform:uppercase;letter-spacing:.07em;margin:0 0 6px}
+.doc-add-bar-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.doc-add-bar-row .field-input{min-width:80px}
+.doc-add-bar-divider{height:.5px;background:#f1efe8;margin:0 -18px}
+.doc-add-bar-section{}
+.doc-upload-inline{display:flex;align-items:center;gap:8px;padding:9px 12px;border:1px dashed #d3d1c7;border-radius:8px;cursor:pointer;font-size:12px;color:#888780;transition:border-color .15s,background .15s;background:#faf9f7}
+.doc-upload-inline:hover{border-color:#888780;background:#f4f3f0}
+.doc-upload-inline svg{flex-shrink:0;color:#b4b2a9}
 
 /* Liste documents */
 .doc-list{display:flex;flex-direction:column;gap:8px}
@@ -721,20 +729,15 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
 
 
   <div class="tab-panel" id="tab-docs">
-    <div class="doc-page">
-      <!-- Colonne gauche : liste documents -->
-      <div>
-        <div class="doc-list" id="doc-list"></div>
-      </div>
-      <!-- Colonne droite : sidebar ajout -->
-      <div class="doc-sidebar">
-        <!-- Carte : ajouter un lien -->
-        <div class="doc-add-card">
-          <p class="doc-add-card-title">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#888780" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-            Ajouter un lien
-          </p>
-          <div class="doc-add-row">
+    <div class="doc-container">
+      <!-- Liste des documents -->
+      <div class="doc-list" id="doc-list"></div>
+
+      <!-- Formulaire compact horizontal -->
+      <div class="doc-add-bar">
+        <div class="doc-add-bar-section">
+          <p class="doc-add-bar-label">Ajouter un lien</p>
+          <div class="doc-add-bar-row">
             <select class="doc-type-select" id="doc-type">
               <option value="drive">📁 Drive</option>
               <option value="sheet">📊 Sheets</option>
@@ -743,42 +746,34 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
               <option value="pdf">📕 PDF</option>
               <option value="link">🔗 Lien</option>
             </select>
-            <input class="field-input" id="doc-name-input" type="text" placeholder="Nom du document&hellip;" style="margin:0"/>
+            <input class="field-input" id="doc-name-input" type="text" placeholder="Nom du document" style="margin:0;flex:1"/>
+            <input class="field-input" id="doc-url-input" type="url" placeholder="https://drive.google.com/..." style="margin:0;flex:2"/>
+            <button class="sync-btn primary" onclick="addDoc()" style="flex-shrink:0;white-space:nowrap">+ Ajouter</button>
           </div>
-          <div class="doc-add-row">
-            <input class="field-input" id="doc-url-input" type="url" placeholder="https://drive.google.com/..." style="margin:0;flex:1"/>
-          </div>
-          <button class="add-btn" onclick="addDoc()" style="width:100%;justify-content:center;margin-top:2px">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Ajouter le lien
-          </button>
         </div>
-        <!-- Carte : joindre un fichier -->
-        <div class="doc-add-card">
-          <p class="doc-add-card-title">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#888780" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-            Joindre un fichier
-          </p>
-          <label class="doc-upload-label" id="doc-upload-label">
-            <svg class="upload-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-            <span class="upload-text" id="doc-upload-text">Cliquer ou glisser un fichier</span>
-            <span class="upload-hint">PDF, Word, Excel, images &middot; Max 5 Mo</span>
+        <div class="doc-add-bar-divider"></div>
+        <div class="doc-add-bar-section">
+          <p class="doc-add-bar-label">Joindre un fichier</p>
+          <label class="doc-upload-inline" id="doc-upload-label">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <span id="doc-upload-text">Cliquer ou glisser un fichier &mdash; PDF, Word, Excel &middot; Max 5 Mo</span>
             <input type="file" id="doc-file-input" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.png,.jpg,.jpeg" style="display:none"/>
           </label>
-          <div id="doc-upload-preview" style="display:none;margin-top:10px">
-            <div class="doc-upload-preview-row">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1D9E75" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-              <div style="flex:1;min-width:0">
-                <div id="doc-upload-filename" style="font-size:12px;font-weight:500;color:#085041;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
-                <div id="doc-upload-size" style="font-size:10px;color:#1D9E75"></div>
+          <div id="doc-upload-preview" style="display:none;margin-top:8px">
+            <div class="doc-add-bar-row">
+              <div class="doc-upload-preview-row" style="flex:1">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1D9E75" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                <div style="flex:1;min-width:0">
+                  <div id="doc-upload-filename" style="font-size:12px;font-weight:500;color:#085041;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
+                  <div id="doc-upload-size" style="font-size:10px;color:#1D9E75"></div>
+                </div>
               </div>
-              <button onclick="cancelUpload()" style="background:none;border:none;cursor:pointer;color:#1D9E75;font-size:15px;padding:0;line-height:1">&#x2715;</button>
+              <input class="field-input" id="doc-upload-name" type="text" placeholder="Nom affiché" style="margin:0;flex:1;font-size:12px"/>
+              <button class="sync-btn primary" onclick="uploadDoc()" id="doc-upload-btn" style="flex-shrink:0;white-space:nowrap">
+                <span id="doc-upload-btn-label">&#x2191; Sauvegarder</span>
+              </button>
+              <button onclick="cancelUpload()" style="background:none;border:none;cursor:pointer;color:#b4b2a9;font-size:18px;padding:0;line-height:1;flex-shrink:0">&#x2715;</button>
             </div>
-            <input class="field-input" id="doc-upload-name" type="text" placeholder="Nom affiché (optionnel)" style="margin-top:8px;margin-bottom:8px;font-size:12px"/>
-            <button class="add-btn" onclick="uploadDoc()" id="doc-upload-btn" style="width:100%;justify-content:center;padding:9px">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
-              <span id="doc-upload-btn-label">Sauvegarder</span>
-            </button>
           </div>
         </div>
       </div>
