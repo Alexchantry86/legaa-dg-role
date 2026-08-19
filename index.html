@@ -381,8 +381,8 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
 }
 
 /* ── ONGLET DOCUMENTS ── */
-.doc-page{display:grid;grid-template-columns:1fr 320px;gap:24px;align-items:start}
-@media(max-width:780px){.doc-page{grid-template-columns:1fr}}
+.doc-page{display:grid;grid-template-columns:1fr 300px;gap:28px;align-items:start;padding-top:4px}
+@media(max-width:780px){.doc-page{grid-template-columns:1fr;gap:20px}}
 
 /* Liste documents */
 .doc-list{display:flex;flex-direction:column;gap:8px}
@@ -397,13 +397,13 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
 .doc-open-btn:hover{background:#f7f7f5;border-color:#888780}
 .doc-del-btn{background:none;border:none;cursor:pointer;color:#d3d1c7;font-size:15px;padding:4px;line-height:1;border-radius:6px;transition:all .12s;display:flex;align-items:center;justify-content:center}
 .doc-del-btn:hover{color:#D85A30;background:#FAECE7}
-.doc-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 20px;color:#b4b2a9;font-size:13px;text-align:center;background:#faf9f7;border-radius:14px;border:.5px dashed #d3d1c7}
+.doc-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px 20px;color:#b4b2a9;font-size:13px;text-align:center;background:#faf9f7;border-radius:12px;border:.5px dashed #e8e6e0}
 .doc-empty-icon{font-size:36px;margin-bottom:10px;opacity:.4}
-.doc-section-title{font-size:11px;font-weight:600;color:#888780;text-transform:uppercase;letter-spacing:.07em;margin:0 0 10px}
+.doc-section-title{font-size:11px;font-weight:600;color:#b4b2a9;text-transform:uppercase;letter-spacing:.07em;margin:0 0 12px}
 
 /* Sidebar ajout */
-.doc-sidebar{display:flex;flex-direction:column;gap:12px;position:sticky;top:16px}
-.doc-add-card{background:#fff;border:.5px solid #e8e6e0;border-radius:14px;padding:18px}
+.doc-sidebar{display:flex;flex-direction:column;gap:10px;position:sticky;top:24px}
+.doc-add-card{background:#fff;border:.5px solid #e8e6e0;border-radius:12px;padding:16px}
 .doc-add-card-title{font-size:13px;font-weight:500;color:#2c2c2a;margin:0 0 12px;display:flex;align-items:center;gap:7px}
 .doc-add-row{display:flex;gap:8px;margin-bottom:8px}
 .doc-add-row:last-child{margin-bottom:0}
@@ -724,7 +724,6 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
     <div class="doc-page">
       <!-- Colonne gauche : liste documents -->
       <div>
-        <p class="doc-section-title" style="margin-bottom:12px">Documents &amp; Liens</p>
         <div class="doc-list" id="doc-list"></div>
       </div>
       <!-- Colonne droite : sidebar ajout -->
@@ -2744,10 +2743,10 @@ function renderDocs(){
   if(docs.length === 0){
     list.innerHTML = `<div class="doc-empty">
       <div class="doc-empty-icon">
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#d3d1c7" stroke-width="1.5" stroke-linecap="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#d3d1c7" stroke-width="1.5" stroke-linecap="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
       </div>
-      <p style="margin:0;font-weight:500;color:#888780">Aucun document</p>
-      <p style="margin:4px 0 0;font-size:11px;color:#c8c6be">Ajoutez un lien ou un fichier depuis la colonne de droite</p>
+      <p style="margin:0;font-weight:500;color:#b4b2a9;font-size:13px">Aucun document ajouté</p>
+      <p style="margin:6px 0 0;font-size:11px;color:#c8c6be;line-height:1.5">Ajoutez un lien Google Drive ou<br>déposez un fichier depuis le panneau de droite</p>
     </div>`;
     return;
   }
