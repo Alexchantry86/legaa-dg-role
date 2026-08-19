@@ -397,6 +397,187 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
 .doc-type-select{font-size:12px;border:.5px solid #d3d1c7;border-radius:8px;padding:8px 10px;background:#fff;cursor:pointer;font-family:inherit;outline:none;flex-shrink:0}
 .doc-empty{text-align:center;padding:40px 20px;color:#b4b2a9;font-size:13px}
 .doc-empty i{font-size:32px;display:block;margin-bottom:8px;color:#d3d1c7}
+
+/* ══════════════════════════════════════════
+   MOBILE — écrans < 640px
+══════════════════════════════════════════ */
+@media (max-width: 640px) {
+
+  /* Page générale */
+  .page { padding: 12px 14px; }
+  .app-topbar { flex-wrap: wrap; gap: 8px; padding-bottom: 14px; }
+  .sync-global { flex-wrap: wrap; gap: 6px; margin-top: 0; }
+  .sync-global span#sync-label { font-size: 11px; }
+  .sync-btn { padding: 5px 10px; font-size: 11px; }
+  #app-h1 { font-size: 20px; }
+  .header { margin-top: 10px; margin-bottom: 14px; }
+
+  /* Tabs */
+  .tabs { gap: 4px; flex-wrap: wrap; }
+  .tab-btn { font-size: 11px; padding: 7px 10px; gap: 4px; }
+  .tab-btn i { font-size: 13px; }
+
+  /* Grille de tuiles */
+  .grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .tile { padding: 14px 10px; }
+  .prio-tile { padding: 12px 10px; }
+
+  /* ── MODAL ACTIONS PRIORITAIRES ── */
+  .overlay { padding: 0; align-items: flex-end; }
+  .modal {
+    border-radius: 20px 20px 0 0;
+    max-height: 92vh;
+    width: 100%;
+    max-width: 100%;
+    padding: 20px 14px 30px;
+    overflow-y: auto;
+  }
+
+  /* Ligne action prio : layout vertical sur mobile */
+  .prio-action-row {
+    grid-template-columns: 16px 1fr 24px !important;
+    grid-template-rows: auto auto;
+    gap: 4px 8px;
+    padding: 10px 10px;
+  }
+  /* Nom de l'action sur toute la largeur */
+  .prio-action-name {
+    grid-column: 2 / 3;
+    grid-row: 1;
+    font-size: 12px;
+    white-space: normal;
+    line-height: 1.4;
+  }
+  /* Bouton supprimer */
+  .prio-action-row .del-btn {
+    grid-column: 3;
+    grid-row: 1;
+    align-self: start;
+  }
+  /* Numéro */
+  .prio-num {
+    grid-column: 1;
+    grid-row: 1 / 3;
+    align-self: center;
+  }
+  /* Jauge + select + checkbox sur deuxième ligne */
+  .prio-gauge-wrap {
+    grid-column: 2 / 4;
+    grid-row: 2;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .prio-select {
+    font-size: 10px;
+    padding: 3px 4px;
+    min-width: 64px;
+  }
+  .prio-check-wrap {
+    grid-column: unset;
+    grid-row: unset;
+    flex-shrink: 0;
+  }
+  /* Masquer handle drag sur mobile */
+  .prio-action-row .drag-handle { display: none; }
+
+  /* ── MODAL AUTONOMIE ── */
+  .action-row {
+    grid-template-columns: 22px 1fr 36px 24px !important;
+    grid-template-rows: auto auto;
+    gap: 4px 8px;
+    padding: 8px 10px;
+  }
+  .action-name {
+    grid-column: 2;
+    grid-row: 1;
+    font-size: 12px;
+    white-space: normal;
+  }
+  .action-row .drag-handle { display: none; }
+  .action-row .action-num {
+    grid-column: 1;
+    grid-row: 1 / 3;
+    align-self: center;
+  }
+  .mini-track {
+    grid-column: 2;
+    grid-row: 2;
+  }
+  .mini-pct {
+    grid-column: 3;
+    grid-row: 2;
+    font-size: 11px;
+  }
+  .action-row .del-btn {
+    grid-column: 4;
+    grid-row: 1;
+    align-self: start;
+  }
+
+  /* ── CHAT ── */
+  .overlay-chat { padding: 0; align-items: flex-end; }
+  .chat-modal {
+    border-radius: 20px 20px 0 0;
+    height: 80vh;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  /* ── PAGE D'ACCUEIL ── */
+  .home-page { padding: 30px 16px 60px; }
+  .home-title { font-size: 22px; }
+  .home-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .collab-card { padding: 18px 12px 16px; }
+  .collab-avatar { width: 42px; height: 42px; font-size: 16px; }
+  .collab-name { font-size: 13px; }
+  .collab-role { font-size: 11px; }
+  .home-filters { gap: 6px; }
+  .filter-btn { font-size: 11px; padding: 5px 10px; }
+
+  /* ── SYNTHÈSE CLÔTURE ── */
+  .synth-kpi-row { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .synth-table { font-size: 11px; }
+  .synth-table th, .synth-table td { padding: 5px 6px; }
+  .synth-sparkbar-track { width: 36px; }
+
+  /* ── DOCUMENTS ── */
+  .doc-item { grid-template-columns: 32px 1fr auto; gap: 8px; padding: 10px 12px; }
+  .doc-url-preview { display: none; }
+  .doc-add-row { flex-direction: column; }
+
+  /* ── MODAL GESTION TUILES ── */
+  .overlay-tiles { padding: 0; align-items: flex-end; }
+  .tiles-modal {
+    border-radius: 20px 20px 0 0;
+    max-height: 90vh;
+    width: 100%;
+    max-width: 100%;
+    padding: 20px 14px 30px;
+  }
+  .tile-config-row { flex-wrap: wrap; gap: 8px; }
+  .tile-config-icon-select { font-size: 11px; }
+  .tile-config-name { font-size: 12px; }
+
+  /* ── MODALES GÉNÉRIQUES ── */
+  .overlay-new-collab,
+  .overlay-edit-collab { padding: 0; align-items: flex-end; }
+  .new-collab-modal,
+  .edit-collab-modal {
+    border-radius: 20px 20px 0 0;
+    width: 100%;
+    max-width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 24px 16px 30px;
+  }
+
+  /* ── MENU ··· ── */
+  #more-menu { right: -10px; min-width: 160px; }
+
+  /* Chat bubble count */
+  .chat-btn svg { width: 18px; height: 18px; }
+}
 </style>
 </head>
 <body>
