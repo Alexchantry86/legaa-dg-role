@@ -1526,7 +1526,7 @@ function renderPeriodBar(){
 function getFullPayload(){
   /* Sauvegarder la période courante avant d'exporter */
   allPeriods[currentPeriod] = JSON.parse(JSON.stringify(prioData));
-  return {dims, prioData, periods: allPeriods, currentPeriod, savedAt: new Date().toISOString()};
+  return {dims, prioData, periods: allPeriods, currentPeriod, docs: currentDocs, savedAt: new Date().toISOString()};
 }
 /* ═══════════════ EXPORTS ═══════════════ */
 function colLabel(v){return v>=70?'Forte':'Forte';}
@@ -1906,6 +1906,7 @@ let selectedColor=COLLAB_COLORS[0];
 
 /* COLLABS dynamique — stocké en localStorage */
 let currentCollab=null;
+let currentDocs=[];
 
 function initials(name){return name.slice(0,2).toUpperCase();}
 
@@ -2010,6 +2011,7 @@ function saveCollabData(id, data){
 async function enterCollab(c){
   currentCollab = c;
   _cloudLoaded = false;
+  currentDocs = [];
   /* Fermer tous les overlays ouverts */
   document.querySelectorAll('.overlay,.overlay-chat,.overlay-pwd,.overlay-pwd-cfg,.overlay-tiles,.overlay-new-collab,.overlay-edit-collab').forEach(el=>el.classList.remove('open'));
   document.getElementById('screen-home').style.display='none';
@@ -2150,9 +2152,11 @@ async function loadCollabFromCloud(id){
       dims.splice(0,dims.length,...data.dims);
       initPeriods(data);
       prioData.forEach(pd=>pd.actions.forEach(a=>{if(a.avancement===undefined)a.avancement=a.done?100:0;}));
+      currentDocs = data.docs || [];
       _lastSaved=JSON.stringify({dims,prioData});
       _cloudLoaded=true; _lastCloudLoadTime=Date.now();
       rebuildAll();
+      renderDocs();
       setSyncStatus('ok','Synchronis\u00e9 \u00b7 '+new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}));
     } else {
       _cloudLoaded=true; _lastCloudLoadTime=Date.now();
@@ -2697,10 +2701,10 @@ async function uploadDoc(){
         /* URL de téléchargement */
         const downloadUrl='https://raw.githubusercontent.com/'+GH_REPO+'/main/'+path;
         /* Ajouter dans les docs du collab */
-        if(!currentCollab.docs) currentCollab.docs=[];
         const typeMap={pdf:'pdf',doc:'doc',docx:'doc',xls:'sheet',xlsx:'sheet',ppt:'slide',pptx:'slide',png:'link',jpg:'link',jpeg:'link'};
-        currentCollab.docs.push({name,url:downloadUrl,type:typeMap[ext]||'link',addedAt:new Date().toISOString(),isFile:true,fileName:_uploadFile.name});
-        await saveCollabs(COLLABS);
+        currentDocs.push({name,url:downloadUrl,type:typeMap[ext]||'link',addedAt:new Date().toISOString(),isFile:true,fileName:_uploadFile.name});
+        _lastSaved=''; /* Force autosave */
+        await saveToCloud(false);
         renderDocs();
         cancelUpload();
         lbl.textContent='Sauvegarder sur GitHub';
@@ -2736,7 +2740,7 @@ function docIconSVG(type, size){
 
 function renderDocs(){
   if(!currentCollab) return;
-  const docs = (currentCollab.docs || []);
+  const docs = currentDocs || [];
   const list = document.getElementById('doc-list');
   if(!list) return;
   list.innerHTML = '';
@@ -2807,9 +2811,10 @@ function renderDocs(){
       delBtn.title='Supprimer';
       delBtn.addEventListener('click',e=>{
         e.stopPropagation();
-        currentCollab.docs.splice(i,1);
-        saveCollabs(COLLABS);
+        currentDocs.splice(i,1);
+        _lastSaved='';
         renderDocs();
+        saveToCloud(true);
       });
       acts.appendChild(openBtn); acts.appendChild(delBtn);
       row.appendChild(iconWrap); row.appendChild(info); row.appendChild(acts);
@@ -2823,12 +2828,12 @@ function addDoc(){
   const url  = document.getElementById('doc-url-input').value.trim();
   const type = document.getElementById('doc-type').value;
   if(!name || !url){ return; }
-  if(!currentCollab.docs) currentCollab.docs = [];
-  currentCollab.docs.push({name, url, type, addedAt: new Date().toISOString()});
-  saveCollabs(COLLABS);
+  currentDocs.push({name, url, type, addedAt: new Date().toISOString()});
+  _lastSaved=''; /* Force autosave */
   document.getElementById('doc-name-input').value = '';
   document.getElementById('doc-url-input').value = '';
   renderDocs();
+  setTimeout(()=>saveToCloud(true), 500);
 }
 
 document.getElementById('doc-name-input') && document.getElementById('doc-name-input').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('doc-url-input').focus(); });
