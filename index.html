@@ -381,22 +381,46 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
 }
 
 /* ── ONGLET DOCUMENTS ── */
-.doc-list{display:flex;flex-direction:column;gap:10px;margin-top:4px}
-.doc-item{display:grid;grid-template-columns:36px 1fr auto auto;align-items:center;gap:12px;padding:12px 16px;background:#fff;border:.5px solid #d3d1c7;border-radius:12px;transition:border-color .15s}
-.doc-item:hover{border-color:#888780}
-.doc-icon-wrap{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.doc-name{font-size:13px;font-weight:500;color:#2c2c2a;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.doc-url-preview{font-size:11px;color:#b4b2a9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:300px}
-.doc-open-btn{padding:6px 12px;border-radius:8px;border:.5px solid #d3d1c7;background:#fff;font-size:12px;font-weight:500;color:#2c2c2a;cursor:pointer;font-family:inherit;text-decoration:none;white-space:nowrap;display:inline-flex;align-items:center;gap:5px;transition:background .12s}
-.doc-open-btn:hover{background:#f7f7f5}
-.doc-del-btn{background:none;border:none;cursor:pointer;color:#d3d1c7;font-size:16px;padding:0;transition:color .12s;flex-shrink:0}
-.doc-del-btn:hover{color:#D85A30}
-.doc-add-form{display:flex;flex-direction:column;gap:8px;padding:16px;background:#f7f7f5;border-radius:12px;border:.5px dashed #d3d1c7;margin-top:4px}
-.doc-add-row{display:flex;gap:8px}
-.doc-add-row .field-input{margin-bottom:0;flex:1}
-.doc-type-select{font-size:12px;border:.5px solid #d3d1c7;border-radius:8px;padding:8px 10px;background:#fff;cursor:pointer;font-family:inherit;outline:none;flex-shrink:0}
-.doc-empty{text-align:center;padding:40px 20px;color:#b4b2a9;font-size:13px}
-.doc-empty i{font-size:32px;display:block;margin-bottom:8px;color:#d3d1c7}
+.doc-page{display:grid;grid-template-columns:1fr 320px;gap:24px;align-items:start}
+@media(max-width:780px){.doc-page{grid-template-columns:1fr}}
+
+/* Liste documents */
+.doc-list{display:flex;flex-direction:column;gap:8px}
+.doc-item{display:flex;align-items:center;gap:12px;padding:14px 16px;background:#fff;border:.5px solid #e8e6e0;border-radius:14px;transition:all .15s;cursor:default}
+.doc-item:hover{border-color:#c8c6be;box-shadow:0 2px 8px rgba(44,44,42,.07)}
+.doc-icon-wrap{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.doc-info{flex:1;min-width:0}
+.doc-name{font-size:13px;font-weight:500;color:#2c2c2a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.doc-meta{font-size:11px;color:#b4b2a9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.doc-actions{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.doc-open-btn{padding:5px 12px;border-radius:8px;border:.5px solid #d3d1c7;background:#fff;font-size:11px;font-weight:500;color:#2c2c2a;cursor:pointer;font-family:inherit;text-decoration:none;white-space:nowrap;display:inline-flex;align-items:center;gap:4px;transition:background .12s}
+.doc-open-btn:hover{background:#f7f7f5;border-color:#888780}
+.doc-del-btn{background:none;border:none;cursor:pointer;color:#d3d1c7;font-size:15px;padding:4px;line-height:1;border-radius:6px;transition:all .12s;display:flex;align-items:center;justify-content:center}
+.doc-del-btn:hover{color:#D85A30;background:#FAECE7}
+.doc-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 20px;color:#b4b2a9;font-size:13px;text-align:center;background:#faf9f7;border-radius:14px;border:.5px dashed #d3d1c7}
+.doc-empty-icon{font-size:36px;margin-bottom:10px;opacity:.4}
+.doc-section-title{font-size:11px;font-weight:600;color:#888780;text-transform:uppercase;letter-spacing:.07em;margin:0 0 10px}
+
+/* Sidebar ajout */
+.doc-sidebar{display:flex;flex-direction:column;gap:12px;position:sticky;top:16px}
+.doc-add-card{background:#fff;border:.5px solid #e8e6e0;border-radius:14px;padding:18px}
+.doc-add-card-title{font-size:13px;font-weight:500;color:#2c2c2a;margin:0 0 12px;display:flex;align-items:center;gap:7px}
+.doc-add-row{display:flex;gap:8px;margin-bottom:8px}
+.doc-add-row:last-child{margin-bottom:0}
+.doc-add-row .field-input{margin-bottom:0;flex:1;font-size:12px}
+.doc-type-select{font-size:11px;border:.5px solid #d3d1c7;border-radius:8px;padding:7px 8px;background:#fff;cursor:pointer;font-family:inherit;outline:none;flex-shrink:0;color:#2c2c2a}
+.doc-type-select:focus{border-color:#888780}
+
+/* Upload zone */
+.doc-upload-label{display:flex;flex-direction:column;align-items:center;gap:6px;padding:20px 16px;border:1.5px dashed #d3d1c7;border-radius:10px;cursor:pointer;transition:border-color .15s,background .15s;text-align:center;background:#faf9f7}
+.doc-upload-label:hover{border-color:#888780;background:#f4f3f0}
+.doc-upload-label .upload-icon{font-size:24px;color:#c8c6be}
+.doc-upload-label .upload-text{font-size:12px;color:#888780;font-weight:500}
+.doc-upload-label .upload-hint{font-size:10px;color:#c8c6be}
+.doc-upload-preview-row{display:flex;align-items:center;gap:8px;padding:10px 12px;background:#E1F5EE;border:.5px solid #1D9E75;border-radius:10px}
+
+/* Badge type */
+.doc-type-badge{font-size:9px;font-weight:600;padding:2px 6px;border-radius:4px;letter-spacing:.04em;text-transform:uppercase;flex-shrink:0}
 
 /* ══════════════════════════════════════════
    MOBILE — écrans < 640px
@@ -697,54 +721,67 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
 
 
   <div class="tab-panel" id="tab-docs">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+    <div class="doc-page">
+      <!-- Colonne gauche : liste documents -->
       <div>
-        <p style="font-size:15px;font-weight:500;color:#2c2c2a;margin:0">Documents &amp; Liens</p>
-        <p style="font-size:12px;color:#888780;margin:4px 0 0">Liens vers Google Drive, documents partag&eacute;s, rapports</p>
+        <p class="doc-section-title" style="margin-bottom:12px">Documents &amp; Liens</p>
+        <div class="doc-list" id="doc-list"></div>
       </div>
-    </div>
-    <div class="doc-list" id="doc-list"></div>
-    <!-- Formulaire ajout -->
-    <div class="doc-add-form" style="margin-top:16px">
-      <p style="font-size:11px;font-weight:500;color:#888780;text-transform:uppercase;letter-spacing:.06em;margin:0 0 4px">Ajouter un lien</p>
-      <div class="doc-add-row">
-        <select class="doc-type-select" id="doc-type">
-          <option value="drive">📁 Drive</option>
-          <option value="sheet">📊 Sheets</option>
-          <option value="doc">📄 Docs</option>
-          <option value="slide">📑 Slides</option>
-          <option value="pdf">📕 PDF</option>
-          <option value="link">🔗 Lien</option>
-        </select>
-        <input class="field-input" id="doc-name-input" type="text" placeholder="Nom du document&hellip;" style="margin:0"/>
-      </div>
-      <div class="doc-add-row">
-        <input class="field-input" id="doc-url-input" type="url" placeholder="https://drive.google.com/..." style="margin:0;flex:1"/>
-        <button class="add-btn" onclick="addDoc()" style="flex-shrink:0"><i class="ti ti-link" style="font-size:13px"></i> Ajouter</button>
-      </div>
-    </div>
-    <!-- Upload fichier -->
-    <div class="doc-add-form" style="margin-top:10px">
-      <p style="font-size:11px;font-weight:500;color:#888780;text-transform:uppercase;letter-spacing:.06em;margin:0 0 8px">Joindre un fichier (PDF, image, doc&hellip;)</p>
-      <label class="doc-upload-label" id="doc-upload-label">
-        <i class="ti ti-upload" style="font-size:18px;color:#b4b2a9"></i>
-        <span id="doc-upload-text">Cliquer ou glisser un fichier ici</span>
-        <span style="font-size:10px;color:#d3d1c7">Max 5 Mo</span>
-        <input type="file" id="doc-file-input" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.png,.jpg,.jpeg" style="display:none"/>
-      </label>
-      <div id="doc-upload-preview" style="display:none;margin-top:8px">
-        <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#fff;border:.5px solid #1D9E75;border-radius:10px">
-          <i class="ti ti-file" style="font-size:18px;color:#1D9E75;flex-shrink:0"></i>
-          <div style="flex:1;min-width:0">
-            <div id="doc-upload-filename" style="font-size:12px;font-weight:500;color:#2c2c2a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
-            <div id="doc-upload-size" style="font-size:10px;color:#888780"></div>
+      <!-- Colonne droite : sidebar ajout -->
+      <div class="doc-sidebar">
+        <!-- Carte : ajouter un lien -->
+        <div class="doc-add-card">
+          <p class="doc-add-card-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#888780" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            Ajouter un lien
+          </p>
+          <div class="doc-add-row">
+            <select class="doc-type-select" id="doc-type">
+              <option value="drive">📁 Drive</option>
+              <option value="sheet">📊 Sheets</option>
+              <option value="doc">📄 Docs</option>
+              <option value="slide">📑 Slides</option>
+              <option value="pdf">📕 PDF</option>
+              <option value="link">🔗 Lien</option>
+            </select>
+            <input class="field-input" id="doc-name-input" type="text" placeholder="Nom du document&hellip;" style="margin:0"/>
           </div>
-          <button onclick="cancelUpload()" style="background:none;border:none;cursor:pointer;color:#d3d1c7;font-size:16px">&#x2715;</button>
+          <div class="doc-add-row">
+            <input class="field-input" id="doc-url-input" type="url" placeholder="https://drive.google.com/..." style="margin:0;flex:1"/>
+          </div>
+          <button class="add-btn" onclick="addDoc()" style="width:100%;justify-content:center;margin-top:2px">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Ajouter le lien
+          </button>
         </div>
-        <input class="field-input" id="doc-upload-name" type="text" placeholder="Nom du fichier (optionnel)" style="margin-top:8px;margin-bottom:8px"/>
-        <button class="add-btn" onclick="uploadDoc()" id="doc-upload-btn" style="width:100%;justify-content:center;padding:9px">
-          <i class="ti ti-cloud-upload" style="font-size:13px"></i> <span id="doc-upload-btn-label">Sauvegarder sur GitHub</span>
-        </button>
+        <!-- Carte : joindre un fichier -->
+        <div class="doc-add-card">
+          <p class="doc-add-card-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#888780" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Joindre un fichier
+          </p>
+          <label class="doc-upload-label" id="doc-upload-label">
+            <svg class="upload-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <span class="upload-text" id="doc-upload-text">Cliquer ou glisser un fichier</span>
+            <span class="upload-hint">PDF, Word, Excel, images &middot; Max 5 Mo</span>
+            <input type="file" id="doc-file-input" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.png,.jpg,.jpeg" style="display:none"/>
+          </label>
+          <div id="doc-upload-preview" style="display:none;margin-top:10px">
+            <div class="doc-upload-preview-row">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1D9E75" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              <div style="flex:1;min-width:0">
+                <div id="doc-upload-filename" style="font-size:12px;font-weight:500;color:#085041;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
+                <div id="doc-upload-size" style="font-size:10px;color:#1D9E75"></div>
+              </div>
+              <button onclick="cancelUpload()" style="background:none;border:none;cursor:pointer;color:#1D9E75;font-size:15px;padding:0;line-height:1">&#x2715;</button>
+            </div>
+            <input class="field-input" id="doc-upload-name" type="text" placeholder="Nom affiché (optionnel)" style="margin-top:8px;margin-bottom:8px;font-size:12px"/>
+            <button class="add-btn" onclick="uploadDoc()" id="doc-upload-btn" style="width:100%;justify-content:center;padding:9px">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+              <span id="doc-upload-btn-label">Sauvegarder</span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -2705,48 +2742,80 @@ function renderDocs(){
   if(!list) return;
   list.innerHTML = '';
   if(docs.length === 0){
-    list.innerHTML = '<div class="doc-empty"><i class="ti ti-folder-open"></i>Aucun document — ajoutez un lien ci-dessous</div>';
+    list.innerHTML = `<div class="doc-empty">
+      <div class="doc-empty-icon">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#d3d1c7" stroke-width="1.5" stroke-linecap="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+      </div>
+      <p style="margin:0;font-weight:500;color:#888780">Aucun document</p>
+      <p style="margin:4px 0 0;font-size:11px;color:#c8c6be">Ajoutez un lien ou un fichier depuis la colonne de droite</p>
+    </div>`;
     return;
   }
-  docs.forEach((doc, i) => {
-    const ic = DOC_ICONS[doc.type] || DOC_ICONS.link;
-    const row = document.createElement('div');
-    row.className = 'doc-item';
-    const iconWrap = document.createElement('div');
-    iconWrap.className = 'doc-icon-wrap';
-    iconWrap.style.background = ic.bg;
-    iconWrap.innerHTML = docIconSVG(doc.type, 20);
-    const info = document.createElement('div');
-    info.style.minWidth = '0';
-    const name = document.createElement('div');
-    name.className = 'doc-name';
-    name.textContent = doc.name;
-    const url = document.createElement('div');
-    url.className = 'doc-url-preview';
-    url.textContent = doc.url;
-    info.appendChild(name); info.appendChild(url);
-    const openBtn = document.createElement('a');
-    openBtn.className = 'doc-open-btn';
-    openBtn.href = doc.url;
-    openBtn.target = '_blank';
-    openBtn.rel = 'noopener';
-    openBtn.download = doc.isFile ? (doc.fileName||doc.name) : '';
-    openBtn.innerHTML = doc.isFile
-      ? '<i class="ti ti-download" style="font-size:13px"></i> T\u00e9l.'
-      : '<i class="ti ti-external-link" style="font-size:13px"></i> Ouvrir';
-    const delBtn = document.createElement('button');
-    delBtn.className = 'doc-del-btn';
-    delBtn.innerHTML = '&#x2715;';
-    delBtn.title = 'Supprimer';
-    delBtn.addEventListener('click', e => {
-      e.stopPropagation();
-      currentCollab.docs.splice(i, 1);
-      saveCollabs(COLLABS);
-      renderDocs();
+  /* Grouper par type : liens puis fichiers */
+  const links = docs.filter(d=>!d.isFile);
+  const files = docs.filter(d=>d.isFile);
+  const groups = [];
+  if(links.length) groups.push({label:'Liens',items:links,startIdx:0});
+  if(files.length) groups.push({label:'Fichiers',items:files,startIdx:links.length});
+
+  groups.forEach(grp=>{
+    const sep=document.createElement('p');
+    sep.className='doc-section-title';
+    sep.style.marginTop = groups.indexOf(grp)>0?'16px':'0';
+    sep.textContent = grp.label;
+    list.appendChild(sep);
+
+    grp.items.forEach((doc,gi)=>{
+      const i = grp.startIdx+gi;
+      const ic = DOC_ICONS[doc.type]||DOC_ICONS.link;
+      const typeLabels={drive:'Drive',sheet:'Sheets',doc:'Docs',slide:'Slides',pdf:'PDF',link:'Lien'};
+      const typeBg={drive:'#E8F0FE',sheet:'#E6F4EA',doc:'#E8F0FE',slide:'#FFF0E8',pdf:'#FCE8E6',link:'#f1efe8'};
+      const typeColor={drive:'#1A73E8',sheet:'#34A853',doc:'#4285F4',slide:'#FA7B17',pdf:'#EA4335',link:'#5f5e5a'};
+
+      const row=document.createElement('div');
+      row.className='doc-item';
+
+      /* Icône */
+      const iconWrap=document.createElement('div');
+      iconWrap.className='doc-icon-wrap';
+      iconWrap.style.background=ic.bg;
+      iconWrap.innerHTML=docIconSVG(doc.type,20);
+
+      /* Infos */
+      const info=document.createElement('div');
+      info.className='doc-info';
+      const badge=`<span class="doc-type-badge" style="background:${typeBg[doc.type]||'#f1efe8'};color:${typeColor[doc.type]||'#5f5e5a'}">${typeLabels[doc.type]||'Lien'}</span>`;
+      const added=doc.addedAt?new Date(doc.addedAt).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'}):'';
+      info.innerHTML=`<div class="doc-name">${doc.name}</div>
+        <div class="doc-meta" style="display:flex;align-items:center;gap:6px;margin-top:3px">
+          ${badge}
+          ${added?`<span style="color:#d3d1c7">·</span><span>${added}</span>`:''}
+        </div>`;
+
+      /* Boutons */
+      const acts=document.createElement('div');
+      acts.className='doc-actions';
+      const openBtn=document.createElement('a');
+      openBtn.className='doc-open-btn';
+      openBtn.href=doc.url; openBtn.target='_blank'; openBtn.rel='noopener';
+      if(doc.isFile) openBtn.download=doc.fileName||doc.name;
+      openBtn.innerHTML=doc.isFile
+        ?`<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="8 17 12 21 16 17"/><line x1="12" y1="21" x2="12" y2="3"/></svg> Télécharger`
+        :`<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg> Ouvrir`;
+      const delBtn=document.createElement('button');
+      delBtn.className='doc-del-btn';
+      delBtn.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+      delBtn.title='Supprimer';
+      delBtn.addEventListener('click',e=>{
+        e.stopPropagation();
+        currentCollab.docs.splice(i,1);
+        saveCollabs(COLLABS);
+        renderDocs();
+      });
+      acts.appendChild(openBtn); acts.appendChild(delBtn);
+      row.appendChild(iconWrap); row.appendChild(info); row.appendChild(acts);
+      list.appendChild(row);
     });
-    row.appendChild(iconWrap); row.appendChild(info);
-    row.appendChild(openBtn); row.appendChild(delBtn);
-    list.appendChild(row);
   });
 }
 
