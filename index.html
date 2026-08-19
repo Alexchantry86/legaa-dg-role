@@ -576,6 +576,10 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
   /* Chat bubble count */
   .chat-btn svg { width: 18px; height: 18px; }
 }
+
+.doc-upload-label{display:flex;flex-direction:column;align-items:center;gap:6px;padding:20px;border:1.5px dashed #d3d1c7;border-radius:10px;cursor:pointer;transition:border-color .15s,background .15s;text-align:center}
+.doc-upload-label:hover{border-color:#888780;background:#faf9f7}
+.doc-upload-label span{font-size:12px;color:#888780}
 </style>
 </head>
 <body>
@@ -717,7 +721,31 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
       </div>
       <div class="doc-add-row">
         <input class="field-input" id="doc-url-input" type="url" placeholder="https://drive.google.com/..." style="margin:0;flex:1"/>
-        <button class="add-btn" onclick="addDoc()" style="flex-shrink:0"><i class="ti ti-plus" style="font-size:13px"></i> Ajouter</button>
+        <button class="add-btn" onclick="addDoc()" style="flex-shrink:0"><i class="ti ti-link" style="font-size:13px"></i> Ajouter</button>
+      </div>
+    </div>
+    <!-- Upload fichier -->
+    <div class="doc-add-form" style="margin-top:10px">
+      <p style="font-size:11px;font-weight:500;color:#888780;text-transform:uppercase;letter-spacing:.06em;margin:0 0 8px">Joindre un fichier (PDF, image, doc&hellip;)</p>
+      <label class="doc-upload-label" id="doc-upload-label">
+        <i class="ti ti-upload" style="font-size:18px;color:#b4b2a9"></i>
+        <span id="doc-upload-text">Cliquer ou glisser un fichier ici</span>
+        <span style="font-size:10px;color:#d3d1c7">Max 5 Mo</span>
+        <input type="file" id="doc-file-input" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.png,.jpg,.jpeg" style="display:none"/>
+      </label>
+      <div id="doc-upload-preview" style="display:none;margin-top:8px">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#fff;border:.5px solid #1D9E75;border-radius:10px">
+          <i class="ti ti-file" style="font-size:18px;color:#1D9E75;flex-shrink:0"></i>
+          <div style="flex:1;min-width:0">
+            <div id="doc-upload-filename" style="font-size:12px;font-weight:500;color:#2c2c2a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
+            <div id="doc-upload-size" style="font-size:10px;color:#888780"></div>
+          </div>
+          <button onclick="cancelUpload()" style="background:none;border:none;cursor:pointer;color:#d3d1c7;font-size:16px">&#x2715;</button>
+        </div>
+        <input class="field-input" id="doc-upload-name" type="text" placeholder="Nom du fichier (optionnel)" style="margin-top:8px;margin-bottom:8px"/>
+        <button class="add-btn" onclick="uploadDoc()" id="doc-upload-btn" style="width:100%;justify-content:center;padding:9px">
+          <i class="ti ti-cloud-upload" style="font-size:13px"></i> <span id="doc-upload-btn-label">Sauvegarder sur GitHub</span>
+        </button>
       </div>
     </div>
   </div>
@@ -2561,6 +2589,101 @@ document.addEventListener('click',e=>{
 });
 
 
+
+/* ── UPLOAD FICHIER ── */
+let _uploadFile = null;
+
+document.getElementById('doc-file-input').addEventListener('change', function(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  if(file.size > 5 * 1024 * 1024){
+    alert('Fichier trop volumineux (max 5 Mo)');
+    return;
+  }
+  _uploadFile = file;
+  document.getElementById('doc-upload-filename').textContent = file.name;
+  document.getElementById('doc-upload-size').textContent = (file.size/1024).toFixed(0) + ' Ko';
+  document.getElementById('doc-upload-name').value = file.name.replace(/\.[^.]+$/, '');
+  document.getElementById('doc-upload-preview').style.display = 'block';
+  document.getElementById('doc-upload-text').textContent = 'Fichier s\u00e9lectionn\u00e9';
+});
+
+/* Drag & drop */
+const uploadLabel = document.getElementById('doc-upload-label');
+uploadLabel.addEventListener('dragover', e=>{ e.preventDefault(); uploadLabel.style.borderColor='#888780'; });
+uploadLabel.addEventListener('dragleave', ()=>{ uploadLabel.style.borderColor='#d3d1c7'; });
+uploadLabel.addEventListener('drop', e=>{
+  e.preventDefault();
+  uploadLabel.style.borderColor='#d3d1c7';
+  const file = e.dataTransfer.files[0];
+  if(file){ document.getElementById('doc-file-input').files; _uploadFile=file;
+    document.getElementById('doc-upload-filename').textContent=file.name;
+    document.getElementById('doc-upload-size').textContent=(file.size/1024).toFixed(0)+' Ko';
+    document.getElementById('doc-upload-name').value=file.name.replace(/\.[^.]+$/,'');
+    document.getElementById('doc-upload-preview').style.display='block';
+    document.getElementById('doc-upload-text').textContent='Fichier s\u00e9lectionn\u00e9';
+  }
+});
+uploadLabel.addEventListener('click', ()=>document.getElementById('doc-file-input').click());
+
+function cancelUpload(){
+  _uploadFile=null;
+  document.getElementById('doc-upload-preview').style.display='none';
+  document.getElementById('doc-upload-text').textContent='Cliquer ou glisser un fichier ici';
+  document.getElementById('doc-file-input').value='';
+}
+
+async function uploadDoc(){
+  if(!_uploadFile || !currentCollab) return;
+  const btn=document.getElementById('doc-upload-btn');
+  const lbl=document.getElementById('doc-upload-btn-label');
+  btn.disabled=true; lbl.textContent='Upload en cours...';
+  try{
+    const reader=new FileReader();
+    reader.onload=async function(e){
+      const b64=e.target.result.split(',')[1];
+      const name=document.getElementById('doc-upload-name').value.trim() || _uploadFile.name;
+      const ext=_uploadFile.name.split('.').pop().toLowerCase();
+      const path='files/'+currentCollab.id+'/'+Date.now()+'_'+_uploadFile.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+      /* Push sur GitHub */
+      try{
+        const payload={message:'Upload '+name,content:b64};
+        /* Vérifier si le fichier existe déjà */
+        try{
+          const chk=await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+path,{headers:{'Authorization':'token '+GH_TOKEN}});
+          if(chk.ok){const m=await chk.json();payload.sha=m.sha;}
+        }catch(e2){}
+        const wr=await fetch('https://api.github.com/repos/'+GH_REPO+'/contents/'+path,{
+          method:'PUT',headers:{'Authorization':'token '+GH_TOKEN,'Content-Type':'application/json'},
+          body:JSON.stringify(payload)
+        });
+        const wres=await wr.json();
+        if(!wres.content) throw new Error(wres.message||'Erreur GitHub');
+        /* URL de téléchargement */
+        const downloadUrl='https://raw.githubusercontent.com/'+GH_REPO+'/main/'+path;
+        /* Ajouter dans les docs du collab */
+        if(!currentCollab.docs) currentCollab.docs=[];
+        const typeMap={pdf:'pdf',doc:'doc',docx:'doc',xls:'sheet',xlsx:'sheet',ppt:'slide',pptx:'slide',png:'link',jpg:'link',jpeg:'link'};
+        currentCollab.docs.push({name,url:downloadUrl,type:typeMap[ext]||'link',addedAt:new Date().toISOString(),isFile:true,fileName:_uploadFile.name});
+        await saveCollabs(COLLABS);
+        renderDocs();
+        cancelUpload();
+        lbl.textContent='Sauvegarder sur GitHub';
+        btn.disabled=false;
+      }catch(err){
+        alert('Erreur upload: '+err.message);
+        lbl.textContent='Sauvegarder sur GitHub';
+        btn.disabled=false;
+      }
+    };
+    reader.readAsDataURL(_uploadFile);
+  }catch(e){
+    alert('Erreur: '+e.message);
+    btn.disabled=false;
+    lbl.textContent='Sauvegarder sur GitHub';
+  }
+}
+
 /* ═══════════════ DOCUMENTS ═══════════════ */
 const DOC_ICONS = {
   drive: {bg:'#E8F0FE',color:'#1A73E8',svg:'<path d="M6 2h9l5 5v15a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zm8 0v5h5"/><path d="M12 18v-6m-3 3h6"/>'},
@@ -2608,7 +2731,10 @@ function renderDocs(){
     openBtn.href = doc.url;
     openBtn.target = '_blank';
     openBtn.rel = 'noopener';
-    openBtn.innerHTML = '<i class="ti ti-external-link" style="font-size:13px"></i> Ouvrir';
+    openBtn.download = doc.isFile ? (doc.fileName||doc.name) : '';
+    openBtn.innerHTML = doc.isFile
+      ? '<i class="ti ti-download" style="font-size:13px"></i> T\u00e9l.'
+      : '<i class="ti ti-external-link" style="font-size:13px"></i> Ouvrir';
     const delBtn = document.createElement('button');
     delBtn.className = 'doc-del-btn';
     delBtn.innerHTML = '&#x2715;';
