@@ -433,53 +433,51 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
     overflow-y: auto;
   }
 
-  /* Ligne action prio : layout vertical sur mobile */
+  /* Actions prioritaires mobile : nom + ligne contrôles */
   .prio-action-row {
-    grid-template-columns: 16px 1fr 24px !important;
-    grid-template-rows: auto auto;
+    display: flex !important;
+    flex-wrap: wrap;
     gap: 4px 8px;
-    padding: 10px 10px;
+    padding: 10px 12px;
+    cursor: default;
+    align-items: center;
   }
-  /* Nom de l'action sur toute la largeur */
+  .prio-action-row .drag-handle { display: none; }
+  .prio-action-row .prio-num { display: none; }
+
+  /* Nom : pleine largeur */
   .prio-action-name {
-    grid-column: 2 / 3;
-    grid-row: 1;
+    flex: 0 0 100%;
     font-size: 12px;
     white-space: normal;
-    line-height: 1.4;
+    line-height: 1.35;
+    order: 0;
   }
-  /* Bouton supprimer */
-  .prio-action-row .del-btn {
-    grid-column: 3;
-    grid-row: 1;
-    align-self: start;
-  }
-  /* Numéro */
-  .prio-num {
-    grid-column: 1;
-    grid-row: 1 / 3;
-    align-self: center;
-  }
-  /* Jauge + select + checkbox sur deuxième ligne */
+  /* Jauge : prend l'espace disponible */
   .prio-gauge-wrap {
-    grid-column: 2 / 4;
-    grid-row: 2;
-    display: flex;
-    align-items: center;
-    gap: 6px;
+    flex: 1;
+    min-width: 80px;
+    order: 1;
+    gap: 4px;
   }
+  .prio-gauge-track { flex: 1; min-width: 40px; height: 5px; }
+  .prio-gauge-pct { font-size: 10px; min-width: 24px; }
+  /* Select priorité */
   .prio-select {
-    font-size: 10px;
-    padding: 3px 4px;
-    min-width: 64px;
-  }
-  .prio-check-wrap {
-    grid-column: unset;
-    grid-row: unset;
+    order: 2;
+    font-size: 9px;
+    padding: 2px 3px;
+    max-width: 64px;
+    min-width: 0;
     flex-shrink: 0;
   }
-  /* Masquer handle drag sur mobile */
-  .prio-action-row .drag-handle { display: none; }
+  /* Chat */
+  .prio-action-row .chat-btn { order: 3; flex-shrink: 0; }
+  /* Checkbox */
+  .prio-check-wrap { order: 4; flex-shrink: 0; }
+  .prio-check { width: 14px; height: 14px; }
+  /* Supprimer */
+  .prio-action-row .del-btn { order: 5; flex-shrink: 0; }
 
   /* ── MODAL AUTONOMIE ── */
   .action-row {
