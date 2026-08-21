@@ -2585,10 +2585,9 @@ async function genEvaluationWord(){
   const name = currentCollab.name;
   const role = currentCollab.role;
 
-  /* Calculer les stats */
+  /* ── Calculs stats ── */
   const activePrio = prioData.filter((_,i)=>!dims[i]||!dims[i].hidden);
-  let totAll=0,totD=0,sumAv=0,totH=0,totM=0,totB=0;
-  let hDone=0,mDone=0,bDone=0;
+  let totAll=0,totD=0,sumAv=0,totH=0,totM=0,totB=0,hDone=0,mDone=0,bDone=0;
   activePrio.forEach(pd=>pd.actions.forEach(a=>{
     totAll++; const av=a.done?100:a.avancement; sumAv+=av;
     if(a.done){totD++;if(a.prio==='haute')hDone++;else if(a.prio==='moyenne')mDone++;else bDone++;}
@@ -2599,58 +2598,61 @@ async function genEvaluationWord(){
   const totMAll = activePrio.reduce((s,pd)=>s+pd.actions.filter(a=>a.prio==='moyenne').length,0);
   const totBAll = activePrio.reduce((s,pd)=>s+pd.actions.filter(a=>a.prio==='basse').length,0);
 
-  /* Construire le contexte pour Claude */
-  let context = `Collaborateur: ${name} (${role})\n`;
-  context += `Avancement global: ${globalAv}%\n`;
-  context += `Actions haute priorité: ${hDone}/${totHAll} terminées\n`;
-  context += `Actions moyenne priorité: ${mDone}/${totMAll} terminées\n`;
-  context += `Actions basse priorité: ${bDone}/${totBAll} terminées\n\n`;
-  context += `Détail par domaine:\n`;
-  activePrio.forEach(pd=>{
-    const tot=pd.actions.length;
-    const done=pd.actions.filter(a=>a.done).length;
-    const av=tot>0?Math.round(pd.actions.map(a=>a.done?100:a.avancement).reduce((s,v)=>s+v,0)/tot):0;
-    const enCours=pd.actions.filter(a=>!a.done&&a.avancement>0).length;
-    context += `- ${pd.label}: ${av}% avancement, ${done}/${tot} terminées, ${enCours} en cours\n`;
-    pd.actions.filter(a=>a.prio==='haute'&&!a.done).slice(0,3).forEach(a=>{
-      context += `  → [HAUTE] ${a.name} (${a.avancement}%)\n`;
-    });
-  });
+  /* ── Bullets par défaut (générés localement) ── */
+  const pct = globalAv;
+  const perf = pct>=70?'bonne':pct>=40?'modérée':'faible';
+  const defaultBullets = [
+    'Avancement global de ' + pct + '% sur l'ensemble des domaines actifs.',
+    'Actions haute priorité : ' + hDone + '/' + totHAll + ' terminées (' + (totHAll?Math.round(hDone/totHAll*100):0) + '%).',
+    'Actions moyenne priorité : ' + mDone + '/' + totMAll + ' terminées (' + (totMAll?Math.round(mDone/totMAll*100):0) + '%).',
+    'Performance globale ' + perf + ' avec ' + totD + ' actions terminées sur ' + totAll + '.',
+    totH>0 ? totH + ' action(s) haute priorité en cours — nécessitent un suivi rapproché.' : 'Toutes les actions haute priorité sont terminées.',
+    'Progression à consolider sur ' + (activePrio.filter(pd=>pd.actions.some(a=>!a.done&&a.avancement<30)).length) + ' domaine(s) en retard.'
+  ];
 
-  setSyncStatus('saving', 'Evaluation en cours...');
+  /* ── Générer le Word immédiatement ── */
+  setSyncStatus('saving', 'Génération du document...');
+  buildEvaluationDocx(name, role, globalAv, totHAll, totMAll, totBAll, hDone, mDone, bDone, totAll, totD, defaultBullets, activePrio);
+  setSyncStatus('ok', 'Document généré');
 
-  /* Appel API Claude pour l'analyse */
-  let bullets = [];
+  /* ── Tenter analyse Claude en arrière-plan (optionnel) ── */
   try{
+    let context = name + ' (' + role + ') - Avancement: ' + globalAv + '%. ';
+    context += 'H: '+hDone+'/'+totHAll+' M: '+mDone+'/'+totMAll+' B: '+bDone+'/'+totBAll+'. ';
+    activePrio.slice(0,6).forEach(pd=>{
+      const tot=pd.actions.length;
+      const done=pd.actions.filter(a=>a.done).length;
+      const av=tot>0?Math.round(pd.actions.reduce((s,a)=>s+(a.done?100:a.avancement),0)/tot):0;
+      context += pd.label + ': ' + av + '% (' + done + '/' + tot + '). ';
+    });
+
+    const ctrl = new AbortController();
+    const timeout = setTimeout(()=>ctrl.abort(), 8000);
     const res = await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
+      method:'POST', signal: ctrl.signal,
       headers:{'Content-Type':'application/json'},
       body: JSON.stringify({
-        model:'claude-sonnet-4-6',
-        max_tokens:1000,
-        system: "Tu es un assistant RH expert. Analyse les données de suivi des actions et génère une synthèse. Réponds uniquement en JSON avec un tableau \"bullets\" de 5 à 6 chaînes. Pas de markdown.",
-        messages:[{role:'user', content: `Analyse la performance de ce collaborateur et génère 5-6 bullet points de synthèse pertinents, objectifs et constructifs (points forts, axes d'amélioration, observations). Données:\n${context}`}]
+        model:'claude-sonnet-4-6', max_tokens:600,
+        system:'Tu es un assistant RH. Analyse les données et réponds UNIQUEMENT avec un JSON {"bullets":["...","...","...","...","...","..."]} sans aucun autre texte.',
+        messages:[{role:'user',content:'Analyse: '+context}]
       })
     });
-    const data = await res.json();
-    const text = data.content?.[0]?.text || '{}';
-    const clean = text.replace(/```json|```/g,'').trim();
-    const parsed = JSON.parse(clean);
-    bullets = parsed.bullets || [];
+    clearTimeout(timeout);
+    if(res.ok){
+      const data = await res.json();
+      const text = (data.content&&data.content[0]&&data.content[0].text)||'{}';
+      const parsed = JSON.parse(text.replace(/```json|```/g,'').trim());
+      if(parsed.bullets&&parsed.bullets.length>=4){
+        /* Regénérer avec les vrais bullets Claude */
+        buildEvaluationDocx(name, role, globalAv, totHAll, totMAll, totBAll, hDone, mDone, bDone, totAll, totD, parsed.bullets, activePrio);
+      }
+    }
   }catch(e){
-    console.warn('Analyse Claude:', e);
-    bullets = [
-      'Analyse non disponible — vérifiez la connexion',
-      'Avancement global : ' + globalAv + '%',
-      'Actions hautes priorités : ' + hDone + '/' + totHAll + ' terminées',
-      'Actions moyennes priorités : ' + mDone + '/' + totMAll + ' terminées',
-    ];
+    /* Timeout ou erreur - le document par défaut a déjà été téléchargé */
+    console.warn('Analyse Claude non disponible:', e.message);
   }
-
-  /* Générer le Word via docx.js */
-  buildEvaluationDocx(name, role, globalAv, totHAll, totMAll, totBAll, hDone, mDone, bDone, totAll, totD, bullets, activePrio);
-  setSyncStatus('ok', 'Synchronisé');
 }
+
 
 function buildEvaluationDocx(name, role, globalAv, totH, totM, totB, hDone, mDone, bDone, totAll, totD, bullets, activePrio){
   const {Document,Packer,Paragraph,TextRun,HeadingLevel,AlignmentType,BorderStyle,TableRow,TableCell,Table,WidthType,ShadingType,PageBreak,NumberingLevel,LevelFormat} = window.docx || docx || {};
