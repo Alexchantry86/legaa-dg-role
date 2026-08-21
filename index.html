@@ -6,7 +6,7 @@
 <title>Tableau de bord — LEGAA</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.0.0/tabler-icons.min.css">
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.js"></script>
+<script src="https://unpkg.com/docx@8.5.0/build/index.js"></script>
 <style>
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -2653,8 +2653,8 @@ async function genEvaluationWord(){
 }
 
 function buildEvaluationDocx(name, role, globalAv, totH, totM, totB, hDone, mDone, bDone, totAll, totD, bullets, activePrio){
-  const {Document,Packer,Paragraph,TextRun,HeadingLevel,AlignmentType,BorderStyle,TableRow,TableCell,Table,WidthType,ShadingType,PageBreak,NumberingLevel,LevelFormat} = window.docx || {};
-  if(!window.docx){ alert('Librairie docx non chargée'); return; }
+  const {Document,Packer,Paragraph,TextRun,HeadingLevel,AlignmentType,BorderStyle,TableRow,TableCell,Table,WidthType,ShadingType,PageBreak,NumberingLevel,LevelFormat} = window.docx || docx || {};
+  if(typeof docx === 'undefined' && typeof window.docx === 'undefined'){ alert('Librairie docx non chargée'); return; }
 
   const now = new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
   const colA = '#2c2c2a';
