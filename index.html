@@ -651,6 +651,11 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
         <span id="home-save-status" style="margin-left:12px;font-size:12px;color:#b4b2a9;align-self:center"></span>
       </div>
     </div>
+        <div class="home-filters" style="margin-bottom:20px">
+          <button class="filter-btn active" data-filter="all" onclick="setFilter('all',this)">Tous</button>
+          <button class="filter-btn" data-filter="legaa" onclick="setFilter('legaa',this)">LEGAA</button>
+          <button class="filter-btn" data-filter="capembal" onclick="setFilter('capembal',this)">CAP'EMBAL</button>
+        </div>
         <div class="home-sections" id="home-sections">
           <!-- Section Roadmap Collaborateurs -->
           <div class="home-section" id="section-collabs">
@@ -2820,7 +2825,7 @@ function enterEntreprise(id){
 let _activeFilter='all';
 function setFilter(f,btn){
   _activeFilter=f;
-  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.home-filters .filter-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   buildHomePage();
 }
