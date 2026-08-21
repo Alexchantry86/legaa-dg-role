@@ -2539,9 +2539,11 @@ function savePwdConfig(){
   document.getElementById('overlay-pwd-config').style.display='none';
 }
 function removePwdConfig(){
-  localStorage.removeItem(PWD_KEY);
-  updatePwdStatus();
-  document.getElementById('overlay-pwd-config').style.display='none';
+  if(!confirm('Supprimer le mot de passe ?')) return;
+  saveHomePwd('').then(()=>{
+    updatePwdStatus();
+    document.getElementById('overlay-pwd-config').style.display='none';
+  });
 }
 
 function updatePwdStatus(){
