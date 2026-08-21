@@ -2147,8 +2147,14 @@ async function enterCollab(c){
   currentDocs = [];
   /* Fermer tous les overlays ouverts */
   document.querySelectorAll('.overlay,.overlay-chat,.overlay-pwd,.overlay-pwd-cfg,.overlay-tiles,.overlay-new-collab,.overlay-edit-collab').forEach(el=>el.classList.remove('open'));
+  /* Masquer tous les écrans */
   document.getElementById('screen-home').style.display='none';
+  const sc = document.getElementById('screen-collabs');
+  if(sc) sc.style.display='none';
+  const se = document.getElementById('screen-entreprises');
+  if(se) se.style.display='none';
   document.getElementById('screen-app').style.display='block';
+  window.scrollTo(0,0);
   // Badge collaborateur
   document.getElementById('cb-avatar').style.background=c.color;
   document.getElementById('cb-avatar').textContent=initials(c.name);
@@ -2164,9 +2170,12 @@ async function enterCollab(c){
 function goHome(){
   if(currentCollab)saveCollabData(currentCollab.id, {dims, prioData});
   document.getElementById('screen-app').style.display='none';
+  const _sc = document.getElementById('screen-collabs');
+  if(_sc) _sc.style.display='none';
+  const _se = document.getElementById('screen-entreprises');
+  if(_se) _se.style.display='none';
   document.getElementById('screen-home').style.display='block';
-  document.getElementById('screen-collabs').style.display='none';
-  document.getElementById('screen-entreprises').style.display='none';
+  window.scrollTo(0,0);
   updatePwdStatus();
   /* Mettre à jour badge */
   const b=document.getElementById('badge-collabs-home');
