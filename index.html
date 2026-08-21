@@ -2560,7 +2560,7 @@ async function genEvaluationWord(){
       body: JSON.stringify({
         model:'claude-sonnet-4-6',
         max_tokens:1000,
-        system: 'Tu es un assistant RH expert en performance managériale. Tu analyses les données de suivi des actions d'un collaborateur et génères une synthèse concise et professionnelle. Réponds uniquement en JSON avec un tableau "bullets" de 5 à 6 chaînes de caractères (bullet points). Pas de markdown, pas de backticks.',
+        system: "Tu es un assistant RH expert. Analyse les données de suivi des actions et génère une synthèse. Réponds uniquement en JSON avec un tableau \"bullets\" de 5 à 6 chaînes. Pas de markdown.",
         messages:[{role:'user', content: `Analyse la performance de ce collaborateur et génère 5-6 bullet points de synthèse pertinents, objectifs et constructifs (points forts, axes d'amélioration, observations). Données:\n${context}`}]
       })
     });
@@ -2636,10 +2636,10 @@ function buildEvaluationDocx(name, role, globalAv, totH, totM, totB, hDone, mDon
         new Paragraph({children:[new PageBreak()]}),
 
         /* ── CHAPITRE 1 : SYNTHÈSE ── */
-        h('1. Synthèse de l'entretien'),
+        h("1. Synthèse de l'entretien"),
         new Paragraph({children:[new TextRun({text:'À compléter lors de l'entretien',size:18,color:'b4b2a9',italics:true})],spacing:{before:0,after:200}}),
         ...field('Points forts observés',3),
-        ...field('Axes d'amélioration',3),
+        ...field("Axes d'amélioration",3),
         ...field('Objectifs S1 2027',3),
         ...field('Note globale  (1 à 5)',1),
         new Paragraph({children:[new TextRun({text:'Synthèse narrative',size:20,color:'6B7280',bold:true})],spacing:{before:200,after:40}}),
