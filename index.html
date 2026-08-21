@@ -1983,6 +1983,7 @@ function initials(name){return name.slice(0,2).toUpperCase();}
 
 function buildHomePage(){
   const grid=document.getElementById('home-grid');
+  if(!grid) return;
   grid.innerHTML='';
   const filtered=COLLABS.filter(c=>{
     if(_activeFilter==='all')return true;
