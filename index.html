@@ -2571,7 +2571,7 @@ async function genEvaluationWord(){
     bullets = parsed.bullets || [];
   }catch(e){
     console.warn('Analyse Claude:', e);
-    bullet    bullets = [
+    bullets = [
       'Analyse non disponible — vérifiez la connexion',
       'Avancement global : ' + globalAv + '%',
       'Actions hautes priorités : ' + hDone + '/' + totHAll + ' terminées',
