@@ -651,16 +651,16 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
         <span id="home-save-status" style="margin-left:12px;font-size:12px;color:#b4b2a9;align-self:center"></span>
       </div>
     </div>
-        <div class="home-filters" style="margin-bottom:20px">
-          <button class="filter-btn active" data-filter="all" onclick="setFilter('all',this)">Tous</button>
-          <button class="filter-btn" data-filter="legaa" onclick="setFilter('legaa',this)">LEGAA</button>
-          <button class="filter-btn" data-filter="capembal" onclick="setFilter('capembal',this)">CAP'EMBAL</button>
-        </div>
         <div class="home-sections" id="home-sections">
           <!-- Section Roadmap Collaborateurs -->
           <div class="home-section" id="section-collabs">
             <div class="home-section-header">
               <p class="home-section-title">&#128100; Roadmap Collaborateurs</p>
+              <div style="display:flex;gap:6px;margin:0 10px">
+                <button class="filter-btn active" data-filter="all" onclick="setFilter('all',this)" style="font-size:10px;padding:3px 8px">Tous</button>
+                <button class="filter-btn" data-filter="legaa" onclick="setFilter('legaa',this)" style="font-size:10px;padding:3px 8px">LEGAA</button>
+                <button class="filter-btn" data-filter="capembal" onclick="setFilter('capembal',this)" style="font-size:10px;padding:3px 8px">CAP'EMBAL</button>
+              </div>
               <div class="home-section-line"></div>
               <span class="home-section-badge" id="badge-collabs">0</span>
             </div>
@@ -2637,7 +2637,7 @@ function buildEvaluationDocx(name, role, globalAv, totH, totM, totB, hDone, mDon
 
         /* ── CHAPITRE 1 : SYNTHÈSE ── */
         h("1. Synthèse de l'entretien"),
-        new Paragraph({children:[new TextRun({text:'À compléter lors de l'entretien',size:18,color:'b4b2a9',italics:true})],spacing:{before:0,after:200}}),
+        new Paragraph({children:[new TextRun({text:"À compléter lors de l'entretien",size:18,color:'b4b2a9',italics:true})],spacing:{before:0,after:200}}),
         ...field('Points forts observés',3),
         ...field("Axes d'amélioration",3),
         ...field('Objectifs S1 2027',3),
