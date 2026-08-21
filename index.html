@@ -6,7 +6,6 @@
 <title>Tableau de bord — LEGAA</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.0.0/tabler-icons.min.css">
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<script src="https://unpkg.com/docx@8.5.0/build/index.js"></script>
 <style>
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -2655,118 +2654,87 @@ async function genEvaluationWord(){
 
 
 function buildEvaluationDocx(name, role, globalAv, totH, totM, totB, hDone, mDone, bDone, totAll, totD, bullets, activePrio){
-  const {Document,Packer,Paragraph,TextRun,HeadingLevel,AlignmentType,BorderStyle,TableRow,TableCell,Table,WidthType,ShadingType,PageBreak,NumberingLevel,LevelFormat} = window.docx || docx || {};
-  if(typeof docx === 'undefined' && typeof window.docx === 'undefined'){ alert('Librairie docx non chargée'); return; }
+  try{
+    const now = new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
+    const barC = globalAv>=70?'#1D9E75':globalAv>=40?'#EF9F27':'#D85A30';
 
-  const now = new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
-  const colA = '#2c2c2a';
-  const colGray = '#888780';
-  const colAccent = '#1D9E75';
+    /* Lignes vides pour saisie */
+    function blankLines(n){
+      let s='';
+      for(let i=0;i<n;i++) s+='<tr><td style="border-bottom:1px solid #ccc;height:28px;padding:4px 6px">&nbsp;</td></tr>';
+      return s;
+    }
 
-  function h(text, level=1){
-    return new Paragraph({
-      text, heading: level===1?HeadingLevel.HEADING_1:level===2?HeadingLevel.HEADING_2:HeadingLevel.HEADING_3,
-      spacing:{before:300,after:120}
+    /* Tableau actions par domaine */
+    let domaineTables = '';
+    activePrio.forEach(pd=>{
+      const tot = pd.actions.length;
+      const done = pd.actions.filter(a=>a.done).length;
+      const av = tot>0?Math.round(pd.actions.reduce((s,a)=>s+(a.done?100:a.avancement),0)/tot):0;
+      const dc = done===tot&&tot>0?'#1D9E75':pd.actions.some(a=>!a.done&&a.prio==='haute')?'#D85A30':'#EF9F27';
+      let rows = pd.actions.map((a,j)=>{
+        const av2=a.done?100:a.avancement;
+        const pc=a.done?'#1D9E75':a.prio==='haute'?'#D85A30':a.prio==='moyenne'?'#EF9F27':'#888';
+        return '<tr style="background:'+(j%2?'#f9f9f9':'#fff')+'">'
+          +'<td style="padding:6px 8px;border:1px solid #e5e5e5">'+(j+1)+'</td>'
+          +'<td style="padding:6px 8px;border:1px solid #e5e5e5;font-weight:'+(a.done?'normal':'500')+';text-decoration:'+(a.done?'line-through':'none')+'">'+a.name+'</td>'
+          +'<td style="padding:6px 8px;border:1px solid #e5e5e5;color:'+pc+';font-weight:600">'+av2+'%</td>'
+          +'<td style="padding:6px 8px;border:1px solid #e5e5e5;color:'+pc+'">'+(a.prio==='haute'?'Haute':a.prio==='moyenne'?'Moyenne':'Basse')+'</td>'
+          +'<td style="padding:6px 8px;border:1px solid #e5e5e5;color:'+(a.done?'#1D9E75':'#888')+'">'+(a.done?'&#10003; Fait':'En cours')+'</td>'
+          +'</tr>';
+      }).join('');
+      domaineTables += '<h3 style="font-family:Calibri,sans-serif;font-size:14pt;color:#2c2c2a;margin:24pt 0 6pt;border-bottom:2px solid '+dc+';padding-bottom:4pt">'+pd.label+'&nbsp;<span style="font-size:10pt;color:'+dc+'">'+av+'% &mdash; '+done+'/'+tot+'</span></h3>'
+        +'<table style="width:100%;border-collapse:collapse;font-family:Calibri,sans-serif;font-size:10pt">'
+        +'<thead><tr style="background:#f1f1f1"><th style="padding:6px 8px;border:1px solid #ddd;text-align:left">N°</th><th style="padding:6px 8px;border:1px solid #ddd;text-align:left">Action</th><th style="padding:6px 8px;border:1px solid #ddd">Avancement</th><th style="padding:6px 8px;border:1px solid #ddd">Priorité</th><th style="padding:6px 8px;border:1px solid #ddd">Statut</th></tr></thead>'
+        +'<tbody>'+rows+'</tbody></table>';
     });
-  }
-  function p(text, opts={}){
-    return new Paragraph({
-      children:[new TextRun({text, size:22, color:'374151', ...opts})],
-      spacing:{before:60,after:60}
-    });
-  }
-  function blank(n=1){ return Array(n).fill(new Paragraph({text:'',spacing:{before:0,after:60}})); }
-  function field(label, lines=3){
-    const rows=[
-      new Paragraph({children:[new TextRun({text:label,size:20,color:'6B7280',bold:true})],spacing:{before:160,after:40}}),
-      ...Array(lines).fill(null).map(()=>new Paragraph({
-        text:'',
-        border:{bottom:{style:BorderStyle.SINGLE,size:4,color:'D1D5DB'}},
-        spacing:{before:0,after:100}
-      }))
-    ];
-    return rows;
-  }
 
-  const numbering={config:[{reference:'bullets',levels:[{level:0,format:LevelFormat.BULLET,text:'•',alignment:AlignmentType.LEFT,style:{paragraph:{indent:{left:360,hanging:260}}}}]}]};
+    const docHtml = '<!DOCTYPE html><html><head><meta charset="UTF-8">'
+      +'<style>body{font-family:Calibri,sans-serif;font-size:11pt;color:#1a1a1a;margin:2cm}h1{font-size:22pt;color:#2c2c2a;margin-bottom:4pt}h2{font-size:16pt;color:#2c2c2a;border-bottom:1px solid #e0e0e0;padding-bottom:6pt;margin-top:24pt} ul{margin:0;padding-left:20pt} li{margin:8pt 0;line-height:1.5} table{border-collapse:collapse;width:100%;font-size:10pt} td,th{border:1px solid #ddd;padding:6px 8px} .field-label{font-weight:bold;font-size:10pt;color:#555;margin-top:14pt;margin-bottom:4pt} .line{border:none;border-bottom:1px solid #aaa;height:28px;width:100%;display:block;margin-bottom:8pt}</style>'
+      +'</head><body>'
 
-  const doc = new Document({
-    numbering,
-    styles:{default:{document:{run:{font:'Calibri Light',size:22}}}},
-    sections:[{
-      properties:{page:{size:{width:11906,height:16838},margin:{top:1134,bottom:1134,left:1134,right:1134}}},
-      children:[
-        /* ── PAGE DE GARDE ── */
-        ...blank(4),
-        new Paragraph({children:[new TextRun({text:'ÉVALUATION COLLABORATEUR',size:32,bold:true,color:'2c2c2a',font:'Calibri Light'})],alignment:AlignmentType.CENTER,spacing:{before:0,after:200}}),
-        new Paragraph({children:[new TextRun({text:name,size:52,bold:true,color:'2c2c2a',font:'Calibri Light'})],alignment:AlignmentType.CENTER,spacing:{before:0,after:80}}),
-        new Paragraph({children:[new TextRun({text:role,size:24,color:'888780'})],alignment:AlignmentType.CENTER,spacing:{before:0,after:60}}),
-        new Paragraph({children:[new TextRun({text:`S2 2026  ·  ${now}`,size:20,color:'b4b2a9'})],alignment:AlignmentType.CENTER,spacing:{before:0,after:600}}),
-        new Paragraph({children:[new TextRun({text:`Avancement global : ${globalAv}%   ·   ${totD}/${totAll} actions terminées`,size:22,color:'1D9E75',bold:true})],alignment:AlignmentType.CENTER}),
-        new Paragraph({children:[new PageBreak()]}),
+      /* Couverture */
+      +'<div style="text-align:center;margin-bottom:48pt;padding:32pt;background:#f8f8f6">'
+      +'<p style="font-size:10pt;color:#888;letter-spacing:2pt;text-transform:uppercase;margin:0">LEGAA &bull; Direction G&eacute;n&eacute;rale</p>'
+      +'<h1 style="font-size:28pt;margin:12pt 0 4pt">'+name+'</h1>'
+      +'<p style="font-size:13pt;color:#666;margin:0">'+role+'</p>'
+      +'<p style="font-size:10pt;color:#aaa;margin:8pt 0 0">Entretien S2 2026 &bull; '+now+'</p>'
+      +'<div style="margin:24pt auto;background:#e8e8e0;border-radius:4pt;height:10pt;max-width:400px;overflow:hidden"><div style="background:'+barC+';height:10pt;width:'+globalAv+'%"></div></div>'
+      +'<p style="color:'+barC+';font-weight:bold;font-size:14pt">'+globalAv+'% d&rsquo;avancement global &bull; '+totD+'/'+totAll+' actions termin&eacute;es</p>'
+      +'</div>'
 
-        /* ── CHAPITRE 1 : SYNTHÈSE ── */
-        h("1. Synthèse de l'entretien"),
-        new Paragraph({children:[new TextRun({text:"À compléter lors de l'entretien",size:18,color:'b4b2a9',italics:true})],spacing:{before:0,after:200}}),
-        ...field('Points forts observés',3),
-        ...field("Axes d'amélioration",3),
-        ...field('Objectifs S1 2027',3),
-        ...field('Note globale  (1 à 5)',1),
-        new Paragraph({children:[new TextRun({text:'Synthèse narrative',size:20,color:'6B7280',bold:true})],spacing:{before:200,after:40}}),
-        ...Array(6).fill(null).map(()=>new Paragraph({text:'',border:{bottom:{style:BorderStyle.SINGLE,size:4,color:'D1D5DB'}},spacing:{before:0,after:100}})),
-        new Paragraph({children:[new PageBreak()]}),
+      /* Chapitre 1 */
+      +'<h2>1. Synth&egrave;se de l\'entretien</h2>'
+      +'<p style="color:#888;font-style:italic;font-size:10pt">&Agrave; compl&eacute;ter lors de l\'entretien</p>'
+      +'<p class="field-label">Points forts observ&eacute;s</p><table style="border:none"><tbody>'+blankLines(3)+'</tbody></table>'
+      +'<p class="field-label">Axes d\'am&eacute;lioration</p><table style="border:none"><tbody>'+blankLines(3)+'</tbody></table>'
+      +'<p class="field-label">Objectifs S1 2027</p><table style="border:none"><tbody>'+blankLines(3)+'</tbody></table>'
+      +'<p class="field-label">Note globale (1 &agrave; 5)</p><table style="border:none"><tbody>'+blankLines(1)+'</tbody></table>'
+      +'<p class="field-label">Synth&egrave;se narrative</p><table style="border:none"><tbody>'+blankLines(5)+'</tbody></table>'
 
-        /* ── CHAPITRE 2 : ANALYSE IA ── */
-        h('2. Analyse de la performance'),
-        new Paragraph({children:[new TextRun({text:'Synthèse générée par analyse des données de suivi',size:18,color:'b4b2a9',italics:true})],spacing:{before:0,after:200}}),
-        ...bullets.map(b=>new Paragraph({
-          children:[new TextRun({text:b,size:22})],
-          numbering:{reference:'bullets',level:0},
-          spacing:{before:80,after:80}
-        })),
-        new Paragraph({children:[new PageBreak()]}),
+      /* Chapitre 2 */
+      +'<h2>2. Analyse de la performance</h2>'
+      +'<p style="color:#888;font-style:italic;font-size:10pt">Synth&egrave;se g&eacute;n&eacute;r&eacute;e par analyse des donn&eacute;es de suivi</p>'
+      +'<ul>'+bullets.map(b=>'<li>'+b+'</li>').join('')+'</ul>'
 
-        /* ── CHAPITRE 3 : DÉTAIL DES ACTIONS ── */
-        h('3. Détail des actions par domaine'),
-        ...activePrio.flatMap(pd=>{
-          const done=pd.actions.filter(a=>a.done).length;
-          const tot=pd.actions.length;
-          const av=tot>0?Math.round(pd.actions.map(a=>a.done?100:a.avancement).reduce((s,v)=>s+v,0)/tot):0;
-          return [
-            h(pd.label,2),
-            new Paragraph({children:[new TextRun({text:`Avancement : ${av}%   ·   ${done}/${tot} terminées`,size:20,color:'888780'})],spacing:{before:0,after:120}}),
-            new Table({
-              width:{size:9072,type:WidthType.DXA},
-              columnWidths:[4500,1200,1400,1200,700],
-              rows:[
-                new TableRow({children:[
-                  ...[['Action',4500],['Avancement',1200],['Priorité',1400],['Statut',1200],['%',700]].map(([t,w])=>
-                    new TableCell({width:{size:w,type:WidthType.DXA},shading:{type:ShadingType.CLEAR,color:'F9FAFB'},children:[new Paragraph({children:[new TextRun({text:t,bold:true,size:18,color:'374151'})]})]})
-                  )
-                ]}),
-                ...pd.actions.map(a=>new TableRow({children:[
-                  new TableCell({width:{size:4500,type:WidthType.DXA},children:[new Paragraph({children:[new TextRun({text:a.name,size:20,color:a.done?'9CA3AF':'111827',strike:a.done})]})] }),
-                  new TableCell({width:{size:1200,type:WidthType.DXA},children:[new Paragraph({children:[new TextRun({text:`${a.done?100:a.avancement}%`,size:20,color:'1D9E75',bold:true})]})] }),
-                  new TableCell({width:{size:1400,type:WidthType.DXA},children:[new Paragraph({children:[new TextRun({text:a.prio==='haute'?'Haute':a.prio==='moyenne'?'Moyenne':'Basse',size:20,color:a.prio==='haute'?'D85A30':a.prio==='moyenne'?'EF9F27':'888780'})]})] }),
-                  new TableCell({width:{size:1200,type:WidthType.DXA},children:[new Paragraph({children:[new TextRun({text:a.done?'✓ Terminée':'En cours',size:20,color:a.done?'1D9E75':'888780'})]})] }),
-                  new TableCell({width:{size:700,type:WidthType.DXA},children:[new Paragraph({children:[new TextRun({text:`${a.done?100:a.avancement}`,size:18,color:'9CA3AF'})]})]}),
-                ]}))
-              ]
-            }),
-            new Paragraph({text:'',spacing:{before:200,after:0}})
-          ];
-        })
-      ]
-    }]
-  });
+      /* Chapitre 3 */
+      +'<h2>3. D&eacute;tail des actions par domaine</h2>'
+      +domaineTables
 
-  Packer.toBlob(doc).then(blob=>{
-    const url=URL.createObjectURL(blob);
-    const a=document.createElement('a');
-    a.href=url; a.download=`Evaluation_${name.replace(/ /g,'_')}_S2_2026.docx`;
+      +'</body></html>';
+
+    const blob = new Blob([docHtml], {type:'application/msword'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'Evaluation_'+name.replace(/ /g,'_')+'_S2_2026.doc';
     document.body.appendChild(a); a.click();
-    document.body.removeChild(a); URL.revokeObjectURL(url);
-  });
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  } catch(e){
+    console.error('buildEvaluationDocx erreur:', e);
+    alert('Erreur g\u00e9n\u00e9ration: ' + e.message);
+  }
 }
 
 function saveHomeConfig(){
