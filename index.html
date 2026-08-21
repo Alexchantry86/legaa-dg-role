@@ -2602,7 +2602,7 @@ async function genEvaluationWord(){
   const pct = globalAv;
   const perf = pct>=70?'bonne':pct>=40?'modérée':'faible';
   const defaultBullets = [
-    'Avancement global de ' + pct + '% sur l'ensemble des domaines actifs.',
+    'Avancement global de ' + pct + "% sur l'ensemble des domaines actifs.",
     'Actions haute priorité : ' + hDone + '/' + totHAll + ' terminées (' + (totHAll?Math.round(hDone/totHAll*100):0) + '%).',
     'Actions moyenne priorité : ' + mDone + '/' + totMAll + ' terminées (' + (totMAll?Math.round(mDone/totMAll*100):0) + '%).',
     'Performance globale ' + perf + ' avec ' + totD + ' actions terminées sur ' + totAll + '.',
