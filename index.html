@@ -6,6 +6,7 @@
 <title>Tableau de bord — LEGAA</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.0.0/tabler-icons.min.css">
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.js"></script>
 <style>
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -612,6 +613,24 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
 .doc-upload-label{display:flex;flex-direction:column;align-items:center;gap:6px;padding:20px;border:1.5px dashed #d3d1c7;border-radius:10px;cursor:pointer;transition:border-color .15s,background .15s;text-align:center}
 .doc-upload-label:hover{border-color:#888780;background:#faf9f7}
 .doc-upload-label span{font-size:12px;color:#888780}
+
+/* ── SECTIONS ACCUEIL ── */
+.home-sections{display:flex;flex-direction:column;gap:32px;margin-bottom:32px}
+.home-section{}
+.home-section-header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.home-section-title{font-size:12px;font-weight:600;color:#888780;text-transform:uppercase;letter-spacing:.08em;margin:0}
+.home-section-badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;background:#f1efe8;color:#b4b2a9}
+.home-section-line{flex:1;height:.5px;background:#e8e6e0}
+.home-grid-mini{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+/* Badge entreprise dans les tuiles entreprise */
+.ent-card{background:#fff;border:.5px solid #e8e6e0;border-radius:16px;padding:20px 16px;cursor:pointer;transition:all .15s;display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px}
+.ent-card:hover{border-color:#888780;box-shadow:0 2px 12px rgba(44,44,42,.08);transform:translateY(-1px)}
+.ent-card-icon{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px}
+.ent-card-name{font-size:13px;font-weight:500;color:#2c2c2a}
+.ent-card-sub{font-size:11px;color:#b4b2a9}
+/* Bouton évaluation */
+.eval-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;border:.5px solid #d3d1c7;background:#fff;font-size:12px;font-weight:500;color:#2c2c2a;cursor:pointer;font-family:inherit;transition:all .12s}
+.eval-btn:hover{background:#f7f7f5;border-color:#888780}
 </style>
 </head>
 <body>
@@ -632,7 +651,58 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
         <span id="home-save-status" style="margin-left:12px;font-size:12px;color:#b4b2a9;align-self:center"></span>
       </div>
     </div>
-        <div class="home-grid" id="home-grid"></div>
+        <div class="home-sections" id="home-sections">
+          <!-- Section Roadmap Collaborateurs -->
+          <div class="home-section" id="section-collabs">
+            <div class="home-section-header">
+              <p class="home-section-title">&#128100; Roadmap Collaborateurs</p>
+              <div class="home-section-line"></div>
+              <span class="home-section-badge" id="badge-collabs">0</span>
+            </div>
+            <div class="home-grid" id="home-grid"></div>
+          </div>
+          <!-- Section Roadmap Entreprises -->
+          <div class="home-section" id="section-entreprises">
+            <div class="home-section-header">
+              <p class="home-section-title">&#127963; Roadmap Entreprises</p>
+              <div class="home-section-line"></div>
+            </div>
+            <div class="home-grid-mini" id="home-grid-ent">
+              <!-- Brame Développement -->
+              <div class="ent-card" onclick="enterEntreprise('brame')">
+                <div class="ent-card-icon" style="background:#E8F0FE">&#127968;</div>
+                <div class="ent-card-name">Brame D&eacute;veloppement</div>
+                <div class="ent-card-sub">Holding</div>
+              </div>
+              <!-- LEGAA -->
+              <div class="ent-card" onclick="enterEntreprise('legaa')">
+                <div class="ent-card-icon" style="background:#E6F4EA">&#128230;</div>
+                <div class="ent-card-name">LEGAA</div>
+                <div class="ent-card-sub">Emballage &middot; Logistique</div>
+              </div>
+              <!-- CAP'EMBAL -->
+              <div class="ent-card" onclick="enterEntreprise('capembal')">
+                <div class="ent-card-icon" style="background:#FFF0E8">&#127981;</div>
+                <div class="ent-card-name">CAP&rsquo;EMBAL</div>
+                <div class="ent-card-sub">Emballage industriel</div>
+              </div>
+            </div>
+          </div>
+          <!-- Section Perso -->
+          <div class="home-section" id="section-perso">
+            <div class="home-section-header">
+              <p class="home-section-title">&#127775; Perso</p>
+              <div class="home-section-line"></div>
+            </div>
+            <div class="home-grid-mini" id="home-grid-perso">
+              <div class="ent-card" onclick="enterEntreprise('perso-alexandre')">
+                <div class="ent-card-icon" style="background:#f1efe8">&#129333;</div>
+                <div class="ent-card-name">Alexandre</div>
+                <div class="ent-card-sub">Espace personnel</div>
+              </div>
+            </div>
+          </div>
+        </div>
     <!-- Configuration mot de passe -->
     <div class="pwd-config-section">
       <div style="display:flex;align-items:center;gap:8px;flex:1">
@@ -668,10 +738,12 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
       <button class="sync-btn primary" onclick="forceSave()" id="save-btn"><i class="ti ti-cloud-upload" style="font-size:13px"></i> Sauvegarder</button>
       <div style="position:relative;display:inline-block">
         <button class="sync-btn" onclick="toggleMenu()" id="more-btn" title="Plus d'options" style="font-size:16px;font-weight:500;letter-spacing:1px">···</button>
-        <div id="more-menu" style="display:none;position:absolute;right:0;top:38px;background:#fff;border:.5px solid #d3d1c7;border-radius:10px;box-shadow:0 4px 16px rgba(44,44,42,.12);min-width:180px;z-index:50;overflow:hidden">
+        <div id="more-menu" style="display:none;position:absolute;right:0;top:38px;background:#fff;border:.5px solid #d3d1c7;border-radius:10px;box-shadow:0 4px 16px rgba(44,44,42,.12);min-width:190px;z-index:50;overflow:hidden">
           <button onclick="loadCollabFromCloud(currentCollab?currentCollab.id:'etienne');toggleMenu()" style="display:flex;align-items:center;gap:10px;width:100%;padding:11px 16px;border:none;background:none;cursor:pointer;font-size:13px;color:#2c2c2a;font-family:inherit;text-align:left" onmouseover="this.style.background='#f7f7f5'" onmouseout="this.style.background='none'"><i class="ti ti-refresh" style="font-size:14px;color:#888780"></i> Recharger</button>
           <button onclick="exportExcel();toggleMenu()" style="display:flex;align-items:center;gap:10px;width:100%;padding:11px 16px;border:none;background:none;cursor:pointer;font-size:13px;color:#2c2c2a;font-family:inherit;text-align:left" onmouseover="this.style.background='#f7f7f5'" onmouseout="this.style.background='none'"><i class="ti ti-file-spreadsheet" style="font-size:14px;color:#888780"></i> Exporter Excel</button>
           <button onclick="exportPDF();toggleMenu()" style="display:flex;align-items:center;gap:10px;width:100%;padding:11px 16px;border:none;background:none;cursor:pointer;font-size:13px;color:#2c2c2a;font-family:inherit;text-align:left" onmouseover="this.style.background='#f7f7f5'" onmouseout="this.style.background='none'"><i class="ti ti-file-type-pdf" style="font-size:14px;color:#888780"></i> Exporter PDF</button>
+          <div style="height:.5px;background:#f1efe8;margin:2px 0"></div>
+          <button onclick="genEvaluationWord();toggleMenu()" style="display:flex;align-items:center;gap:10px;width:100%;padding:11px 16px;border:none;background:none;cursor:pointer;font-size:13px;color:#2c2c2a;font-family:inherit;text-align:left" onmouseover="this.style.background='#f7f7f5'" onmouseout="this.style.background='none'"><i class="ti ti-clipboard-text" style="font-size:14px;color:#888780"></i> Évaluation Word</button>
         </div>
       </div>
     </div>
@@ -1998,6 +2070,9 @@ updatePwdStatus();
   addCard.appendChild(addIcon);addCard.appendChild(addLabel);
   addCard.addEventListener('click',openNewCollabModal);
   grid.appendChild(addCard);
+  /* Mettre à jour le badge compteur */
+  const badge=document.getElementById('badge-collabs');
+  if(badge) badge.textContent=filtered.length;
 }
 
 function getCollabData(id){
@@ -2429,6 +2504,195 @@ function updatePwdStatus(){
 
 }
 
+
+/* ── ÉVALUATION WORD ── */
+async function genEvaluationWord(){
+  if(!currentCollab){ alert('Aucun collaborateur sélectionné'); return; }
+  const name = currentCollab.name;
+  const role = currentCollab.role;
+
+  /* Calculer les stats */
+  const activePrio = prioData.filter((_,i)=>!dims[i]||!dims[i].hidden);
+  let totAll=0,totD=0,sumAv=0,totH=0,totM=0,totB=0;
+  let hDone=0,mDone=0,bDone=0;
+  activePrio.forEach(pd=>pd.actions.forEach(a=>{
+    totAll++; const av=a.done?100:a.avancement; sumAv+=av;
+    if(a.done){totD++;if(a.prio==='haute')hDone++;else if(a.prio==='moyenne')mDone++;else bDone++;}
+    if(!a.done){if(a.prio==='haute')totH++;else if(a.prio==='moyenne')totM++;else totB++;}
+  }));
+  const globalAv = totAll>0?Math.round(sumAv/totAll):0;
+  const totHAll = activePrio.reduce((s,pd)=>s+pd.actions.filter(a=>a.prio==='haute').length,0);
+  const totMAll = activePrio.reduce((s,pd)=>s+pd.actions.filter(a=>a.prio==='moyenne').length,0);
+  const totBAll = activePrio.reduce((s,pd)=>s+pd.actions.filter(a=>a.prio==='basse').length,0);
+
+  /* Construire le contexte pour Claude */
+  let context = `Collaborateur: ${name} (${role})\n`;
+  context += `Avancement global: ${globalAv}%\n`;
+  context += `Actions haute priorité: ${hDone}/${totHAll} terminées\n`;
+  context += `Actions moyenne priorité: ${mDone}/${totMAll} terminées\n`;
+  context += `Actions basse priorité: ${bDone}/${totBAll} terminées\n\n`;
+  context += `Détail par domaine:\n`;
+  activePrio.forEach(pd=>{
+    const tot=pd.actions.length;
+    const done=pd.actions.filter(a=>a.done).length;
+    const av=tot>0?Math.round(pd.actions.map(a=>a.done?100:a.avancement).reduce((s,v)=>s+v,0)/tot):0;
+    const enCours=pd.actions.filter(a=>!a.done&&a.avancement>0).length;
+    context += `- ${pd.label}: ${av}% avancement, ${done}/${tot} terminées, ${enCours} en cours\n`;
+    pd.actions.filter(a=>a.prio==='haute'&&!a.done).slice(0,3).forEach(a=>{
+      context += `  → [HAUTE] ${a.name} (${a.avancement}%)\n`;
+    });
+  });
+
+  setSyncStatus('saving', 'Évaluation en cours...');
+
+  /* Appel API Claude pour l'analyse */
+  let bullets = [];
+  try{
+    const res = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-6',
+        max_tokens:1000,
+        system: 'Tu es un assistant RH expert en performance managériale. Tu analyses les données de suivi des actions d'un collaborateur et génères une synthèse concise et professionnelle. Réponds uniquement en JSON avec un tableau "bullets" de 5 à 6 chaînes de caractères (bullet points). Pas de markdown, pas de backticks.',
+        messages:[{role:'user', content: `Analyse la performance de ce collaborateur et génère 5-6 bullet points de synthèse pertinents, objectifs et constructifs (points forts, axes d'amélioration, observations). Données:\n${context}`}]
+      })
+    });
+    const data = await res.json();
+    const text = data.content?.[0]?.text || '{}';
+    const clean = text.replace(/```json|```/g,'').trim();
+    const parsed = JSON.parse(clean);
+    bullets = parsed.bullets || [];
+  }catch(e){
+    console.warn('Analyse Claude:', e);
+    bullets = [
+      'Analyse non disponible — vérifiez la connexion',
+      \`Avancement global : \${globalAv}%\`,
+      \`Actions hautes priorités : \${hDone}/\${totHAll} terminées\`,
+      \`Actions moyennes priorités : \${mDone}/\${totMAll} terminées\`,
+    ];
+  }
+
+  /* Générer le Word via docx.js */
+  buildEvaluationDocx(name, role, globalAv, totHAll, totMAll, totBAll, hDone, mDone, bDone, totAll, totD, bullets, activePrio);
+  setSyncStatus('ok', 'Synchronisé');
+}
+
+function buildEvaluationDocx(name, role, globalAv, totH, totM, totB, hDone, mDone, bDone, totAll, totD, bullets, activePrio){
+  const {Document,Packer,Paragraph,TextRun,HeadingLevel,AlignmentType,BorderStyle,TableRow,TableCell,Table,WidthType,ShadingType,PageBreak,NumberingLevel,LevelFormat} = window.docx || {};
+  if(!window.docx){ alert('Librairie docx non chargée'); return; }
+
+  const now = new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
+  const colA = '#2c2c2a';
+  const colGray = '#888780';
+  const colAccent = '#1D9E75';
+
+  function h(text, level=1){
+    return new Paragraph({
+      text, heading: level===1?HeadingLevel.HEADING_1:level===2?HeadingLevel.HEADING_2:HeadingLevel.HEADING_3,
+      spacing:{before:300,after:120}
+    });
+  }
+  function p(text, opts={}){
+    return new Paragraph({
+      children:[new TextRun({text, size:22, color:'374151', ...opts})],
+      spacing:{before:60,after:60}
+    });
+  }
+  function blank(n=1){ return Array(n).fill(new Paragraph({text:'',spacing:{before:0,after:60}})); }
+  function field(label, lines=3){
+    const rows=[
+      new Paragraph({children:[new TextRun({text:label,size:20,color:'6B7280',bold:true})],spacing:{before:160,after:40}}),
+      ...Array(lines).fill(null).map(()=>new Paragraph({
+        text:'',
+        border:{bottom:{style:BorderStyle.SINGLE,size:4,color:'D1D5DB'}},
+        spacing:{before:0,after:100}
+      }))
+    ];
+    return rows;
+  }
+
+  const numbering={config:[{reference:'bullets',levels:[{level:0,format:LevelFormat.BULLET,text:'•',alignment:AlignmentType.LEFT,style:{paragraph:{indent:{left:360,hanging:260}}}}]}]};
+
+  const doc = new Document({
+    numbering,
+    styles:{default:{document:{run:{font:'Calibri Light',size:22}}}},
+    sections:[{
+      properties:{page:{size:{width:11906,height:16838},margin:{top:1134,bottom:1134,left:1134,right:1134}}},
+      children:[
+        /* ── PAGE DE GARDE ── */
+        ...blank(4),
+        new Paragraph({children:[new TextRun({text:'ÉVALUATION COLLABORATEUR',size:32,bold:true,color:'2c2c2a',font:'Calibri Light'})],alignment:AlignmentType.CENTER,spacing:{before:0,after:200}}),
+        new Paragraph({children:[new TextRun({text:name,size:52,bold:true,color:'2c2c2a',font:'Calibri Light'})],alignment:AlignmentType.CENTER,spacing:{before:0,after:80}}),
+        new Paragraph({children:[new TextRun({text:role,size:24,color:'888780'})],alignment:AlignmentType.CENTER,spacing:{before:0,after:60}}),
+        new Paragraph({children:[new TextRun({text:`S2 2026  ·  ${now}`,size:20,color:'b4b2a9'})],alignment:AlignmentType.CENTER,spacing:{before:0,after:600}}),
+        new Paragraph({children:[new TextRun({text:`Avancement global : ${globalAv}%   ·   ${totD}/${totAll} actions terminées`,size:22,color:'1D9E75',bold:true})],alignment:AlignmentType.CENTER}),
+        new Paragraph({children:[new PageBreak()]}),
+
+        /* ── CHAPITRE 1 : SYNTHÈSE ── */
+        h('1. Synthèse de l'entretien'),
+        new Paragraph({children:[new TextRun({text:'À compléter lors de l'entretien',size:18,color:'b4b2a9',italics:true})],spacing:{before:0,after:200}}),
+        ...field('Points forts observés',3),
+        ...field('Axes d'amélioration',3),
+        ...field('Objectifs S1 2027',3),
+        ...field('Note globale  (1 à 5)',1),
+        new Paragraph({children:[new TextRun({text:'Synthèse narrative',size:20,color:'6B7280',bold:true})],spacing:{before:200,after:40}}),
+        ...Array(6).fill(null).map(()=>new Paragraph({text:'',border:{bottom:{style:BorderStyle.SINGLE,size:4,color:'D1D5DB'}},spacing:{before:0,after:100}})),
+        new Paragraph({children:[new PageBreak()]}),
+
+        /* ── CHAPITRE 2 : ANALYSE IA ── */
+        h('2. Analyse de la performance'),
+        new Paragraph({children:[new TextRun({text:'Synthèse générée par analyse des données de suivi',size:18,color:'b4b2a9',italics:true})],spacing:{before:0,after:200}}),
+        ...bullets.map(b=>new Paragraph({
+          children:[new TextRun({text:b,size:22})],
+          numbering:{reference:'bullets',level:0},
+          spacing:{before:80,after:80}
+        })),
+        new Paragraph({children:[new PageBreak()]}),
+
+        /* ── CHAPITRE 3 : DÉTAIL DES ACTIONS ── */
+        h('3. Détail des actions par domaine'),
+        ...activePrio.flatMap(pd=>{
+          const done=pd.actions.filter(a=>a.done).length;
+          const tot=pd.actions.length;
+          const av=tot>0?Math.round(pd.actions.map(a=>a.done?100:a.avancement).reduce((s,v)=>s+v,0)/tot):0;
+          return [
+            h(pd.label,2),
+            new Paragraph({children:[new TextRun({text:`Avancement : ${av}%   ·   ${done}/${tot} terminées`,size:20,color:'888780'})],spacing:{before:0,after:120}}),
+            new Table({
+              width:{size:9072,type:WidthType.DXA},
+              columnWidths:[4500,1200,1400,1200,700],
+              rows:[
+                new TableRow({children:[
+                  ...[['Action',4500],['Avancement',1200],['Priorité',1400],['Statut',1200],['%',700]].map(([t,w])=>
+                    new TableCell({width:{size:w,type:WidthType.DXA},shading:{type:ShadingType.CLEAR,color:'F9FAFB'},children:[new Paragraph({children:[new TextRun({text:t,bold:true,size:18,color:'374151'})]})]})
+                  )
+                ]}),
+                ...pd.actions.map(a=>new TableRow({children:[
+                  new TableCell({width:{size:4500,type:WidthType.DXA},children:[new Paragraph({children:[new TextRun({text:a.name,size:20,color:a.done?'9CA3AF':'111827',strike:a.done})]})] }),
+                  new TableCell({width:{size:1200,type:WidthType.DXA},children:[new Paragraph({children:[new TextRun({text:`${a.done?100:a.avancement}%`,size:20,color:'1D9E75',bold:true})]})] }),
+                  new TableCell({width:{size:1400,type:WidthType.DXA},children:[new Paragraph({children:[new TextRun({text:a.prio==='haute'?'Haute':a.prio==='moyenne'?'Moyenne':'Basse',size:20,color:a.prio==='haute'?'D85A30':a.prio==='moyenne'?'EF9F27':'888780'})]})] }),
+                  new TableCell({width:{size:1200,type:WidthType.DXA},children:[new Paragraph({children:[new TextRun({text:a.done?'✓ Terminée':'En cours',size:20,color:a.done?'1D9E75':'888780'})]})] }),
+                  new TableCell({width:{size:700,type:WidthType.DXA},children:[new Paragraph({children:[new TextRun({text:`${a.done?100:a.avancement}`,size:18,color:'9CA3AF'})]})]}),
+                ]}))
+              ]
+            }),
+            new Paragraph({text:'',spacing:{before:200,after:0}})
+          ];
+        })
+      ]
+    }]
+  });
+
+  Packer.toBlob(doc).then(blob=>{
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url; a.download=`Evaluation_${name.replace(/ /g,'_')}_S2_2026.docx`;
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a); URL.revokeObjectURL(url);
+  });
+}
+
 function saveHomeConfig(){
   saveCollabs(COLLABS).then(()=>{});
   const btn=document.getElementById('home-save-btn');
@@ -2535,6 +2799,21 @@ function copyCollabUrl(){
   // Déclencher après l'init
   setTimeout(tryEnter, 100);
 })();
+
+
+/* ── ESPACES ENTREPRISES & PERSO ── */
+const ENTREPRISES = {
+  'brame':            {id:'brame',           name:'Brame Développement', role:'Holding stratégique',  color:'#1A73E8', company:'brame'},
+  'legaa':            {id:'legaa',            name:'LEGAA',                   role:'Emballage · Logistique',color:'#34A853', company:'legaa'},
+  'capembal':         {id:'capembal',         name:"CAP'EMBAL",               role:'Emballage industriel',      color:'#FA7B17', company:'capembal'},
+  'perso-alexandre':  {id:'perso-alexandre',  name:'Alexandre',               role:'Espace personnel',          color:'#3A8F8F', company:'perso'},
+};
+
+function enterEntreprise(id){
+  const ent = ENTREPRISES[id];
+  if(!ent) return;
+  enterCollab(ent);
+}
 
 /* ── FILTRE ENTREPRISE ── */
 let _activeFilter='all';
