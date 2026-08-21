@@ -2543,7 +2543,7 @@ async function genEvaluationWord(){
     });
   });
 
-  setSyncStatus('saving', 'Évaluation en cours...');
+  setSyncStatus('saving', 'Evaluation en cours...');
 
   /* Appel API Claude pour l'analyse */
   let bullets = [];
@@ -2565,11 +2565,11 @@ async function genEvaluationWord(){
     bullets = parsed.bullets || [];
   }catch(e){
     console.warn('Analyse Claude:', e);
-    bullets = [
+    bullet    bullets = [
       'Analyse non disponible — vérifiez la connexion',
-      \`Avancement global : \${globalAv}%\`,
-      \`Actions hautes priorités : \${hDone}/\${totHAll} terminées\`,
-      \`Actions moyennes priorités : \${mDone}/\${totMAll} terminées\`,
+      'Avancement global : ' + globalAv + '%',
+      'Actions hautes priorités : ' + hDone + '/' + totHAll + ' terminées',
+      'Actions moyennes priorités : ' + mDone + '/' + totMAll + ' terminées',
     ];
   }
 
