@@ -657,7 +657,7 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
 .pause-btn{background:none;border:none;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;color:#d3d1c7;transition:color .12s;border-radius:4px;width:18px;height:18px}
 .pause-btn:hover{color:#EF9F27}
 .pause-btn.paused{color:#EF9F27}
-.prio-action-row.row-paused{background:#FFFBEB;border-color:#FDE68A;opacity:.85}
+.prio-action-row.row-paused{background:#f5f5f5;border-color:#e0e0e0;opacity:.6}.prio-action-row.row-paused .prio-action-name,.prio-action-row.row-paused .prio-gauge-pct,.prio-action-row.row-paused .prio-num{color:#b4b2a9!important;text-decoration:line-through}
 </style>
 </head>
 <body>
@@ -1185,7 +1185,11 @@ function ringC(){return 2*Math.PI*RING_R;}
 function ringDash(pct){const c=ringC();return`${(pct/100*c).toFixed(2)} ${c.toFixed(2)}`;}
 function colP(prio,av){return av>=100?'#1D9E75':prio==='haute'?'#D85A30':prio==='moyenne'?'#EF9F27':'#b4b2a9';}
 function selCls(prio,done){return done?'sel-done':prio==='haute'?'sel-haute':prio==='moyenne'?'sel-moyenne':'sel-basse';}
-function avgAv(pd){return Math.round(pd.actions.map(a=>a.done?100:a.avancement).reduce((s,v)=>s+v,0)/pd.actions.length);}
+function avgAv(pd){
+  const active=pd.actions.filter(a=>!a.paused);
+  if(!active.length) return 0;
+  return Math.round(active.map(a=>a.done?100:a.avancement).reduce((s,v)=>s+v,0)/active.length);
+}
 function updateTileArc(i){
   const d=dims[i],avg=Math.round(d.actions.reduce((s,a)=>s+a.val,0)/d.actions.length);
   d.val=avg;
@@ -1364,6 +1368,23 @@ function renderAutoModal(i){
     track.addEventListener('touchstart',upG,{passive:true});
     track.addEventListener('touchmove',e=>{e.preventDefault();upG(e);},{passive:false});
 
+    /* ── Pause ── */
+    const ppbtn=row.querySelector(`#ppause-${i}-${j}`);
+    if(ppbtn) ppbtn.addEventListener('click',e=>{
+      e.stopPropagation();
+      const a=pd.actions[j];
+      a.paused=!a.paused;
+      if(a.paused){
+        a._savedAv=a.avancement||0;
+        a.avancement=0;
+      } else {
+        a.avancement=a._savedAv||0;
+      }
+      refreshPrioTile(i);
+      renderPrioModal(i);
+      _lastSaved='';
+    });
+
     row.querySelector('.del-btn').addEventListener('click',e=>{
       e.stopPropagation();
       dims[i].actions.splice(j,1);
@@ -1422,10 +1443,11 @@ document.getElementById('overlay-autonomie').addEventListener('click',e=>{
 let activePrioIdx=null;
 function buildPrioTileEl(pd,i){
   const div=document.createElement('div');div.className='prio-tile';div.id='ptile'+i;
-  const haute=pd.actions.filter(a=>!a.done&&a.prio==='haute').length;
-  const moyenne=pd.actions.filter(a=>!a.done&&a.prio==='moyenne').length;
-  const basse=pd.actions.filter(a=>!a.done&&a.prio==='basse').length;
-  const done=pd.actions.filter(a=>a.done).length;
+  const active=pd.actions.filter(a=>!a.paused);
+  const haute=active.filter(a=>!a.done&&a.prio==='haute').length;
+  const moyenne=active.filter(a=>!a.done&&a.prio==='moyenne').length;
+  const basse=active.filter(a=>!a.done&&a.prio==='basse').length;
+  const done=active.filter(a=>a.done).length;
   const av=avgAv(pd);
   const barColor=done===pd.actions.length&&pd.actions.length>0?'#1D9E75':haute>0?'#D85A30':moyenne>0?'#EF9F27':'#b4b2a9';
   const iconColor=barColor;
