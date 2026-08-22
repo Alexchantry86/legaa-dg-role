@@ -1372,23 +1372,6 @@ function renderAutoModal(i){
     track.addEventListener('touchstart',upG,{passive:true});
     track.addEventListener('touchmove',e=>{e.preventDefault();upG(e);},{passive:false});
 
-    /* ── Pause ── */
-    const ppbtn=row.querySelector(`#ppause-${i}-${j}`);
-    if(ppbtn) ppbtn.addEventListener('click',e=>{
-      e.stopPropagation();
-      const a=pd.actions[j];
-      a.paused=!a.paused;
-      if(a.paused){
-        a._savedAv=a.avancement||0;
-        a.avancement=0;
-      } else {
-        a.avancement=a._savedAv||0;
-      }
-      refreshPrioTile(i);
-      renderPrioModal(i);
-      _lastSaved='';
-    });
-
     row.querySelector('.del-btn').addEventListener('click',e=>{
       e.stopPropagation();
       dims[i].actions.splice(j,1);
@@ -1598,6 +1581,23 @@ function renderPrioModal(i){
       refreshPrioTile(i);
     });
     chk.addEventListener('click',e=>e.stopPropagation());
+    /* ── Pause ── */
+    const ppbtn=row.querySelector(`#ppause-${i}-${j}`);
+    if(ppbtn) ppbtn.addEventListener('click',e=>{
+      e.stopPropagation();
+      const a=pd.actions[j];
+      a.paused=!a.paused;
+      if(a.paused){
+        a._savedAv=a.avancement||0;
+        a.avancement=0;
+      } else {
+        a.avancement=a._savedAv||0;
+      }
+      refreshPrioTile(i);
+      renderPrioModal(i);
+      _lastSaved='';
+    });
+
     row.querySelector('.del-btn').addEventListener('click',e=>{
       e.stopPropagation();
       prioData[i].actions.splice(j,1);
