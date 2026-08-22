@@ -302,9 +302,9 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
 .tiles-modal-head i{font-size:20px;color:#888780}
 .tiles-modal-title{font-size:17px;font-weight:500;color:#2c2c2a}
 .tiles-modal-sub{font-size:12px;color:#b4b2a9;margin-bottom:20px;margin-left:30px}
-.tile-config-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:#f7f7f5;border-radius:10px;margin-bottom:6px}
-.tile-config-icon-select{font-size:13px;border:.5px solid #d3d1c7;border-radius:6px;padding:4px 6px;background:#fff;cursor:pointer;font-family:inherit;outline:none}
-.tile-config-name{flex:1;font-size:13px;font-weight:500;color:#2c2c2a;border:1px solid transparent;border-radius:6px;padding:4px 8px;background:transparent;outline:none;font-family:inherit}
+.tile-config-row{display:grid;grid-template-columns:180px 1fr 44px 30px;align-items:center;gap:8px;padding:9px 12px;background:#fff;border:.5px solid #e8e6e0;border-radius:10px;margin-bottom:6px;transition:border-color .12s}.tile-config-row:hover{border-color:#c8c6be}
+.tile-config-icon-select{font-size:12px;border:.5px solid #d3d1c7;border-radius:8px;padding:5px 6px;background:#f7f7f5;cursor:pointer;font-family:inherit;outline:none;width:100%}
+.tile-config-name{flex:1;font-size:13px;border:.5px solid #d3d1c7;border-radius:8px;padding:5px 10px;font-family:inherit;outline:none;background:#fff;width:100%}.tile-config-name:focus{border-color:#888780}
 .tile-config-name:hover{border-color:#d3d1c7;background:#fff}
 .tile-config-name:focus{border-color:#888780;background:#fff}
 .tile-config-toggle{width:36px;height:20px;background:#d3d1c7;border-radius:10px;cursor:pointer;position:relative;transition:background .15s;flex-shrink:0;border:none}
@@ -2419,24 +2419,49 @@ function openTileManager(){
 }
 
 const ICON_OPTIONS=[
-  {v:'ti-chart-line',l:'📈 Commercial'},
-  {v:'ti-users',l:'👥 RH'},
-  {v:'ti-package',l:'📦 Opérations'},
-  {v:'ti-currency-euro',l:'💶 Finance'},
-  {v:'ti-file-certificate',l:'📋 Conformité'},
+  /* ── Pro & Entreprise ── */
+  {v:'ti-chart-line',       l:'📈 Commercial'},
+  {v:'ti-users',            l:'👥 RH / Équipe'},
+  {v:'ti-package',          l:'📦 Opérations'},
+  {v:'ti-currency-euro',    l:'💶 Finance'},
+  {v:'ti-file-certificate', l:'📋 Conformité'},
   {v:'ti-arrows-right-left',l:'🔄 Synergies'},
-  {v:'ti-user-search',l:'🔍 Stratégie'},
-  {v:'ti-building-bank',l:'🏦 Relations ext.'},
-  {v:'ti-device-desktop',l:'💻 SI'},
-  {v:'ti-shopping-cart',l:'🛒 Achats'},
-  {v:'ti-chart-area',l:'📊 P&L/Budget'},
-  {v:'ti-tools',l:'🔧 Technique'},
-  {v:'ti-truck',l:'🚚 Transport'},
-  {v:'ti-warehouse',l:'🏭 Entrepôt'},
-  {v:'ti-clipboard-list',l:'📝 Planification'},
-  {v:'ti-headset',l:'🎧 SAV/Support'},
-  {v:'ti-certificate',l:'🏆 Qualité'},
-  {v:'ti-settings',l:'⚙️ Process'},
+  {v:'ti-user-search',      l:'🔍 Stratégie'},
+  {v:'ti-building-bank',    l:'🏦 Relations ext.'},
+  {v:'ti-device-desktop',   l:'💻 SI / Outils'},
+  {v:'ti-shopping-cart',    l:'🛒 Achats'},
+  {v:'ti-chart-area',       l:'📊 P&L / Budget'},
+  {v:'ti-tools',            l:'🔧 Technique'},
+  {v:'ti-truck',            l:'🚚 Transport'},
+  {v:'ti-warehouse',        l:'🏭 Entrepôt'},
+  {v:'ti-clipboard-list',   l:'📝 Planification'},
+  {v:'ti-headset',          l:'🎧 SAV / Support'},
+  {v:'ti-certificate',      l:'🏆 Qualité'},
+  {v:'ti-settings',         l:'⚙️ Process'},
+  {v:'ti-briefcase',        l:'💼 Business'},
+  {v:'ti-presentation',     l:'📣 Communication'},
+  {v:'ti-rocket',           l:'🚀 Innovation'},
+  {v:'ti-crown',            l:'👑 Leadership'},
+  {v:'ti-handshake',        l:'🤝 Partenariats'},
+  /* ── Perso & Bien-être ── */
+  {v:'ti-heart',            l:'❤️ Santé / Bien-être'},
+  {v:'ti-activity',         l:'🏃 Sport / Activité'},
+  {v:'ti-ball-football',    l:'⚽ Sport collectif'},
+  {v:'ti-bike',             l:'🚴 Vélo / Cyclisme'},
+  {v:'ti-run',              l:'🏃 Running'},
+  {v:'ti-swim',             l:'🏊 Natation'},
+  {v:'ti-home',             l:'🏠 Famille / Maison'},
+  {v:'ti-book',             l:'📚 Lecture / Formation'},
+  {v:'ti-music',            l:'🎵 Musique / Loisirs'},
+  {v:'ti-plane',            l:'✈️ Voyages'},
+  {v:'ti-coin',             l:'💰 Finances perso'},
+  {v:'ti-brain',            l:'🧠 Développement perso'},
+  {v:'ti-meditation',       l:'🧘 Bien-être / Mindful'},
+  {v:'ti-friends',          l:'👫 Social / Amis'},
+  {v:'ti-school',           l:'🎓 Formation / Études'},
+  {v:'ti-star',             l:'⭐ Objectifs perso'},
+  {v:'ti-plant-2',          l:'🌱 Projets perso'},
+  {v:'ti-mood-smile',       l:'😊 Épanouissement'},
 ];
 
 document.getElementById('overlay-tiles').addEventListener('click',e=>{
