@@ -93,7 +93,7 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
 
 /* MODAL PRIORITÉS — colonnes : drag | num | nom | avancement | priorité(réduite) | check */
 .prio-action-list{display:flex;flex-direction:column;gap:4px}
-.prio-action-row{display:grid;grid-template-columns:16px 18px 1fr 110px 60px 18px 18px 18px 20px;align-items:center;gap:5px;padding:6px 10px;background:#f7f7f5;border-radius:8px;border:1px solid transparent;transition:all .12s}
+.prio-action-row{display:grid;grid-template-columns:16px 22px 1fr auto 80px 22px 22px 22px 20px;align-items:center;gap:6px;padding:8px 12px;background:#f7f7f5;border-radius:10px;border:1px solid transparent;transition:background .12s,border-color .12s}
 .prio-action-row:hover{border-color:#d3d1c7}
 .prio-action-row.dragging{opacity:.35;cursor:grabbing}
 .prio-action-row.drag-over{border-color:#888780;background:#efefed}
@@ -1528,7 +1528,13 @@ function renderPrioModal(i){
           <path d="M14 8.5C14 11.538 11.314 14 8 14c-.98 0-1.905-.226-2.714-.626L2 14l.8-2.8A5.364 5.364 0 0 1 2 8.5C2 5.462 4.686 3 8 3s6 2.462 6 5.5Z" stroke="#b4b2a9" stroke-width="1.2" stroke-linejoin="round"/>
         </svg>
       </button>
+      <button class="pause-btn${a.paused?' paused':''}" id="ppause-${i}-${j}" title="${a.paused?'Reprendre':'Pause'}">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="${a.paused?'#EF9F27':'#d3d1c7'}" stroke="${a.paused?'#EF9F27':'#d3d1c7'}" stroke-width="1.5" stroke-linecap="round">
+          ${a.paused?'<polygon points="5 3 19 12 5 21 5 3"/>':'<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>'}
+        </svg>
+      </button>
       <button class="del-btn" title="Supprimer">&#x2715;</button>`;
+    if(a.paused) row.classList.add('row-paused');
     row.querySelector(`#pname-${i}-${j}`).value=a.name;
     newList.appendChild(row);
     attachDrag(row,i,j);
