@@ -93,7 +93,7 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
 
 /* MODAL PRIORITÉS — colonnes : drag | num | nom | avancement | priorité(réduite) | check */
 .prio-action-list{display:flex;flex-direction:column;gap:4px}
-.prio-action-row{display:grid;grid-template-columns:16px 18px 1fr 110px 60px 22px 18px 20px;align-items:center;gap:6px;padding:6px 10px;background:#f7f7f5;border-radius:8px;border:1px solid transparent;transition:border-color .15s,opacity .15s;cursor:grab}
+.prio-action-row{display:grid;grid-template-columns:16px 18px 1fr 110px 60px 18px 18px 18px 20px;align-items:center;gap:5px;padding:6px 10px;background:#f7f7f5;border-radius:8px;border:1px solid transparent;transition:all .12s}
 .prio-action-row:hover{border-color:#d3d1c7}
 .prio-action-row.dragging{opacity:.35;cursor:grabbing}
 .prio-action-row.drag-over{border-color:#888780;background:#efefed}
@@ -652,6 +652,11 @@ h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:2px}
 .collabs-back-btn:hover{color:#2c2c2a}
 .collabs-title{font-size:22px;font-weight:500;color:#2c2c2a;flex:1}
 .collabs-filters{display:flex;gap:8px;flex-wrap:wrap}
+
+.pause-btn{background:none;border:none;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;color:#d3d1c7;transition:color .12s;border-radius:4px;width:18px;height:18px}
+.pause-btn:hover{color:#EF9F27}
+.pause-btn.paused{color:#EF9F27}
+.prio-action-row.row-paused{background:#FFFBEB;border-color:#FDE68A;opacity:.85}
 </style>
 </head>
 <body>
@@ -1282,6 +1287,13 @@ function renderAutoModal(i){
 
   d.actions.forEach((a,j)=>{
     const row=document.createElement('div');row.className='action-row';
+    const pausedCls = a.paused ? ' paused' : '';
+    const pausedRow = a.paused ? ' row-paused' : '';
+    const pauseSvg = a.paused
+      ? '<polygon points="5 3 19 12 5 21 5 3" fill="#EF9F27"/>'
+      : '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';
+    const pauseColor = a.paused ? '#EF9F27' : '#d3d1c7';
+    row.className = 'prio-action-row' + pausedRow;
     row.innerHTML=`<span class="drag-handle">⋮</span><span class="action-num">${j+1}</span>
       <input class="action-name" type="text" id="aname-${i}-${j}"/>
       <div class="mini-track" id="mt-${i}-${j}"><div class="mini-fill" id="mf-${i}-${j}" style="width:${a.val}%;background:${colA(a.val)}"></div></div>
@@ -1291,7 +1303,12 @@ function renderAutoModal(i){
           <path d="M14 8.5C14 11.538 11.314 14 8 14c-.98 0-1.905-.226-2.714-.626L2 14l.8-2.8A5.364 5.364 0 0 1 2 8.5C2 5.462 4.686 3 8 3s6 2.462 6 5.5Z" stroke="#b4b2a9" stroke-width="1.2" stroke-linejoin="round"/>
         </svg>
       </button>
+      <button class="pause-btn${pausedCls}" id="apause-${i}-${j}" title="${a.paused?'Reprendre':'Pause'}">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="${pauseColor}" stroke-width="2" stroke-linecap="round">${pauseSvg}</svg>
+      </button>
+      <input type="checkbox" class="prio-check" id="adone-${i}-${j}" title="Terminée"/>
       <button class="del-btn" title="Supprimer">&#x2715;</button>`;
+    if(a.done) { const chkEl=row.querySelector('#adone-'+i+'-'+j); if(chkEl) chkEl.checked=true; }
     row.querySelector(`#aname-${i}-${j}`).value=a.name;
     newList.appendChild(row);
     attachAutoDrag(row,i,j);
@@ -1300,6 +1317,35 @@ function renderAutoModal(i){
     inp.addEventListener('input',e=>{d.actions[j].name=e.target.value;});
     inp.addEventListener('click',e=>e.stopPropagation());
     inp.addEventListener('mousedown',e=>e.stopPropagation());
+    /* Checkbox done → 100% */
+    const chk=row.querySelector(`#adone-${i}-${j}`);
+    if(chk) chk.addEventListener('change',e=>{
+      e.stopPropagation();
+      d.actions[j].done=e.target.checked;
+      if(e.target.checked){
+        d.actions[j].val=100;
+        const mf=document.getElementById('mf-'+i+'-'+j);
+        const mp=document.getElementById('mp-'+i+'-'+j);
+        if(mf){mf.style.width='100%';mf.style.background='#1D9E75';}
+        if(mp){mp.textContent='100%';mp.style.color='#1D9E75';}
+        updateTileArc(i);
+      }
+      _lastSaved='';
+    });
+    /* Bouton pause */
+    const pbtn=row.querySelector(`#apause-${i}-${j}`);
+    if(pbtn) pbtn.addEventListener('click',e=>{
+      e.stopPropagation();
+      d.actions[j].paused=!d.actions[j].paused;
+      const isPaused=d.actions[j].paused;
+      row.classList.toggle('row-paused',isPaused);
+      pbtn.classList.toggle('paused',isPaused);
+      pbtn.title=isPaused?'Reprendre':'Pause';
+      const col=isPaused?'#EF9F27':'#d3d1c7';
+      const svg=isPaused?'<polygon points="5 3 19 12 5 21 5 3" fill="'+col+'"/>':'<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';
+      pbtn.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="'+col+'" stroke-width="2" stroke-linecap="round">'+svg+'</svg>';
+      _lastSaved='';
+    });
 
     const track=row.querySelector(`#mt-${i}-${j}`);
     const upG=e=>{
@@ -2715,7 +2761,12 @@ function buildEvaluationDocx(name, role, globalAv, totH, totM, totB, hDone, mDon
     });
 
     const docHtml = '<!DOCTYPE html><html><head><meta charset="UTF-8">'
-      +'<style>body{font-family:Calibri,sans-serif;font-size:11pt;color:#1a1a1a;margin:2cm}h1{font-size:22pt;color:#2c2c2a;margin-bottom:4pt}h2{font-size:16pt;color:#2c2c2a;border-bottom:1px solid #e0e0e0;padding-bottom:6pt;margin-top:24pt} ul{margin:0;padding-left:20pt} li{margin:8pt 0;line-height:1.5} table{border-collapse:collapse;width:100%;font-size:10pt} td,th{border:1px solid #ddd;padding:6px 8px} .field-label{font-weight:bold;font-size:10pt;color:#555;margin-top:14pt;margin-bottom:4pt} .line{border:none;border-bottom:1px solid #aaa;height:28px;width:100%;display:block;margin-bottom:8pt}</style>'
+      +'<style>body{font-family:Calibri,sans-serif;font-size:11pt;color:#1a1a1a;margin:2cm}h1{font-size:22pt;color:#2c2c2a;margin-bottom:4pt}h2{font-size:16pt;color:#2c2c2a;border-bottom:1px solid #e0e0e0;padding-bottom:6pt;margin-top:24pt} ul{margin:0;padding-left:20pt} li{margin:8pt 0;line-height:1.5} table{border-collapse:collapse;width:100%;font-size:10pt} td,th{border:1px solid #ddd;padding:6px 8px} .field-label{font-weight:bold;font-size:10pt;color:#555;margin-top:14pt;margin-bottom:4pt} .line{border:none;border-bottom:1px solid #aaa;height:28px;width:100%;display:block;margin-bottom:8pt}
+.pause-btn{background:none;border:none;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;color:#d3d1c7;transition:color .12s;border-radius:4px;width:18px;height:18px}
+.pause-btn:hover{color:#EF9F27}
+.pause-btn.paused{color:#EF9F27}
+.prio-action-row.row-paused{background:#FFFBEB;border-color:#FDE68A;opacity:.85}
+</style>'
       +'</head><body>'
 
       /* Couverture */
